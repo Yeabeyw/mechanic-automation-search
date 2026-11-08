@@ -1,0 +1,127 @@
+{
+  "planHash": "96dd17ee04d1b3dca497f81a0d69f22f666b35222e79a09f96c78fdd0410995b",
+  "phase": "standalone",
+  "recordedAtUtc": "2026-11-07T18:55:01.4012205Z",
+  "retryCount": 0,
+  "resetBaseline": false,
+  "complete": true,
+  "result": {
+    "setupSucceeded": true,
+    "setupDurationMs": 0,
+    "setupFailureOutput": null,
+    "assertions": [
+      {
+        "name": "production-build",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\r\n\u003E build\r\n\u003E vite build\r\n\r\n\u001B[33mThe plugin \u0022vite-tsconfig-paths\u0022 is detected. Vite now supports tsconfig paths resolution natively via the \u001B[1mresolve.tsconfigPaths\u001B[22m option. You can remove the plugin and set \u001B[1mresolve.tsconfigPaths: true\u001B[22m in your Vite config instead.\u001B[39m\r\n\u001B[36mvite v8.1.5 \u001B[32mbuilding client environment for production...\u001B[36m\u001B[39m\r\n\u001B[2K\r\ntransforming...\u2713 1996 modules transformed.\r\nrendering chunks...\r\ncomputing gzip size...\r\n.output/public/assets/mech-neo-fc5EnAGL.jpg             82.47 kB\r\n.output/public/assets/mech-thabo-g5sJUoij.jpg           96.08 kB\r\n.output/public/assets/mech-lineo-CPuAzNWf.jpg           99.32 kB\r\n.output/public/assets/hero-workshop-BOnHQR0e.jpg       193.14 kB\r\n.output/public/assets/styles-C0rdeokU.css               81.26 kB \u2502 gzip: 13.74 kB\r\n.output/public/assets/loader-circle-LmZjNfAe.js          0.14 kB \u2502 gzip:  0.15 kB\r\n.output/public/assets/useRouter-CwjitLz4.js              0.15 kB \u2502 gzip:  0.14 kB\r\n.output/public/assets/useNavigate-D0meCJtU.js            0.22 kB \u2502 gzip:  0.18 kB\r\n.output/public/assets/link-2-BveF4EGw.js                 0.24 kB \u2502 gzip:  0.20 kB\r\n.output/public/assets/shield-check-DxYS0T48.js           0.32 kB \u2502 gzip:  0.25 kB\r\n.output/public/assets/star-D9BTFXz4.js                   0.47 kB \u2502 gzip:  0.29 kB\r\n.output/public/assets/mechanics-CSpCWwVU.js              0.49 kB \u2502 gzip:  0.31 kB\r\n.output/public/assets/textarea-CkFuOuLM.js               0.51 kB \u2502 gzip:  0.35 kB\r\n.output/public/assets/input-C_mPmcGq.js                  0.62 kB \u2502 gzip:  0.38 kB\r\n.output/public/assets/createLucideIcon-CEGepnBf.js       1.19 kB \u2502 gzip:  0.69 kB\r\n.output/public/assets/label-Cm87CQeU.js                  1.25 kB \u2502 gzip:  0.72 kB\r\n.output/public/assets/request._mechanicId-pX4kFjCh.js    1.27 kB \u2502 gzip:  0.69 kB\r\n.output/public/assets/mechanics._id-C2lhERF9.js          1.29 kB \u2502 gzip:  0.71 kB\r\n.output/public/assets/mechanics.index-B3MCIEw-.js        1.38 kB \u2502 gzip:  0.75 kB\r\n.output/public/assets/mechanics.index-J3-84vUV.js        2.29 kB \u2502 gzip:  1.09 kB\r\n.output/public/assets/ledger-D4egILwn.js                 2.49 kB \u2502 gzip:  1.22 kB\r\n.output/public/assets/MechanicBits-DTilEeP0.js           2.80 kB \u2502 gzip:  1.20 kB\r\n.output/public/assets/LedgerProof-CQ7LpPs6.js            3.36 kB \u2502 gzip:  1.50 kB\r\n.output/public/assets/request._mechanicId-BcnfeshG.js    4.40 kB \u2502 gzip:  1.74 kB\r\n.output/public/assets/mechanics._id-FSg04Lgf.js          4.49 kB \u2502 gzip:  1.66 kB\r\n.output/public/assets/routes-B2-L8qAX.js                 4.73 kB \u2502 gzip:  1.99 kB\r\n.output/public/assets/button-CPNwWy4L.js                 4.86 kB \u2502 gzip:  2.11 kB\r\n.output/public/assets/requests-DXjYjUx8.js               5.56 kB \u2502 gzip:  2.09 kB\r\n.output/public/assets/preload-helper-B_KKnDdO.js         5.68 kB \u2502 gzip:  2.21 kB\r\n.output/public/assets/admin-BqwPPPel.js                  7.31 kB \u2502 gzip:  2.40 kB\r\n.output/public/assets/ledger-Cp2_ZpZO.js                 7.70 kB \u2502 gzip:  2.86 kB\r\n.output/public/assets/project-oyK3R13E.js                7.77 kB \u2502 gzip:  2.85 kB\r\n.output/public/assets/auth-Ds6ek8fs.js                   7.78 kB \u2502 gzip:  3.37 kB\r\n.output/public/assets/jsx-runtime-Cltr0gcK.js            8.43 kB \u2502 gzip:  3.21 kB\r\n.output/public/assets/useQuery--wh3QPn7.js               8.79 kB \u2502 gzip:  3.21 kB\r\n.output/public/assets/link-Bo04l-EA.js                  11.26 kB \u2502 gzip:  4.98 kB\r\n.output/public/assets/QueryClientProvider-DHcYeW04.js   15.24 kB \u2502 gzip:  5.25 kB\r\n.output/public/assets/workshop-CNOKrHnm.js              15.59 kB \u2502 gzip:  5.62 kB\r\n.output/public/assets/utils-B6KiDbIe.js                 27.26 kB \u2502 gzip:  8.69 kB\r\n.output/public/assets/dist-vbLkd846.js                  36.80 kB \u2502 gzip: 10.61 kB\r\n.output/public/assets/client-C2rm7lxu.js               220.78 kB \u2502 gzip: 57.25 kB\r\n.output/public/assets/index-B2pQahCR.js                307.34 kB \u2502 gzip: 98.26 kB\r\n\r\n\u001B[33m\u001B[33m[PLUGIN_TIMINGS] \u001B[0mYour build spent significant time in plugins. Here is a breakdown:\r\n  - vite-tsconfig-paths (72%)\r\n  - tanstack-start-core:import-protection (15%)\r\n  - tanstack-start-core:import-protecti\n\u2026[truncated]",
+        "durationMs": 35102
+      },
+      {
+        "name": "typescript-no-emit",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "",
+        "durationMs": 41312
+      },
+      {
+        "name": "tests-pass",
+        "kind": "process",
+        "verificationMethod": "test-results",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\r\n\u003E test\r\n\u003E vitest run\r\n\r\n\r\n RUN  v4.1.11 D:/Year 3 Semester 1/Digital Strategy for Business Transformation/Group Assignment/lesotho-digital-trust-main/lesotho-digital-trust-main\r\n\r\n\r\n Test Files  2 passed (2)\r\n      Tests  7 passed (7)\r\n   Start at  20:53:29\r\n   Duration  18.43s (transform 1.33s, setup 3.97s, import 3.03s, tests 49ms, environment 11.19s)\r\n\r\n",
+        "durationMs": 29938,
+        "testResults": {
+          "testFramework": "vitest",
+          "runnerDetectedFrom": "package_json",
+          "testsTotal": 7,
+          "testsPassed": 7,
+          "testsFailed": 0,
+          "testsSkipped": 0,
+          "parseFailed": false
+        }
+      },
+      {
+        "name": "home-page-responds",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n\u003C!DOCTYPE html\u003E\u003Chtml lang=\u0022en\u0022 class=\u0022dark\u0022 data-tsd-source=\u0022/src/routes/__root.tsx:111:5\u0022\u003E\u003Chead data-tsd-source=\u0022/src/routes/__root.tsx:112:7\u0022\u003E\u003Cmeta charSet=\u0022utf-8\u0022/\u003E\u003Cmeta name=\u0022viewport\u0022 content=\u0022width=device-width, initial-scale=1\u0022/\u003E\u003Clink rel=\u0022preload\u0022 as=\u0022image\u0022 href=\u0022/src/assets/hero-workshop.jpg\u0022/\u003E\u003Clink rel=\u0022stylesheet\u0022 href=\u0022/src/styles.css\u0022 data-precedence=\u0022default\u0022/\u003E\u003Clink rel=\u0022stylesheet\u0022 href=\u0022https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800\u0026amp;family=Manrope:wght@400;500;600;700\u0026amp;family=JetBrains\u002BMono:wght@400;600\u0026amp;display=swap\u0022 data-precedence=\u0022default\u0022/\u003E\u003Clink rel=\u0022stylesheet\u0022 href=\u0022/@tanstack-start/styles.css?routes=__root__%2C%2F\u0022 data-tanstack-router-dev-styles=\u0022true\u0022 data-precedence=\u0022default\u0022/\u003E\u003Ctitle\u003EAutoHelp Lesotho \u2014 Car trouble? Find a trusted mechanic\u003C/title\u003E\u003Cmeta name=\u0022description\u0022 content=\u0022Find verified mechanics in Maseru, Teyateyaneng, Maputsoe and across Lesotho. Every job is recorded on a tamper-proof ledger.\u0022/\u003E\u003Cmeta property=\u0022og:title\u0022 content=\u0022AutoHelp Lesotho \u2014 Find a trusted mechanic\u0022/\u003E\u003Cmeta property=\u0022og:description\u0022 content=\u0022Verified local mechanics across Lesotho, with tamper-proof job records.\u0022/\u003E\u003Cmeta property=\u0022og:type\u0022 content=\u0022website\u0022/\u003E\u003Cmeta name=\u0022twitter:card\u0022 content=\u0022summary_large_image\u0022/\u003E\u003Clink rel=\u0022modulepreload\u0022 href=\u0022/@id/virtual:tanstack-start-dev-client-entry\u0022/\u003E\u003Clink rel=\u0022icon\u0022 href=\u0022/favicon.ico\u0022 type=\u0022image/x-icon\u0022/\u003E\u003Clink rel=\u0022preconnect\u0022 href=\u0022https://fonts.googleapis.com\u0022/\u003E\u003Clink rel=\u0022preconnect\u0022 href=\u0022https://fonts.gstatic.com\u0022 crossorigin=\u0022anonymous\u0022/\u003E\u003C/head\u003E\u003Cbody data-tsd-source=\u0022/src/routes/__root.tsx:115:7\u0022\u003E\u003Cdiv class=\u0022min-h-screen pb-24 md:pb-0\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:26:5\u0022\u003E\u003Cheader class=\u0022sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:27:7\u0022\u003E\u003Cdiv class=\u0022mx-auto flex h-16 max-w-6xl items-center justify-between px-4\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:28:9\u0022\u003E\u003Ca class=\u0022flex items-center gap-2 active\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:9:5\u0022 href=\u0022/\u0022 data-status=\u0022active\u0022 aria-current=\u0022page\u0022\u003E\u003Cspan class=\u0022grid size-9 place-items-center rounded-xl bg-gradient-primary shadow-glow\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:10:7\u0022\u003E\u003Csvg xmlns=\u0022http://www.w3.org/2000/svg\u0022 width=\u002224\u0022 height=\u002224\u0022 viewBox=\u00220 0 24 24\u0022 fill=\u0022none\u0022 stroke=\u0022currentColor\u0022 stroke-width=\u00222\u0022 stroke-linecap=\u0022round\u0022 stroke-linejoin=\u0022round\u0022 class=\u0022lucide lucide-wrench size-5 text-primary-foreground\u0022 aria-hidden=\u0022true\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:11:9\u0022\u003E\u003Cpath d=\u0022M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z\u0022\u003E\u003C/path\u003E\u003C/svg\u003E\u003C/span\u003E\u003Cspan class=\u0022font-display text-lg font-bold leading-none\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:13:7\u0022\u003EAutoHelp \u003Cspan class=\u0022text-gradient\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:14:18\u0022\u003ELesotho\u003C/span\u003E\u003C/span\u003E\u003C/a\u003E\u003Cnav class=\u0022hidden items-center gap-1 md:flex\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:30:11\u0022\u003E\u003Ca class=\u0022rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:31:13\u0022 href=\u0022/mechanics\u0022\u003EFind a mechanic\u003C/a\u003E\u003Ca class=\u0022rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:35:13\u0022 href=\u0022/ledger\u0022\u003ELedger\u003C/a\u003E\u003Ca class=\u0022rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:36:13\u0022 href=\u0022/project\u0022\u003EAssignment evidence\u003C/a\u003E\u003C/nav\u003E\u003Cdiv class=\u0022flex items-center gap-2\u0022 data-tsd-source=\u0022/src/components/AppShell.tsx:38:11\u0022\u003E\u003Ca data-tsd-source=\u0022/src/components/AppShell.tsx:42:56\u0022 class=\u0022inline-flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed \n\u2026[truncated]",
+        "durationMs": 71505
+      }
+    ],
+    "executions": [
+      {
+        "source": "production-build",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "build"
+        ],
+        "cwd": "D:\\Year 3 Semester 1\\Digital Strategy for Business Transformation\\Group Assignment\\lesotho-digital-trust-main\\lesotho-digital-trust-main",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "typescript-no-emit",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\node.EXE",
+        "args": [
+          "node_modules/typescript/bin/tsc",
+          "--noEmit"
+        ],
+        "cwd": "D:\\Year 3 Semester 1\\Digital Strategy for Business Transformation\\Group Assignment\\lesotho-digital-trust-main\\lesotho-digital-trust-main",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "tests-pass",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "test"
+        ],
+        "cwd": "D:\\Year 3 Semester 1\\Digital Strategy for Business Transformation\\Group Assignment\\lesotho-digital-trust-main\\lesotho-digital-trust-main",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "home-page-responds",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "dev",
+          "--",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "5173",
+          "--strictPort"
+        ],
+        "cwd": "D:\\Year 3 Semester 1\\Digital Strategy for Business Transformation\\Group Assignment\\lesotho-digital-trust-main\\lesotho-digital-trust-main",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      }
+    ]
+  }
+}
