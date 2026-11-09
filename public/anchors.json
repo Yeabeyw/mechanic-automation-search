@@ -1,0 +1,15 @@
+{
+  "network": "Ethereum Sepolia",
+  "chainId": 11155111,
+  "contract": "0x58a7d99938bd64420540F0D9b166106FCA7818De",
+  "deployTx": "0x466c82527889c3fe2bb470117977f70d62bff00bce8acb94e35bca54fc649cb9",
+  "anchors": [
+    {
+      "checkpointIndex": 5,
+      "blockHash": "92f0ca86498558a23d0944d74b05a3393d2d1ef8dce9afbb9aeb7fcb3fa5b2fa",
+      "txHash": "0xbb7d4b0ef8ba315821f6ebbf6ff99a406654f3825021ee0e9b620070d66f9671",
+      "chainBlock": 12100760,
+      "anchoredAt": "2026-11-09T23:23:02.495Z"
+    }
+  ]
+}
