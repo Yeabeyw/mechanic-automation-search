@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Search } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { listVerifiedMechanics } from "@/lib/firebase-data";
 import { CATEGORIES, type Mechanic } from "@/lib/mechanics";
 import { MechanicCard } from "@/components/MechanicBits";
 import { Input } from "@/components/ui/input";
@@ -33,11 +33,7 @@ function FindMechanic() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["mechanics"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("mechanics").select("*").eq("verified", true).order("rating", { ascending: false });
-      if (error) throw error;
-      return data as Mechanic[];
-    },
+    queryFn: listVerifiedMechanics,
   });
 
   const list = (data ?? []).filter(

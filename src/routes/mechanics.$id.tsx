@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { BadgeCheck, MapPin, Star, ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import type { Mechanic } from "@/lib/mechanics";
+import { getMechanic, getMechanicReviews } from "@/lib/firebase-data";
 import { MechanicAvatar, DemoTag } from "@/components/MechanicBits";
 import { LedgerProof } from "@/components/LedgerProof";
 import { Button } from "@/components/ui/button";
@@ -25,15 +24,11 @@ function Profile() {
   const { id } = Route.useParams();
   const { data: m } = useQuery({
     queryKey: ["mechanic", id],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("mechanics").select("*").eq("id", id).maybeSingle();
-      if (error) throw error;
-      return data as Mechanic | null;
-    },
+    queryFn: () => getMechanic(id),
   });
   const { data: reviews } = useQuery({
     queryKey: ["reviews", id],
-    queryFn: async () => (await supabase.from("reviews").select("rating, comment, created_at").eq("mechanic_id", id).order("created_at", { ascending: false })).data ?? [],
+    queryFn: () => getMechanicReviews(id),
   });
 
   if (!m) return <div className="mx-auto max-w-3xl px-4 py-10 text-muted-foreground">Loading…</div>;

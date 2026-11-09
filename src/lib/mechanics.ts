@@ -1,18 +1,69 @@
-import thabo from "@/assets/mech-thabo.jpg";
-import lineo from "@/assets/mech-lineo.jpg";
-import neo from "@/assets/mech-neo.jpg";
-import type { Database } from "@/integrations/supabase/types";
+export type RequestStatus =
+  | "sent"
+  | "accepted"
+  | "declined"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
 
-export type Mechanic = Database["public"]["Tables"]["mechanics"]["Row"];
-export type ServiceRequest = Database["public"]["Tables"]["service_requests"]["Row"];
-export type RequestStatus = Database["public"]["Enums"]["request_status"];
+export type Mechanic = {
+  id: string;
+  available: boolean;
+  bio: string | null;
+  code: string;
+  created_at: string;
+  experience_years: number;
+  is_demo: boolean;
+  jobs_completed: number;
+  name: string;
+  photo_key: string | null;
+  rating: number;
+  specialties: string[];
+  town: string;
+  verified: boolean;
+  workshop: string;
+};
 
-const photos: Record<string, string> = { thabo, lineo, neo };
-export const photoFor = (m: Pick<Mechanic, "photo_key">) => (m.photo_key ? photos[m.photo_key] : undefined);
+export type ServiceRequest = {
+  id: string;
+  category: string;
+  contact_phone: string | null;
+  created_at: string;
+  customer_id: string;
+  description: string;
+  mechanic_id: string;
+  mechanic_owner_id: string;
+  ref: string;
+  status: RequestStatus;
+  updated_at: string;
+  vehicle_make: string;
+  vehicle_model: string;
+  vehicle_year: number | null;
+};
+
+export type Review = {
+  id: string;
+  comment: string;
+  created_at: string;
+  customer_id?: string;
+  mechanic_id: string;
+  rating: number;
+  request_id?: string;
+};
+
+const photos: Record<string, string> = {
+  thabo,
+  lineo,
+  neo,
+};
+
+export const photoFor = (mechanic: Pick<Mechanic, "photo_key">) =>
+  mechanic.photo_key ? photos[mechanic.photo_key] : undefined;
+
 export const initials = (name: string) =>
   name
     .split(" ")
-    .map((p) => p[0])
+    .map((part) => part[0])
     .slice(0, 2)
     .join("");
 
@@ -27,3 +78,6 @@ export const STATUS_LABEL: Record<RequestStatus, string> = {
   completed: "Completed",
   cancelled: "Cancelled",
 };
+import thabo from "@/assets/mech-thabo.jpg";
+import lineo from "@/assets/mech-lineo.jpg";
+import neo from "@/assets/mech-neo.jpg";

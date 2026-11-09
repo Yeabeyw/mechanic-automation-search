@@ -3,6 +3,10 @@ import { Home, Search, ClipboardList, Link2, User, Wrench, ShieldCheck } from "l
 import type { ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import {
+  getFirebaseSetupError,
+  isFirebaseMutationsEnabled,
+} from "@/integrations/firebase/client";
 
 export function Logo() {
   return (
@@ -18,7 +22,8 @@ export function Logo() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, hasRole, signOut } = useAuth();
+  const { user, hasRole, signOut, error } = useAuth();
+  const firebaseError = getFirebaseSetupError() ?? error;
   const navLink = "rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors";
   const active = { className: "rounded-lg px-3 py-2 text-sm bg-accent text-foreground" };
 
@@ -44,6 +49,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
+      {firebaseError && (
+        <div role="alert" className="mx-auto mt-4 max-w-6xl px-4">
+          <p className="rounded-xl border border-warning/40 bg-warning/10 p-3 text-sm text-foreground">
+            {firebaseError}
+          </p>
+        </div>
+      )}
+      {!isFirebaseMutationsEnabled() && (
+        <div role="status" className="mx-auto mt-4 max-w-6xl px-4">
+          <p className="rounded-xl border border-warning/40 bg-warning/10 p-3 text-sm text-foreground">
+            Read-only mode: Firebase Cloud Functions are not enabled for this build. You can browse public information, but account creation and app updates are unavailable.
+          </p>
+        </div>
+      )}
       <main>{children}</main>
       <footer className="mx-auto hidden max-w-6xl px-4 py-10 text-xs text-muted-foreground md:block">
         AutoHelp Lesotho · BIDT3110 group project · Mechanic profiles marked “Demo” are sample data.

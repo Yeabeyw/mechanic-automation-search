@@ -1,5 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
+/// <reference types="@capacitor-firebase/authentication" />
+
 const serverUrl = process.env.CAPACITOR_SERVER_URL || "http://10.0.2.2:5173";
 
 const config: CapacitorConfig = {
@@ -12,6 +14,10 @@ const config: CapacitorConfig = {
     androidScheme: "https",
   },
   plugins: {
+    FirebaseAuthentication: {
+      skipNativeAuth: true,
+      providers: ["google.com"],
+    },
     SplashScreen: {
       launchShowDuration: 1500,
       launchAutoHide: true,

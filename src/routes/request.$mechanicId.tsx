@@ -2,9 +2,9 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { createServiceRequest, getMechanic } from "@/lib/firebase-data";
 import { useAuth } from "@/lib/auth";
-import { CATEGORIES, type Mechanic } from "@/lib/mechanics";
+import { CATEGORIES } from "@/lib/mechanics";
 import { MechanicAvatar } from "@/components/MechanicBits";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,7 +40,7 @@ function RequestHelp() {
 
   const { data: m } = useQuery({
     queryKey: ["mechanic", mechanicId],
-    queryFn: async () => (await supabase.from("mechanics").select("*").eq("id", mechanicId).maybeSingle()).data as Mechanic | null,
+    queryFn: () => getMechanic(mechanicId),
   });
 
   if (!loading && !user)
@@ -57,20 +57,23 @@ function RequestHelp() {
     if (!user) return;
     if (model.trim().length < 1 || desc.trim().length < 5) { toast.error("Add your car model and a short description."); return; }
     setBusy(true);
-    const { error } = await supabase.from("service_requests").insert({
-      customer_id: user.id,
-      mechanic_id: mechanicId,
-      category,
-      vehicle_make: make.trim().slice(0, 40),
-      vehicle_model: model.trim().slice(0, 40),
-      vehicle_year: year ? Number(year) : null,
-      description: desc.trim().slice(0, 500),
-      contact_phone: phone.trim().slice(0, 20) || null,
-    });
-    setBusy(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Request sent and recorded in the simulated ledger.");
-    navigate({ to: "/requests" });
+    try {
+      await createServiceRequest({
+        mechanic_id: mechanicId,
+        category,
+        vehicle_make: make.trim().slice(0, 40),
+        vehicle_model: model.trim().slice(0, 40),
+        vehicle_year: year ? Number(year) : null,
+        description: desc.trim().slice(0, 500),
+        contact_phone: phone.trim().slice(0, 20) || null,
+      });
+      toast.success("Request sent and recorded in the Firebase ledger.");
+      navigate({ to: "/requests" });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not send your request.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (

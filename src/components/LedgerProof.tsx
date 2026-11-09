@@ -2,30 +2,22 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link2, ShieldCheck, ShieldAlert, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
 import {
-  verifyChain,
-  verifyRecordSnapshot,
-  short,
-  type LedgerBlock,
-  type RecordSnapshot,
-} from "@/lib/ledger";
+  getLedgerBlocks,
+  getLedgerBlocksForRecord,
+  verifyLedgerRecord,
+} from "@/lib/firebase-data";
+import { anchorFor, useAnchors } from "@/lib/anchor";
+import { verifyChain, short, type LedgerBlock, type RecordSnapshot } from "@/lib/ledger";
 
-/** Shows the simulated ledger proof for one record and verifies its current fingerprint. */
+/** Shows the Firestore hash-chain proof for one record and verifies its current fingerprint. */
 export function LedgerProof({ recordRef, snapshot }: { recordRef: string; snapshot: RecordSnapshot }) {
   const [result, setResult] = useState<null | { ok: boolean; message: string }>(null);
   const [busy, setBusy] = useState(false);
+  const { data: anchorStore } = useAnchors();
   const { data: blocks, error, isLoading } = useQuery({
     queryKey: ["ledger-ref", recordRef],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("ledger_blocks")
-        .select("*")
-        .eq("record_ref", recordRef)
-        .order("block_index", { ascending: true });
-      if (error) throw error;
-      return data as LedgerBlock[];
-    },
+    queryFn: () => getLedgerBlocksForRecord(recordRef),
   });
   const availableBlocks = blocks ?? [];
   const latest = availableBlocks.at(-1);
@@ -38,30 +30,13 @@ export function LedgerProof({ recordRef, snapshot }: { recordRef: string; snapsh
     setBusy(true);
     setResult(null);
     try {
-      const all: LedgerBlock[] = [];
-      const pageSize = 500;
-      for (let from = 0; ; from += pageSize) {
-        const { data, error } = await supabase
-          .from("ledger_blocks")
-          .select("*")
-          .lte("block_index", latestBlock.block_index)
-          .order("block_index", { ascending: true })
-          .range(from, from + pageSize - 1);
-        if (error) throw error;
-        all.push(...(data as LedgerBlock[]));
-        if (data.length < pageSize) break;
-      }
+      const all = (await getLedgerBlocks()).filter(
+        (block) => block.block_index <= latestBlock.block_index,
+      );
 
       const chainChecks = await verifyChain(all);
       const chainOk = all.length > 0 && chainChecks.length === all.length && chainChecks.every((item) => item.ok);
-      const recordBlocks = all.filter((block) => block.record_ref === recordRef);
-      const { data: fingerprintSalt, error: fingerprintError } = await supabase.rpc(
-        "ledger_fingerprint_salt",
-        { _block_index: latestBlock.block_index },
-      );
-      if (fingerprintError) throw fingerprintError;
-      if (!fingerprintSalt) throw new Error("Fingerprint salt is unavailable.");
-      const recordOk = await verifyRecordSnapshot(recordBlocks, snapshot, fingerprintSalt);
+      const { ok: recordOk } = await verifyLedgerRecord(recordRef, snapshot.type);
       setResult({
         ok: chainOk && recordOk,
         message: !chainOk
@@ -85,11 +60,11 @@ export function LedgerProof({ recordRef, snapshot }: { recordRef: string; snapsh
       <div className="flex flex-wrap items-center gap-2">
         <Link2 className="size-4 text-primary" />
         <span className="font-semibold">
-          {snapshot.type === "mechanic" ? "Mechanic verification" : "Request history"} proof · Simulated
+          {snapshot.type === "mechanic" ? "Mechanic verification" : "Request history"} proof · Hash-chain
           {" · "}{availableBlocks.length} event{availableBlocks.length > 1 ? "s" : ""}
         </span>
         <span className="rounded-full bg-warning/15 px-2 py-0.5 font-medium text-warning">
-          Not a blockchain transaction
+          {anchorFor(latestBlock.block_index, anchorStore) ? "Anchored on Ethereum Sepolia" : "Not yet anchored on-chain"}
         </span>
         <span className="font-mono text-muted-foreground">#{latestBlock.block_index} · {short(latestBlock.record_hash ?? latestBlock.data_hash, 10)}</span>
         <button onClick={check} disabled={busy} className="ml-auto inline-flex items-center gap-1 rounded-lg bg-primary px-2 py-1 font-semibold text-primary-foreground disabled:opacity-60">

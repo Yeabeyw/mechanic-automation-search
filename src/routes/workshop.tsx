@@ -2,9 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  getMechanicForUser,
+  getMechanicRequests,
+  setMechanicAvailability,
+  submitMechanicApplication,
+  updateServiceRequestStatus,
+} from "@/lib/firebase-data";
 import { useAuth } from "@/lib/auth";
-import { CATEGORIES, STATUS_LABEL, type Mechanic, type RequestStatus } from "@/lib/mechanics";
+import { CATEGORIES, STATUS_LABEL, type RequestStatus } from "@/lib/mechanics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,14 +41,14 @@ function Workshop() {
   const { user, loading } = useAuth();
   const qc = useQueryClient();
   const { data: me, isLoading } = useQuery({
-    queryKey: ["my-mechanic", user?.id],
+    queryKey: ["my-mechanic", user?.uid],
     enabled: !!user,
-    queryFn: async () => (await supabase.from("mechanics").select("*").eq("user_id", user!.id).maybeSingle()).data as Mechanic | null,
+    queryFn: () => getMechanicForUser(user!.uid),
   });
   const { data: jobs } = useQuery({
     queryKey: ["my-jobs", me?.id],
     enabled: !!me,
-    queryFn: async () => (await supabase.from("service_requests").select("*").eq("mechanic_id", me!.id).order("created_at", { ascending: false })).data ?? [],
+    queryFn: () => getMechanicRequests(user!.uid),
   });
 
   if (!loading && !user)
@@ -51,15 +57,21 @@ function Workshop() {
   if (!me) return <Apply />;
 
   async function setAvail(v: boolean) {
-    const { error } = await supabase.from("mechanics").update({ available: v }).eq("id", me!.id);
-    if (error) { toast.error(error.message); return; }
-    qc.invalidateQueries({ queryKey: ["my-mechanic"] });
+    try {
+      await setMechanicAvailability(v);
+      qc.invalidateQueries({ queryKey: ["my-mechanic"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update availability.");
+    }
   }
   async function move(id: string, to: RequestStatus) {
-    const { error } = await supabase.from("service_requests").update({ status: to }).eq("id", id);
-    if (error) { toast.error(error.message); return; }
-    toast.success(`Status → ${STATUS_LABEL[to]} — proof added to the simulated ledger`);
-    qc.invalidateQueries();
+    try {
+      await updateServiceRequestStatus(id, to);
+      toast.success(`Status → ${STATUS_LABEL[to]} — proof added to the Firebase ledger`);
+      qc.invalidateQueries();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update this request.");
+    }
   }
 
   const groups: { title: string; filter: (s: RequestStatus) => boolean }[] = [
@@ -123,20 +135,26 @@ function Gate() {
 }
 
 function Apply() {
-  const { user } = useAuth();
   const qc = useQueryClient();
   const [f, setF] = useState({ name: "", workshop: "", town: "", years: "3", bio: "" });
   const [spec, setSpec] = useState<string[]>([]);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!f.name || !f.workshop || !f.town || spec.length === 0) { toast.error("Fill in all fields and pick at least one specialty."); return; }
-    const { error } = await supabase.from("mechanics").insert({
-      user_id: user!.id, name: f.name.slice(0, 80), workshop: f.workshop.slice(0, 80), town: f.town.slice(0, 80),
-      experience_years: Number(f.years) || 1, specialties: spec, bio: f.bio.slice(0, 300),
-    });
-    if (error) { toast.error(error.message); return; }
-    toast.success("Application sent — an administrator will verify your workshop.");
-    qc.invalidateQueries({ queryKey: ["my-mechanic"] });
+    try {
+      await submitMechanicApplication({
+        name: f.name.slice(0, 80),
+        workshop: f.workshop.slice(0, 80),
+        town: f.town.slice(0, 80),
+        experience_years: Number(f.years) || 1,
+        specialties: spec,
+        bio: f.bio.slice(0, 300),
+      });
+      toast.success("Application sent — an administrator will verify your workshop.");
+      qc.invalidateQueries({ queryKey: ["my-mechanic"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not submit your application.");
+    }
   }
   return (
     <div className="mx-auto max-w-xl px-4 py-8">

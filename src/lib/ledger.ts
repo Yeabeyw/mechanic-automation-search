@@ -18,6 +18,9 @@ export type LedgerBlock = {
   block_hash: string;
   network: string;
   created_at: string;
+  tx_hash?: string | null;
+  block_number?: number | null;
+  contract_address?: string | null;
 };
 
 export const GENESIS_PREV = "0".repeat(64);

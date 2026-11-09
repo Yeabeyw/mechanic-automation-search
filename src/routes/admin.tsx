@@ -2,12 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ExternalLink, ShieldCheck, ShieldAlert } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  getAdminRequests,
+  getLedgerBlocks,
+  getMechanicsForAdmin,
+  verifyMechanic,
+} from "@/lib/firebase-data";
 import { useAuth } from "@/lib/auth";
 import { STATUS_LABEL, type Mechanic } from "@/lib/mechanics";
 import { DemoTag } from "@/components/MechanicBits";
 import { Button } from "@/components/ui/button";
-import { verifyChain, type LedgerBlock } from "@/lib/ledger";
+import { verifyChain } from "@/lib/ledger";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -30,29 +35,18 @@ function Admin() {
   const { data: mechs } = useQuery({
     queryKey: ["admin-mechanics"],
     enabled: isAdmin,
-    queryFn: async () => (await supabase.from("mechanics").select("*").order("created_at", { ascending: false })).data as Mechanic[],
+    queryFn: getMechanicsForAdmin,
   });
   const { data: reqs } = useQuery({
     queryKey: ["admin-requests"],
     enabled: isAdmin,
-    queryFn: async () => (await supabase.from("service_requests").select("id, ref, category, status, created_at, mechanics(name)").order("created_at", { ascending: false }).limit(50)).data ?? [],
+    queryFn: getAdminRequests,
   });
   const { data: audit, error: auditError } = useQuery({
     queryKey: ["admin-ledger-audit"],
     enabled: isAdmin,
     queryFn: async () => {
-      const all: LedgerBlock[] = [];
-      const pageSize = 500;
-      for (let from = 0; ; from += pageSize) {
-        const { data, error } = await supabase
-          .from("ledger_blocks")
-          .select("*")
-          .order("block_index", { ascending: true })
-          .range(from, from + pageSize - 1);
-        if (error) throw error;
-        all.push(...(data as LedgerBlock[]));
-        if (data.length < pageSize) break;
-      }
+      const all = await getLedgerBlocks();
       const checks = await verifyChain(all);
       return all.map((block, index) => ({ block, valid: checks[index]?.ok === true }));
     },
@@ -69,10 +63,13 @@ function Admin() {
     );
 
   async function verify(m: Mechanic) {
-    const { error } = await supabase.from("mechanics").update({ verified: true }).eq("id", m.id);
-    if (error) { toast.error(error.message); return; }
-    toast.success(`${m.name} verified — proof added to the simulated ledger`);
-    qc.invalidateQueries();
+    try {
+      await verifyMechanic(m.id);
+      toast.success(`${m.name} verified — proof added to the Firebase ledger`);
+      qc.invalidateQueries();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not verify this mechanic.");
+    }
   }
 
   const pending = (mechs ?? []).filter((m) => !m.verified);

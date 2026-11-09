@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Star, Check } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { cancelServiceRequest, getCustomerRequests, submitReview } from "@/lib/firebase-data";
 import { useAuth } from "@/lib/auth";
 import { STATUS_LABEL, STATUS_STEPS, type RequestStatus } from "@/lib/mechanics";
 import { LedgerProof } from "@/components/LedgerProof";
@@ -29,17 +29,9 @@ function MyRequests() {
   const { user, loading } = useAuth();
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
-    queryKey: ["my-requests", user?.id],
+    queryKey: ["my-requests", user?.uid],
     enabled: !!user,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("service_requests")
-        .select("*, mechanics(name, workshop, town, code), reviews(id)")
-        .eq("customer_id", user!.id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => getCustomerRequests(user!.uid),
   });
 
   if (!loading && !user)
@@ -52,11 +44,14 @@ function MyRequests() {
     );
 
   async function cancel(id: string) {
-    const { error } = await supabase.from("service_requests").update({ status: "cancelled" }).eq("id", id);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Request cancelled");
-    qc.invalidateQueries({ queryKey: ["my-requests"] });
-    qc.invalidateQueries({ queryKey: ["ledger-ref"] });
+    try {
+      await cancelServiceRequest(id);
+      toast.success("Request cancelled");
+      qc.invalidateQueries({ queryKey: ["my-requests"] });
+      qc.invalidateQueries({ queryKey: ["ledger-ref"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not cancel this request.");
+    }
   }
 
   return (
@@ -128,15 +123,17 @@ function Timeline({ status }: { status: RequestStatus }) {
 }
 
 function ReviewForm({ requestId, mechanicId }: { requestId: string; mechanicId: string }) {
-  const { user } = useAuth();
   const qc = useQueryClient();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   async function submit() {
-    const { error } = await supabase.from("reviews").insert({ request_id: requestId, mechanic_id: mechanicId, customer_id: user!.id, rating, comment: comment.slice(0, 400) });
-    if (error) { toast.error(error.message); return; }
-    toast.success("Review submitted and recorded in the simulated ledger");
-    qc.invalidateQueries();
+    try {
+      await submitReview({ request_id: requestId, mechanic_id: mechanicId, rating, comment: comment.slice(0, 400) });
+      toast.success("Review submitted and recorded in the Firebase ledger");
+      qc.invalidateQueries();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not submit your review.");
+    }
   }
   return (
     <div className="rounded-xl border border-border p-4">

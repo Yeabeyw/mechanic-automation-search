@@ -1,0 +1,72 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(userPath(request.auth.uid))
+        && get(userPath(request.auth.uid)).data.roles.hasAny(['admin']);
+    }
+
+    function ownsMechanic(mechanicId) {
+      let ownerPath = /databases/$(database)/documents/mechanic_owners/$(mechanicId);
+      return signedIn()
+        && exists(ownerPath)
+        && get(ownerPath).data.user_id == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if false;
+    }
+
+    match /mechanics/{mechanicId} {
+      allow read: if isAdmin()
+        || ownsMechanic(mechanicId)
+        || resource.data.verified == true;
+      allow write: if false;
+    }
+
+    match /mechanic_owners/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if false;
+    }
+
+    match /service_requests/{requestId} {
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.customer_id == request.auth.uid)
+        || (signedIn() && resource.data.mechanic_owner_id == request.auth.uid);
+      allow write: if false;
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /ledger_blocks/{blockId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /ledger_secrets/{secretId} {
+      allow read, write: if false;
+    }
+
+    match /ledger_state/{stateId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

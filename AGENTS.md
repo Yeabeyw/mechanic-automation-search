@@ -15,7 +15,7 @@ Lovable, not by hand. With the [Lovable MCP](https://mcp.lovable.dev)
 connected, `send_message` asks Lovable to do it; otherwise ask the user to
 use the editor.
 
-- **Database.** Do not add or edit `supabase/migrations/` or `drizzle/`.
+- **Database.** Firebase Authentication and Cloud Firestore are the app's only backend. Maintain Firestore rules, indexes, and Cloud Functions; do not add alternate backend integrations or SQL database migrations.
   Ask Lovable to change the schema.
 - **Generated files.** Do not edit a file whose header says it is automatically
   generated.

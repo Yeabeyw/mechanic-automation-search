@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "430706825027",
+    "project_id": "lesotho-auto-search",
+    "storage_bucket": "lesotho-auto-search.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430706825027:android:8aa726b336b01a29d401f6",
+        "android_client_info": {
+          "package_name": "ls.co.autohelp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuWiixWZ0DCnpPvg7wwm-dJJBXGozvlUQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

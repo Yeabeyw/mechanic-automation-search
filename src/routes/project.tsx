@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, Circle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import type { LedgerBlock } from "@/lib/ledger";
+import { getLatestLedgerBlocks } from "@/lib/firebase-data";
 
 export const Route = createFileRoute("/project")({
   head: () => ({
@@ -24,15 +23,7 @@ const offChain = ["Customer name & email", "Phone numbers", "Vehicle make/model/
 function Project() {
   const { data: samples, error: sampleError } = useQuery({
     queryKey: ["project-ledger-samples"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("ledger_blocks")
-        .select("*")
-        .order("block_index", { ascending: false })
-        .limit(3);
-      if (error) throw error;
-      return data as LedgerBlock[];
-    },
+    queryFn: () => getLatestLedgerBlocks(3),
   });
 
   return (
@@ -48,14 +39,14 @@ function Project() {
           <Item done>Customer journey: problem → find mechanic → profile → request → status timeline → review</Item>
           <Item done>Mechanic workspace: apply, availability, accept/decline, start, complete</Item>
           <Item done>Admin: verify mechanics, oversee requests</Item>
-          <Item done>Secure database with per-role access rules, email + Google sign-in</Item>
+          <Item done>Firebase Authentication and Firestore security rules protect access by user role</Item>
           <Item>Publish to a public URL (pending — click Publish)</Item>
         </ul>
       </section>
 
       <section className="glass rounded-2xl p-5">
         <h2 className="text-xl font-semibold">Part B — Blockchain [20]</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Current demo mode is a simulated, database-backed SHA-256 hash chain. Database triggers append proofs when a mechanic is verified, a request is created or changes status, and a review is submitted. The app does not currently submit public-network transactions.</p>
+        <p className="mt-2 text-sm text-muted-foreground">The ledger is a SHA-256 hash chain in Cloud Firestore whose head hash can be anchored to Ethereum Sepolia through the AutoHelpAnchor smart contract (see the ledger explorer for contract address and transaction links). Trusted Firebase Cloud Functions append proofs when a mechanic is verified, a request is created or changes status, and a review is submitted. Only hashes are published on-chain; no personal data.</p>
         <pre className="mt-3 overflow-x-auto rounded-lg bg-background/60 p-3 font-mono text-xs">{`data_hash  = SHA256(payload)
 block_hash = SHA256(index | prev_hash | data_hash | timestamp)
 prev_hash  = block_hash of block (index − 1)   // genesis = 0×64`}</pre>
@@ -65,18 +56,18 @@ prev_hash  = block_hash of block (index − 1)   // genesis = 0×64`}</pre>
         </div>
         <ul className="mt-4 space-y-1 text-sm">
           <Item done>Transparency and integrity: <Link to="/ledger" className="text-primary underline">ledger explorer</Link>, record checks, whole-chain verification, and a tamper test</Item>
-          <Item done>Automatic simulated proofs for mechanic verification, requests/statuses, job completion, and review submission</Item>
+          <Item done>Cloud Functions append tamper-evident proofs for mechanic verification, requests/statuses, job completion, and review submission</Item>
           <Item done>Solidity event contract source: <code>contracts/AutoHelpLedger.sol</code> — deployment is not configured</Item>
           <Item>Public distributed ledger, consensus finality, and explorer transaction links require a deployed contract and funded test wallet</Item>
         </ul>
         <div className="mt-4 grid gap-3 rounded-xl border border-warning/40 bg-warning/10 p-4 text-sm md:grid-cols-2">
-          <p><b>Network:</b> Simulation only. Contract address: <b>Not deployed.</b> Transaction hashes: none.</p>
-          <p><b>Future test network:</b> Sepolia or Polygon Amoy (Proof-of-Stake). No wallet secret is stored in this app.</p>
+          <p><b>Network:</b> Hybrid: database hash-chain + public checkpoints. Contract address and transaction hashes are listed on the ledger explorer page.</p>
+          <p><b>Test network:</b> Ethereum Sepolia (Proof-of-Stake). The wallet key stays on the operator's computer; the website holds no secret.</p>
         </div>
         <div className="mt-5">
           <h3 className="font-semibold">Data flow</h3>
           <ol className="mt-2 grid gap-2 text-center text-xs md:grid-cols-5">
-            {["Customer / mechanic action", "Database validates role and transition", "Trigger builds minimal event payload and SHA-256 hash", "Simulation stores proof; future relay calls recordEvent", "Admin or customer verifies proof"].map((step, index) => (
+            {["Customer / mechanic action", "Cloud Function validates role and transition", "Function hashes minimal event metadata", "Firestore stores the proof; optional relay anchors it", "Admin or customer verifies proof"].map((step, index) => (
               <li key={step} className="rounded-lg bg-background/60 p-3">{index + 1}. {step}</li>
             ))}
           </ol>
