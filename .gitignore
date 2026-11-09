@@ -41,3 +41,5 @@ dist-ssr
 # Firebase admin keys and logs
 *adminsdk*.json
 firebase-install.log
+
+.firebase/
