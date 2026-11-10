@@ -1,0 +1,162 @@
+[
+  {
+    "requirement": "Lawful basis for processing",
+    "level_today": "Partially compliant",
+    "target": "Compliant",
+    "gap": "Consent mechanism exists but needs documented legal basis",
+    "action": "Document legal basis for each data processing activity",
+    "priority": "High"
+  },
+  {
+    "requirement": "Data minimisation",
+    "level_today": "Compliant",
+    "target": "Compliant",
+    "gap": "",
+    "action": "",
+    "priority": "High"
+  },
+  {
+    "requirement": "Purpose limitation",
+    "level_today": "Compliant",
+    "target": "Compliant",
+    "gap": "",
+    "action": "",
+    "priority": "High"
+  },
+  {
+    "requirement": "Data accuracy",
+    "level_today": "Compliant",
+    "target": "Compliant",
+    "gap": "",
+    "action": "",
+    "priority": "High"
+  },
+  {
+    "requirement": "Storage limitation",
+    "level_today": "Partially compliant",
+    "target": "Compliant",
+    "gap": "No automated data deletion after retention period",
+    "action": "Implement scheduled Cloud Functions for data deletion",
+    "priority": "Medium"
+  },
+  {
+    "requirement": "Integrity and confidentiality",
+    "level_today": "Compliant",
+    "target": "Compliant",
+    "gap": "",
+    "action": "",
+    "priority": "High"
+  },
+  {
+    "requirement": "Right to be informed",
+    "level_today": "Partially compliant",
+    "target": "Compliant",
+    "gap": "Privacy notice page exists but needs more detail",
+    "action": "Expand privacy notice with all required GDPR information",
+    "priority": "High"
+  },
+  {
+    "requirement": "Right of access",
+    "level_today": "Compliant",
+    "target": "Compliant",
+    "gap": "",
+    "action": "",
+    "priority": "High"
+  },
+  {
+    "requirement": "Right to rectification",
+    "level_today": "Compliant",
+    "target": "Compliant",
+    "gap": "",
+    "action": "",
+    "priority": "High"
+  },
+  {
+    "requirement": "Right to erasure",
+    "level_today": "Non-compliant",
+    "target": "Compliant",
+    "gap": "No account deletion mechanism",
+    "action": "Implement account deletion request process",
+    "priority": "High"
+  },
+  {
+    "requirement": "Right to restrict processing",
+    "level_today": "Non-compliant",
+    "target": "Compliant",
+    "gap": "No mechanism to restrict processing",
+    "action": "Implement data restriction functionality",
+    "priority": "Medium"
+  },
+  {
+    "requirement": "Right to data portability",
+    "level_today": "Partially compliant",
+    "target": "Compliant",
+    "gap": "JSON export implemented but not machine-readable formats (CSV, XML)",
+    "action": "Add CSV and XML export options",
+    "priority": "Medium"
+  },
+  {
+    "requirement": "Right to object",
+    "level_today": "Non-compliant",
+    "target": "Compliant",
+    "gap": "No objection mechanism",
+    "action": "Implement objection handling process",
+    "priority": "Low"
+  },
+  {
+    "requirement": "Data breach notification",
+    "level_today": "Non-compliant",
+    "target": "Compliant",
+    "gap": "No breach detection or notification process",
+    "action": "Implement breach detection and notification workflow",
+    "priority": "High"
+  },
+  {
+    "requirement": "Data Protection Impact Assessment (DPIA)",
+    "level_today": "Non-compliant",
+    "target": "Compliant",
+    "gap": "No DPIA conducted",
+    "action": "Conduct DPIA for high-risk processing activities",
+    "priority": "Medium"
+  },
+  {
+    "requirement": "Data Protection Officer (DPO)",
+    "level_today": "Non-compliant",
+    "target": "Compliant",
+    "gap": "No DPO appointed",
+    "action": "Appoint DPO if required by scale of processing",
+    "priority": "Low"
+  },
+  {
+    "requirement": "Records of processing activities",
+    "level_today": "Partially compliant",
+    "target": "Compliant",
+    "gap": "Partial documentation exists",
+    "action": "Complete ROPA documentation",
+    "priority": "Medium"
+  },
+  {
+    "requirement": "International data transfers",
+    "level_today": "Compliant",
+    "target": "Compliant",
+    "gap": "",
+    "action": "",
+    "priority": "High"
+  },
+  {
+    "requirement": "Privacy by design and by default",
+    "level_today": "Partially compliant",
+    "target": "Compliant",
+    "gap": "Privacy considerations not fully integrated into development",
+    "action": "Integrate privacy impact assessment into development process",
+    "priority": "Medium"
+  },
+  {
+    "requirement": "Consent management",
+    "level_today": "Partially compliant",
+    "target": "Compliant",
+    "gap": "Consent checkbox exists but no granular consent preferences",
+    "action": "Implement granular consent management",
+    "priority": "Medium"
+  }
+]

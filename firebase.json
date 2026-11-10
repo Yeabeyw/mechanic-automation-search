@@ -7,18 +7,36 @@
                       "source":  "functions",
                       "runtime":  "nodejs22"
                   },
-    "hosting":  {
-                    "public":  ".output/public",
-                    "ignore":  [
-                                   "firebase.json",
-                                   "**/.*",
-                                   "**/node_modules/**"
-                               ],
-                    "rewrites":  [
-                                     {
-                                         "source":  "**",
-                                         "destination":  "/_shell.html"
-                                     }
-                                 ]
-                }
+    "hosting":  [
+                    {
+                        "target":  "main",
+                        "public":  ".output/public",
+                        "ignore":  [
+                                       "firebase.json",
+                                       "**/.*",
+                                       "**/node_modules/**"
+                                   ],
+                        "rewrites":  [
+                                         {
+                                             "source":  "**",
+                                             "destination":  "/_shell.html"
+                                         }
+                                     ]
+                    },
+                    {
+                        "target":  "security",
+                        "public":  "security-console/dist",
+                        "ignore":  [
+                                       "firebase.json",
+                                       "**/.*",
+                                       "**/node_modules/**"
+                                   ],
+                        "rewrites":  [
+                                         {
+                                             "source":  "**",
+                                             "destination":  "/index.html"
+                                         }
+                                     ]
+                    }
+                ]
 }

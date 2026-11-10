@@ -42,6 +42,7 @@ function AuthPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -52,6 +53,10 @@ function AuthPage() {
     e.preventDefault();
     if (mode === "up" && !isFirebaseMutationsEnabled()) {
       toast.error("Account creation is unavailable while AutoHelp is in read-only mode.");
+      return;
+    }
+    if (mode === "up" && !consent) {
+      toast.error("Please accept the terms and privacy policy to continue.");
       return;
     }
     setBusy(true);
@@ -112,6 +117,21 @@ function AuthPage() {
           {mode === "up" && <div><Label htmlFor="name">Full name</Label><Input id="name" required value={name} onChange={(e) => setName(e.target.value)} className="mt-1" /></div>}
           <div><Label htmlFor="email">Email</Label><Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1" /></div>
           <div><Label htmlFor="pw">Password</Label><Input id="pw" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1" /></div>
+          {mode === "up" && (
+            <div className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                id="consent"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                className="mt-1"
+                required
+              />
+              <label htmlFor="consent" className="text-xs text-muted-foreground">
+                I agree to the <a href="/privacy" className="text-primary underline">Privacy Policy</a> and Terms of Service
+              </label>
+            </div>
+          )}
           <Button type="submit" variant="hero" size="xl" className="w-full" disabled={busy}>{mode === "in" ? "Sign in" : "Create account"}</Button>
         </form>
         {isFirebaseMutationsEnabled() && (

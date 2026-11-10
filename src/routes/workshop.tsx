@@ -161,11 +161,27 @@ function Apply() {
       <h1 className="text-3xl font-bold">Join as a mechanic</h1>
       <p className="mt-1 text-muted-foreground">Tell us about your workshop. You'll appear to customers once verified.</p>
       <form onSubmit={submit} className="glass mt-5 space-y-4 rounded-2xl p-5">
-        <div><Label>Your name</Label><Input className="mt-1" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></div>
-        <div><Label>Workshop name</Label><Input className="mt-1" value={f.workshop} onChange={(e) => setF({ ...f, workshop: e.target.value })} /></div>
+        <div>
+          <Label>Your name</Label>
+          <Input className="mt-1" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
+          <p className="text-xs text-muted-foreground mt-1">Your full name as it will appear to customers.</p>
+        </div>
+        <div>
+          <Label>Workshop name</Label>
+          <Input className="mt-1" value={f.workshop} onChange={(e) => setF({ ...f, workshop: e.target.value })} />
+          <p className="text-xs text-muted-foreground mt-1">The official name of your workshop or business.</p>
+        </div>
         <div className="grid grid-cols-2 gap-3">
-          <div><Label>Town / area</Label><Input className="mt-1" placeholder="Maseru – Ha Abia" value={f.town} onChange={(e) => setF({ ...f, town: e.target.value })} /></div>
-          <div><Label>Years of experience</Label><Input className="mt-1" type="number" min={0} max={50} value={f.years} onChange={(e) => setF({ ...f, years: e.target.value })} /></div>
+          <div>
+            <Label>Town / area</Label>
+            <Input className="mt-1" placeholder="Maseru – Ha Abia" value={f.town} onChange={(e) => setF({ ...f, town: e.target.value })} />
+            <p className="text-xs text-muted-foreground mt-1">Help customers find you easily.</p>
+          </div>
+          <div>
+            <Label>Years of experience</Label>
+            <Input className="mt-1" type="number" min={0} max={50} value={f.years} onChange={(e) => setF({ ...f, years: e.target.value })} />
+            <p className="text-xs text-muted-foreground mt-1">Total years working as a mechanic.</p>
+          </div>
         </div>
         <div>
           <Label>Specialties</Label>
@@ -175,8 +191,13 @@ function Apply() {
                 className={cn("rounded-full border px-3 py-1 text-sm", spec.includes(c) ? "border-primary bg-primary text-primary-foreground" : "border-border")}>{c}</button>
             ))}
           </div>
+          <p className="text-xs text-muted-foreground mt-1">Select all repair types you handle.</p>
         </div>
-        <div><Label>Short bio</Label><Input className="mt-1" value={f.bio} onChange={(e) => setF({ ...f, bio: e.target.value })} /></div>
+        <div>
+          <Label>Short bio</Label>
+          <Input className="mt-1" value={f.bio} onChange={(e) => setF({ ...f, bio: e.target.value })} />
+          <p className="text-xs text-muted-foreground mt-1">Brief description of your expertise (max 300 characters).</p>
+        </div>
         <Button type="submit" variant="hero" size="xl" className="w-full">Submit application</Button>
       </form>
     </div>

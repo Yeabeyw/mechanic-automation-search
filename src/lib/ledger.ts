@@ -1,5 +1,5 @@
 // Client-side verification of the AutoHelp hash-chain ledger.
-// Rules (must match public.ledger_append in the database):
+// Rules (must match appendLedgerEvent in functions/src/ledger.ts):
 //   data_hash  = SHA-256(payload)
 //   record_hash = SHA-256(private salt hex + "|" + canonical record)
 //   block_hash = SHA-256(`${block_index}|${prev_hash}|${data_hash}|${ts}`)

@@ -4,9 +4,16 @@ import {
   FieldValue,
   getFirestore,
   type DocumentData,
+  type Query,
+  type Transaction,
 } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
-import { HttpsError, onCall, type CallableRequest } from "firebase-functions/v2/https";
+import {
+  HttpsError,
+  onCall,
+  type CallableRequest,
+  type FunctionsErrorCode,
+} from "firebase-functions/v2/https";
 import {
   appendLedgerEvent,
   ledgerHeadRef,
@@ -127,6 +134,23 @@ export const ensureUserProfile = onCall(async (request) => {
   });
 
   return { roles };
+});
+
+/**
+ * Lets a signed-in user change ONLY their own display name. Clients cannot write to
+ * users/{uid} (Firestore rules deny it), so this runs with the Admin SDK instead.
+ */
+export const updateMyProfile = onCall(async (request) => {
+  const uid = requireUid(request);
+  const data = inputObject(request.data);
+  const fullName = textField(data, "fullName", 100);
+  const userRef = db.doc(`users/${uid}`);
+  await db.runTransaction(async (transaction) => {
+    const profile = await transaction.get(userRef);
+    if (!profile.exists) throw new HttpsError("failed-precondition", "Your profile is not ready.");
+    transaction.update(userRef, { full_name: fullName });
+  });
+  return { ok: true };
 });
 
 export const submitMechanicApplication = onCall(async (request) => {
@@ -507,6 +531,20 @@ export const verifyMechanic = onCall(async (request) => {
       recordMetadata("MECHANIC_VERIFIED", String(mechanic.get("code")), { verified: true }),
       mechanicRecord(verifiedMechanic),
     );
+
+    const auditRef = db.collection("security_audit").doc();
+    transaction.create(auditRef, {
+      actor_uid: uid,
+      action: "verifyMechanic",
+      target_uid: id,
+      role_changed: null,
+      result: "Allowed",
+      reason: "Mechanic verified by admin",
+      timestamp: Math.floor(Date.now() / 1000),
+      record_ref: String(mechanic.get("code")),
+      before_status: "unverified",
+      after_status: "verified",
+    });
   });
 });
 
@@ -573,4 +611,305 @@ export const verifyLedgerRecord = onCall(async (request) => {
     : requestRecord(record, mechanicCode ?? "");
   const ok = await verifyRecordFingerprint(blockIndex, snapshot);
   return { ok };
+});
+
+function requireSecurityAdmin(uid: string) {
+  const profile = db.doc(`users/${uid}`);
+  return profile.get().then((snapshot) => {
+    if (!snapshot.exists || !roleList(snapshot.data()).includes("security_admin")) {
+      throw new HttpsError("permission-denied", "Security administrator access is required.");
+    }
+  });
+}
+
+async function writeAuditLog(
+  actorUid: string,
+  action: string,
+  targetUid: string | null,
+  roleChanged: string | null,
+  result: "Allowed" | "Denied",
+  reason: string,
+  extra: Record<string, unknown> = {},
+) {
+  const auditRef = db.collection("security_audit").doc();
+  await auditRef.create({
+    actor_uid: actorUid,
+    action,
+    target_uid: targetUid,
+    role_changed: roleChanged,
+    result,
+    reason,
+    timestamp: Math.floor(Date.now() / 1000),
+    ...extra,
+  });
+}
+
+function writeAuditLogInTransaction(
+  transaction: Transaction,
+  actorUid: string,
+  action: string,
+  targetUid: string | null,
+  roleChanged: string | null,
+  result: "Allowed" | "Denied",
+  reason: string,
+  extra: Record<string, unknown> = {},
+) {
+  const auditRef = db.collection("security_audit").doc();
+  transaction.create(auditRef, {
+    actor_uid: actorUid,
+    action,
+    target_uid: targetUid,
+    role_changed: roleChanged,
+    result,
+    reason,
+    timestamp: Math.floor(Date.now() / 1000),
+    ...extra,
+  });
+}
+
+export const listUserRoles = onCall(async (request) => {
+  const uid = requireUid(request);
+  await requireSecurityAdmin(uid);
+
+  const usersSnapshot = await db.collection("users").select("roles", "full_name").get();
+  const users = usersSnapshot.docs.map((doc) => ({
+    uid: doc.id,
+    full_name: doc.get("full_name") || "",
+    roles: roleList(doc.data()),
+  }));
+  return { users };
+});
+
+// audit-fix:v1 - denials are written to security_audit OUTSIDE the transaction (a thrown error
+// rolls a transaction back, which used to discard the audit entry). Role changes are also no longer
+// appended to the public ledger, because that exposed user IDs and privilege changes.
+type RoleDenial = { code: FunctionsErrorCode; message: string; reason: string };
+
+export const setUserRole = onCall(async (request) => {
+  const uid = requireUid(request);
+  await requireSecurityAdmin(uid);
+
+  const data = inputObject(request.data);
+  const targetUid = textField(data, "targetUid", 128);
+  const role = textField(data, "role", 50);
+  const action = data.action;
+
+  const deny = async (denial: RoleDenial): Promise<never> => {
+    await writeAuditLog(uid, "setUserRole", targetUid, role, "Denied", denial.reason);
+    throw new HttpsError(denial.code, denial.message);
+  };
+
+  if (action !== "grant" && action !== "revoke") {
+    return deny({ code: "invalid-argument", message: "action must be 'grant' or 'revoke'.", reason: "Invalid action" });
+  }
+  if (role !== "admin" && role !== "mechanic") {
+    return deny({
+      code: "invalid-argument",
+      message: "Only 'admin' and 'mechanic' roles can be managed.",
+      reason: "Invalid role for this function",
+    });
+  }
+  if (targetUid === uid) {
+    return deny({ code: "permission-denied", message: "You cannot change your own roles.", reason: "Cannot change own roles" });
+  }
+
+  const targetRef = db.doc("users/" + targetUid);
+  const denial = await db.runTransaction(async (transaction): Promise<RoleDenial | null> => {
+    const [targetProfile, allAdmins] = await Promise.all([
+      transaction.get(targetRef),
+      transaction.get(db.collection("users").where("roles", "array-contains", "admin")),
+    ]);
+
+    if (!targetProfile.exists) {
+      return { code: "not-found", message: "Target user not found.", reason: "Target user not found" };
+    }
+    const currentRoles = roleList(targetProfile.data());
+
+    if (action === "grant") {
+      if (currentRoles.includes(role)) {
+        return { code: "already-exists", message: "User already has this role.", reason: "Role already granted" };
+      }
+      if (role === "admin" && allAdmins.docs.length === 0) {
+        return {
+          code: "failed-precondition",
+          message: "Cannot grant admin role when no admins exist.",
+          reason: "Cannot grant admin when no admins exist",
+        };
+      }
+      transaction.update(targetRef, { roles: FieldValue.arrayUnion(role) });
+    } else {
+      if (!currentRoles.includes(role)) {
+        return { code: "failed-precondition", message: "User does not have this role.", reason: "Role not present" };
+      }
+      if (role === "admin" && allAdmins.docs.filter((adminDoc) => adminDoc.id !== targetUid).length === 0) {
+        return {
+          code: "failed-precondition",
+          message: "Cannot revoke the last admin role.",
+          reason: "Cannot revoke last admin",
+        };
+      }
+      transaction.update(targetRef, { roles: FieldValue.arrayRemove(role) });
+    }
+
+    writeAuditLogInTransaction(
+      transaction,
+      uid,
+      "setUserRole_" + action,
+      targetUid,
+      role,
+      "Allowed",
+      "Role changed successfully",
+    );
+    return null;
+  });
+
+  if (denial) return deny(denial);
+  return { success: true };
+});
+
+export const getSecurityPolicy = onCall(async (request) => {
+  const uid = requireUid(request);
+  await requireSecurityAdmin(uid);
+
+  const policy = {
+    actors: ["Visitor", "Customer", "Mechanic", "Admin", "Security Admin", "System"],
+    modules: [
+      { name: "User profiles", id: "users" },
+      { name: "Mechanic profiles", id: "mechanics" },
+      { name: "Mechanic ownership", id: "mechanic_owners" },
+      { name: "Service requests", id: "service_requests" },
+      { name: "Reviews", id: "reviews" },
+      { name: "Ledger blocks", id: "ledger_blocks" },
+      { name: "Ledger secrets", id: "ledger_secrets" },
+      { name: "Ledger state", id: "ledger_state" },
+      { name: "Security audit log", id: "security_audit" },
+    ],
+    permissions: [
+      { actor: "Visitor", module: "users", read: "None", write: "None", status: "Enforced" },
+      { actor: "Visitor", module: "mechanics", read: "Own (verified)", write: "None", status: "Enforced" },
+      { actor: "Visitor", module: "mechanic_owners", read: "None", write: "None", status: "Enforced" },
+      { actor: "Visitor", module: "service_requests", read: "None", write: "None", status: "Enforced" },
+      { actor: "Visitor", module: "reviews", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Visitor", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Visitor", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
+      { actor: "Visitor", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
+      { actor: "Visitor", module: "security_audit", read: "None", write: "None", status: "Enforced" },
+
+      { actor: "Customer", module: "users", read: "Own", write: "None", status: "Enforced" },
+      { actor: "Customer", module: "mechanics", read: "Own (verified)", write: "None", status: "Enforced" },
+      { actor: "Customer", module: "mechanic_owners", read: "Own", write: "None", status: "Enforced" },
+      { actor: "Customer", module: "service_requests", read: "Own", write: "Own (fn)", status: "Enforced" },
+      { actor: "Customer", module: "reviews", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Customer", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Customer", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
+      { actor: "Customer", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
+      { actor: "Customer", module: "security_audit", read: "None", write: "None", status: "Enforced" },
+
+      { actor: "Mechanic", module: "users", read: "Own", write: "None", status: "Enforced" },
+      { actor: "Mechanic", module: "mechanics", read: "Own", write: "None", status: "Enforced" },
+      { actor: "Mechanic", module: "mechanic_owners", read: "Own", write: "None", status: "Enforced" },
+      { actor: "Mechanic", module: "service_requests", read: "Assigned", write: "Assigned (fn)", status: "Enforced" },
+      { actor: "Mechanic", module: "reviews", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Mechanic", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Mechanic", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
+      { actor: "Mechanic", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
+      { actor: "Mechanic", module: "security_audit", read: "None", write: "None", status: "Enforced" },
+
+      { actor: "Admin", module: "users", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Admin", module: "mechanics", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Admin", module: "mechanic_owners", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Admin", module: "service_requests", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Admin", module: "reviews", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Admin", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Admin", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
+      { actor: "Admin", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
+      { actor: "Admin", module: "security_audit", read: "None", write: "None", status: "Enforced" },
+
+      { actor: "Security Admin", module: "users", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Security Admin", module: "mechanics", read: "None", write: "None", status: "Enforced" },
+      { actor: "Security Admin", module: "mechanic_owners", read: "None", write: "None", status: "Enforced" },
+      { actor: "Security Admin", module: "service_requests", read: "None", write: "None", status: "Enforced" },
+      { actor: "Security Admin", module: "reviews", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Security Admin", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
+      { actor: "Security Admin", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
+      { actor: "Security Admin", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
+      { actor: "Security Admin", module: "security_audit", read: "Full", write: "None", status: "Enforced" },
+
+      { actor: "System", module: "users", read: "Full", write: "Full", status: "Enforced" },
+      { actor: "System", module: "mechanics", read: "Full", write: "Full", status: "Enforced" },
+      { actor: "System", module: "mechanic_owners", read: "Full", write: "Full", status: "Enforced" },
+      { actor: "System", module: "service_requests", read: "Full", write: "Full", status: "Enforced" },
+      { actor: "System", module: "reviews", read: "Full", write: "Full", status: "Enforced" },
+      { actor: "System", module: "ledger_blocks", read: "Full", write: "Full", status: "Enforced" },
+      { actor: "System", module: "ledger_secrets", read: "Full", write: "Full", status: "Enforced" },
+      { actor: "System", module: "ledger_state", read: "Full", write: "Full", status: "Enforced" },
+      { actor: "System", module: "security_audit", read: "Full", write: "Full", status: "Enforced" },
+    ],
+  };
+
+  return policy;
+});
+
+// audit-fix:v1 - filters are validated, pagination uses a document cursor (no skipped rows on equal
+// timestamps), and the composite indexes it needs are in firestore.indexes.json.
+function optionalFilter(value: unknown, name: string, maxLength: number) {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value !== "string" || value.length > maxLength) {
+    throw new HttpsError("invalid-argument", name + " must be a string of at most " + maxLength + " characters.");
+  }
+  return value;
+}
+
+export const listAuditLog = onCall(async (request) => {
+  const uid = requireUid(request);
+  await requireSecurityAdmin(uid);
+
+  const data = inputObject(request.data);
+  const limit = data.limit === undefined || data.limit === null ? 50 : Number(data.limit);
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+    throw new HttpsError("invalid-argument", "limit must be a whole number between 1 and 100.");
+  }
+  const filterActor = optionalFilter(data.filterActor, "filterActor", 128);
+  const filterAction = optionalFilter(data.filterAction, "filterAction", 100);
+  const filterResult = optionalFilter(data.filterResult, "filterResult", 20);
+  if (filterResult !== null && filterResult !== "Allowed" && filterResult !== "Denied") {
+    throw new HttpsError("invalid-argument", "filterResult must be 'Allowed' or 'Denied'.");
+  }
+  const startAfterId = optionalFilter(data.startAfterId, "startAfterId", 128);
+  const startAfterTimestamp =
+    data.startAfter === undefined || data.startAfter === null || data.startAfter === ""
+      ? null
+      : Number(data.startAfter);
+  if (startAfterTimestamp !== null && !Number.isFinite(startAfterTimestamp)) {
+    throw new HttpsError("invalid-argument", "startAfter must be a number.");
+  }
+
+  let query: Query = db.collection("security_audit");
+  if (filterActor) query = query.where("actor_uid", "==", filterActor);
+  if (filterAction) query = query.where("action", "==", filterAction);
+  if (filterResult) query = query.where("result", "==", filterResult);
+  query = query.orderBy("timestamp", "desc");
+
+  if (startAfterId) {
+    const cursorDoc = await db.doc("security_audit/" + startAfterId).get();
+    if (!cursorDoc.exists) throw new HttpsError("invalid-argument", "startAfterId does not exist.");
+    query = query.startAfter(cursorDoc);
+  } else if (startAfterTimestamp !== null) {
+    query = query.startAfter(startAfterTimestamp);
+  }
+
+  const snapshot = await query.limit(limit).get();
+  const entries = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    actor_uid: doc.get("actor_uid"),
+    action: doc.get("action"),
+    target_uid: doc.get("target_uid"),
+    role_changed: doc.get("role_changed"),
+    result: doc.get("result"),
+    reason: doc.get("reason"),
+    timestamp: doc.get("timestamp"),
+  }));
+  const nextCursor = entries.length === limit ? (entries.at(-1)?.id ?? null) : null;
+
+  return { entries, nextCursor };
 });

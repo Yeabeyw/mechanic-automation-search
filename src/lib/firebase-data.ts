@@ -154,6 +154,45 @@ export async function getAdminRequests(): Promise<AdminRequest[]> {
   }));
 }
 
+export async function updateMyProfile(fullName: string) {
+  return callFunction<{ fullName: string }, { ok: boolean }>("updateMyProfile", { fullName });
+}
+
+/** Everything the app holds about one user, for the GDPR access/portability download. */
+export async function exportMyData(uid: string): Promise<Record<string, unknown>> {
+  const db = getFirebaseDb();
+  const profile = await getDoc(doc(db, "users", uid));
+
+  const sent = await getDocs(
+    query(collection(db, "service_requests"), where("customer_id", "==", uid)),
+  );
+  const requestsSent = sent.docs.map((snapshot) => rowFromSnapshot<ServiceRequest>(snapshot));
+  const reviewSnapshots = await Promise.all(
+    requestsSent.map((request) => getDoc(doc(db, "reviews", request.id))),
+  );
+  const reviewsWritten = reviewSnapshots
+    .filter((snapshot) => snapshot.exists())
+    .map((snapshot) => ({ id: snapshot.id, ...snapshot.data() }));
+
+  const mechanic = await getMechanicForUser(uid);
+  const received = await getDocs(
+    query(collection(db, "service_requests"), where("mechanic_owner_id", "==", uid)),
+  );
+  const requestsReceived = received.docs.map((snapshot) => rowFromSnapshot<ServiceRequest>(snapshot));
+  const reviewsReceived = mechanic ? await getMechanicReviews(mechanic.id) : [];
+
+  return {
+    profile: profile.exists() ? profile.data() : null,
+    mechanic_profile: mechanic,
+    requests_sent: requestsSent,
+    reviews_written: reviewsWritten,
+    requests_received_as_mechanic: requestsReceived,
+    reviews_received_as_mechanic: reviewsReceived,
+    ledger_note:
+      "The public ledger stores only salted SHA-256 fingerprints and non-personal metadata about your records, not your personal data.",
+  };
+}
+
 export async function setMechanicAvailability(available: boolean) {
   return callFunction<{ available: boolean }, void>("setMechanicAvailability", { available });
 }

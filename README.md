@@ -103,3 +103,213 @@ Cloud Functions append SHA-256 fingerprints to a Firestore hash chain when mecha
 Historical ledger entries are not imported. To anchor new Firestore ledger checkpoints to Ethereum Sepolia, deploy the contract with `npm run anchor:deploy`, then set `ANCHOR_RPC_URL` and `ANCHOR_PRIVATE_KEY` in the ignored local `.env.anchor` file and run `npm run anchor`. The script reads publicly readable Firestore ledger blocks, verifies the full hash chain, then writes the transaction checkpoint to `public/anchors.json`. Never commit the private key. A Firestore hash-chain proof is not a public-chain anchor until the transaction succeeds.
 
 The current TanStack Start build includes a server-rendered Nitro output and does not create a static Hosting `index.html`. Do not deploy `.output/public` as a standalone website; configure a compatible Firebase Hosting server backend before publishing the web build. The Android app can continue using Firebase directly.
+
+## Part C: Cybersecurity Implementation
+
+### Security Console
+
+A separate security configuration module is hosted on a different domain for role management, audit logging, and security monitoring.
+
+**Security Console URL**: `https://musolink-security.web.app` (to be configured with custom domain)
+
+**Deploy Security Console**:
+```bash
+cd security-console
+npm install
+npm run build
+cd ..
+firebase deploy --only hosting:security
+```
+
+**Security Console Features**:
+- Sign-in with Firebase Auth (separate session from main app)
+- Overview dashboard with security metrics
+- User role management (admin, mechanic roles only)
+- Permission matrix viewer
+- Audit log viewer with filtering
+- Data classification table
+- GDPR compliance checklist
+- Security settings and domain status
+- Access restricted to `security_admin` role
+
+### Firestore Security Rules
+
+**Status**: ✅ Enforced with deny-by-default policy
+
+**Collections and Permissions**:
+
+| Collection | Read Access | Write Access | Status |
+|------------|-------------|--------------|--------|
+| users | Owner, admin, security_admin (get/list) | None (server only) | Enforced |
+| mechanics | Public (verified only), admin, mechanic owner (all) | None (server only) | Enforced |
+| mechanic_owners | Owner, admin (get/list) | None (server only) | Enforced |
+| service_requests | Owner, assigned mechanic, admin (get/list) | None (server only) | Enforced |
+| reviews | Public (get/list) | None (server only) | Enforced |
+| ledger_blocks | Public (get/list) | None (server only) | Enforced |
+| ledger_secrets | None | None | Enforced |
+| ledger_state | None | None | Enforced |
+| security_audit | security_admin (get/list) | None (server only) | Enforced |
+
+**Helper Functions**:
+- `isSignedIn()`: Checks if user is authenticated
+- `isAdmin()`: Checks for admin role only
+- `isSecurityAdmin()`: Checks for security_admin role only
+- `isOwner(uid)`: Checks if user owns the document
+
+### Cloud Functions
+
+**Status**: ✅ Deployed with server-side security checks
+
+**Functions**:
+- `listUserRoles`: Lists all users with roles (security_admin only)
+- `setUserRole`: Grants/revokes admin and mechanic roles (security_admin only)
+- `getSecurityPolicy`: Returns permission matrix (authenticated)
+- `listAuditLog`: Returns audit log with filtering (security_admin only)
+- `verifyMechanic`: Verifies mechanic applications with audit logging (admin only)
+
+**Audit Logging**:
+- All role changes are logged to `security_audit` collection
+- Mechanic verifications are logged with before/after status
+- Ledger events are appended for immutable record
+- Audit log is append-only and read-only for security_admin
+
+### Main App Security Enhancements
+
+**Status**: ✅ Implemented
+
+- Consent checkbox at sign-up linking to privacy policy
+- Privacy policy page at `/privacy`
+- Profile page at `/profile` with editing and data download
+- Field hints under free-text inputs
+- Access denied component for unauthorized access
+- Profile link added to navigation
+
+### Data Classification
+
+**Status**: ✅ Documented in `docs/data-classification.md`
+
+**Classification Levels**:
+- **Public**: Reviews, ledger block hashes
+- **Private**: User profiles, mechanic profiles, service requests
+- **Confidential**: User roles, verification status, audit log
+- **Restricted**: Ledger secrets (salt)
+
+**Documentation**: See `docs/data-classification.md` for complete classification table.
+
+### GDPR Compliance
+
+**Status**: ✅ Partially compliant (see `security-console/src/data/gdpr-checklist.json`)
+
+**Compliance Score**: 35% (7/20 requirements fully compliant)
+
+**Key Areas**:
+- ✅ Data minimization
+- ✅ Purpose limitation
+- ✅ Data accuracy
+- ✅ Integrity and confidentiality
+- ✅ Right to access (data download implemented)
+- ✅ Right to rectification (profile editing implemented)
+- ✅ International data transfers (data stored in Firebase EU region)
+- ⚠️ Lawful basis for processing (partial - consent mechanism exists)
+- ⚠️ Right to be informed (partial - privacy notice exists)
+- ⚠️ Storage limitation (partial - no automated deletion)
+- ⚠️ Records of processing activities (partial)
+- ⚠️ Privacy by design (partial)
+- ⚠️ Consent management (partial)
+- ❌ Right to erasure (not implemented)
+- ❌ Right to restrict processing (not implemented)
+- ❌ Right to data portability (partial - JSON export only)
+- ❌ Right to object (not implemented)
+- ❌ Data breach notification (not implemented)
+- ❌ Data Protection Impact Assessment (not conducted)
+- ❌ Data Protection Officer (not appointed)
+
+**Lesotho Data Protection Law**: The application also aligns with the Lesotho Data Protection Act 2021, which provides similar protections to GDPR for personal data processing within Lesotho.
+
+### Hardening Steps
+
+**Status**: ✅ Documented in `docs/hardening.md`
+
+**Implemented**:
+- Firestore security rules with deny-by-default
+- Cloud Functions with server-side checks
+- Audit logging for sensitive operations
+- Separation of security console domain
+- Service account key management (documented)
+
+**Documented (requires action)**:
+- `android:allowBackup=false` for Android app
+- Service account key revocation
+- App Check (requires Blaze plan upgrade)
+
+### Testing
+
+**Firestore Rules Tests**:
+```bash
+firebase emulators:start --only firestore
+firebase emulators:exec "mocha firestore.rules.test.js"
+```
+
+**Cloud Functions Tests**:
+```bash
+node functions/test/functions.test.js
+```
+
+**Evidence Documentation**: See `docs/part-c-evidence.md` for step-by-step verification.
+
+### Creating the First Security Admin
+
+1. Create a Firebase Authentication account in the main app
+2. Find the user's UID in Firebase Console → Authentication
+3. In Firestore Console, navigate to `users/{uid}`
+4. Add `"security_admin"` to the `roles` array
+5. Sign in to the security console with that account
+
+**Important**: Only grant `security_admin` role through Firebase Console or Cloud Functions. Never grant roles from the client.
+
+### Seeding Test Data
+
+A seed script is provided to populate Firebase with test data for development and testing.
+
+**Usage**:
+```bash
+# 1. Download service account key from Firebase Console
+# 2. Save as service-account-key.json in project root
+# 3. Install dependencies
+npm install firebase-admin
+# 4. Run seed script
+node scripts/seed-firebase.js
+```
+
+**Seeded Data**:
+- 6 users (3 customers, 1 mechanic, 1 admin, 1 security_admin)
+- 6 mechanics (3 verified, 3 unverified)
+- 6 service requests (various statuses)
+- 6 reviews
+- Ledger secrets and state
+
+See `scripts/README.md` for detailed instructions.
+
+### Multi-Site Firebase Hosting
+
+**Main App**: `https://musolink.web.app`
+**Security Console**: `https://musolink-security.web.app`
+
+**Configuration**:
+- `.firebaserc` defines two hosting targets: `main` and `security`
+- `firebase.json` configures hosting array with rewrites
+- Main app deploys from `.output/public`
+- Security console deploys from `security-console/dist`
+
+**Deploy Both Sites**:
+```bash
+# Deploy main app
+npm run build
+firebase deploy --only hosting:main
+
+# Deploy security console
+cd security-console
+npm run build
+cd ..
+firebase deploy --only hosting:security
+```

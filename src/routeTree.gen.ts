@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LedgerRouteImport } from './routes/ledger'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProjectRouteImport } from './routes/project'
 import { Route as RequestsRouteImport } from './routes/requests'
 import { Route as WorkshopRouteImport } from './routes/workshop'
@@ -38,6 +40,16 @@ const AuthRoute = AuthRouteImport.update({
 const LedgerRoute = LedgerRouteImport.update({
   id: '/ledger',
   path: '/ledger',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectRoute = ProjectRouteImport.update({
@@ -76,6 +88,8 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/ledger': typeof LedgerRoute
+  '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/project': typeof ProjectRoute
   '/requests': typeof RequestsRoute
   '/workshop': typeof WorkshopRoute
@@ -88,6 +102,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/ledger': typeof LedgerRoute
+  '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/project': typeof ProjectRoute
   '/requests': typeof RequestsRoute
   '/workshop': typeof WorkshopRoute
@@ -101,6 +117,8 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/ledger': typeof LedgerRoute
+  '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/project': typeof ProjectRoute
   '/requests': typeof RequestsRoute
   '/workshop': typeof WorkshopRoute
@@ -115,6 +133,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/ledger'
+    | '/privacy'
+    | '/profile'
     | '/project'
     | '/requests'
     | '/workshop'
@@ -127,6 +147,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/ledger'
+    | '/privacy'
+    | '/profile'
     | '/project'
     | '/requests'
     | '/workshop'
@@ -139,6 +161,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/ledger'
+    | '/privacy'
+    | '/profile'
     | '/project'
     | '/requests'
     | '/workshop'
@@ -152,6 +176,8 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   LedgerRoute: typeof LedgerRoute
+  PrivacyRoute: typeof PrivacyRoute
+  ProfileRoute: typeof ProfileRoute
   ProjectRoute: typeof ProjectRoute
   RequestsRoute: typeof RequestsRoute
   WorkshopRoute: typeof WorkshopRoute
@@ -188,6 +214,20 @@ declare module '@tanstack/react-router' {
       path: '/ledger'
       fullPath: '/ledger'
       preLoaderRoute: typeof LedgerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/project': {
@@ -240,6 +280,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   LedgerRoute: LedgerRoute,
+  PrivacyRoute: PrivacyRoute,
+  ProfileRoute: ProfileRoute,
   ProjectRoute: ProjectRoute,
   RequestsRoute: RequestsRoute,
   WorkshopRoute: WorkshopRoute,

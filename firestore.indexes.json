@@ -4,41 +4,116 @@
       "collectionGroup": "service_requests",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "customer_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "customer_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "service_requests",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "mechanic_owner_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "mechanic_owner_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "reviews",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "mechanic_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "mechanic_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "ledger_blocks",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "record_ref", "order": "ASCENDING" },
-        { "fieldPath": "block_index", "order": "ASCENDING" }
+        {
+          "fieldPath": "record_ref",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "block_index",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "ledger_blocks",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "record_ref", "order": "ASCENDING" },
-        { "fieldPath": "record_type", "order": "ASCENDING" },
-        { "fieldPath": "block_index", "order": "DESCENDING" }
+        {
+          "fieldPath": "record_ref",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "record_type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "block_index",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "security_audit",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "actor_uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "security_audit",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "action",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "security_audit",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "result",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
       ]
     }
   ],

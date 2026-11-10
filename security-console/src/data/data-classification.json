@@ -1,0 +1,156 @@
+[
+  {
+    "field": "User ID (uid)",
+    "class": "Private",
+    "owner": "User",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Full name",
+    "class": "Private",
+    "owner": "User",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Email address",
+    "class": "Private",
+    "owner": "User",
+    "retention": "Until account deletion",
+    "safeguard": "Firebase Auth + Firestore"
+  },
+  {
+    "field": "User roles (admin, mechanic, security_admin)",
+    "class": "Confidential",
+    "owner": "System",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules + Cloud Functions"
+  },
+  {
+    "field": "Mechanic code",
+    "class": "Private",
+    "owner": "Mechanic",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Mechanic name",
+    "class": "Private",
+    "owner": "Mechanic",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Workshop name",
+    "class": "Private",
+    "owner": "Mechanic",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Town",
+    "class": "Private",
+    "owner": "Mechanic",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Experience years",
+    "class": "Private",
+    "owner": "Mechanic",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Specialties",
+    "class": "Private",
+    "owner": "Mechanic",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Mechanic verification status",
+    "class": "Confidential",
+    "owner": "System",
+    "retention": "Until account deletion",
+    "safeguard": "Firestore with security rules + audit log"
+  },
+  {
+    "field": "Service request reference",
+    "class": "Private",
+    "owner": "Customer",
+    "retention": "2 years after completion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Vehicle make/model/year",
+    "class": "Private",
+    "owner": "Customer",
+    "retention": "2 years after completion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Repair category",
+    "class": "Private",
+    "owner": "Customer",
+    "retention": "2 years after completion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Description",
+    "class": "Private",
+    "owner": "Customer",
+    "retention": "2 years after completion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Contact phone",
+    "class": "Private",
+    "owner": "Customer",
+    "retention": "2 years after completion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Request status",
+    "class": "Private",
+    "owner": "System",
+    "retention": "2 years after completion",
+    "safeguard": "Firestore with security rules"
+  },
+  {
+    "field": "Review rating",
+    "class": "Public",
+    "owner": "Customer",
+    "retention": "Indefinite",
+    "safeguard": "Firestore (public read)"
+  },
+  {
+    "field": "Review comment",
+    "class": "Public",
+    "owner": "Customer",
+    "retention": "Indefinite",
+    "safeguard": "Firestore (public read)"
+  },
+  {
+    "field": "Ledger block hash",
+    "class": "Public",
+    "owner": "System",
+    "retention": "Indefitive",
+    "safeguard": "Firestore (public read)"
+  },
+  {
+    "field": "Ledger secrets (salt)",
+    "class": "Restricted",
+    "owner": "System",
+    "retention": "Indefinite",
+    "safeguard": "Firestore (no client access)"
+  },
+  {
+    "field": "Security audit log entries",
+    "class": "Confidential",
+    "owner": "Security Admin",
+    "retention": "7 years",
+    "safeguard": "Firestore (security_admin only) + append-only"
+  }
+]

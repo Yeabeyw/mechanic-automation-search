@@ -99,8 +99,16 @@ function RequestHelp() {
           <div><Label htmlFor="model">Model</Label><Input id="model" placeholder="Corolla" value={model} onChange={(e) => setModel(e.target.value)} className="mt-1" /></div>
           <div><Label htmlFor="year">Year</Label><Input id="year" type="number" min={1970} max={2027} placeholder="2012" value={year} onChange={(e) => setYear(e.target.value)} className="mt-1" /></div>
         </div>
-        <div><Label htmlFor="desc">What's happening?</Label><Textarea id="desc" maxLength={500} rows={4} placeholder="Car won't start this morning in Ha Thetsane, clicking sound…" value={desc} onChange={(e) => setDesc(e.target.value)} className="mt-1" /></div>
-        <div><Label htmlFor="phone">Phone for the mechanic (optional)</Label><Input id="phone" placeholder="+266 5x xxx xxx" value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1" /></div>
+        <div>
+          <Label htmlFor="desc">What's happening?</Label>
+          <Textarea id="desc" maxLength={500} rows={4} placeholder="Car won't start this morning in Ha Thetsane, clicking sound…" value={desc} onChange={(e) => setDesc(e.target.value)} className="mt-1" />
+          <p className="text-xs text-muted-foreground mt-1">Describe the problem clearly so the mechanic can diagnose and bring the right tools.</p>
+        </div>
+        <div>
+          <Label htmlFor="phone">Phone for the mechanic (optional)</Label>
+          <Input id="phone" placeholder="+266 5x xxx xxx" value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1" />
+          <p className="text-xs text-muted-foreground mt-1">Include country code for reliable contact.</p>
+        </div>
         <p className="text-xs text-muted-foreground">Only the request number, mechanic code, category and status go on the ledger. Your name, phone, car and description stay private.</p>
         <Button type="submit" variant="hero" size="xl" className="w-full" disabled={busy}>{busy ? "Sending…" : "Send request"}</Button>
       </form>

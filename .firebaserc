@@ -1,0 +1,27 @@
+{
+  "projects": {
+    "default": "lesotho-digital-trust"
+  },
+  "targets": {
+    "hosting": {
+      "main": {
+        "site": "lesotho-digital-trust",
+        "public": ".output/public",
+        "ignore": [
+          "firebase.json",
+          "**/.*",
+          "**/node_modules/**"
+        ]
+      },
+      "security": {
+        "site": "lesotho-digital-trust-security",
+        "public": "security-console/dist",
+        "ignore": [
+          "firebase.json",
+          "**/.*",
+          "**/node_modules/**"
+        ]
+      }
+    }
+  }
+}

@@ -30,6 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Project rules
-- Blockchain records are appended only by database triggers via `public.ledger_append` (hash-chain in `ledger_blocks`); `src/lib/ledger.ts` must mirror its hashing formula exactly — why: browser re-verification depends on byte-identical inputs.
+- Blockchain records are appended only by Cloud Functions via `appendLedgerEvent` (hash-chain in `ledger_blocks`); `functions/src/ledger.ts` must mirror its hashing formula exactly — why: browser re-verification depends on byte-identical inputs.
 - Never put personal data (names, phones, emails, vehicle details, free text) into ledger payloads — why: on-chain data cannot be erased (GDPR Art. 17).
-- Status transitions and admin-only fields are enforced by DB triggers (`requests_guard`, `mechanics_guard`), not the UI — why: role permissions must hold for any client.
+- Status transitions and admin-only fields are enforced by Cloud Functions (`verifyMechanic`, `updateServiceRequest`), not the UI — why: role permissions must hold for any client.
+- Firestore security rules enforce deny-by-default policy with explicit permissions for each collection.

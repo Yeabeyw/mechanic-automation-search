@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { onAuthStateChanged, signOut, type User } from "firebase/auth";
+import { onAuthStateChanged, signOut, updateProfile as updateFirebaseProfile, type User } from "firebase/auth";
 import { getDoc, doc } from "firebase/firestore";
 import {
   getFirebaseAuth,
   getFirebaseDb,
   isFirebaseMutationsEnabled,
 } from "@/integrations/firebase/client";
-import { ensureUserProfile } from "@/lib/firebase-data";
+import { ensureUserProfile, updateMyProfile } from "@/lib/firebase-data";
 
 export type AppRole = "customer" | "mechanic" | "admin" | "security_admin";
 
@@ -17,6 +17,7 @@ type AuthState = {
   error: string | null;
   hasRole: (role: AppRole) => boolean;
   signOut: () => Promise<void>;
+  updateProfile: (name: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -101,6 +102,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         hasRole: (role) => roles.includes(role),
         signOut: async () => {
           await signOut(getFirebaseAuth());
+        },
+        updateProfile: async (name: string) => {
+          if (!user) throw new Error("No user signed in");
+          await updateMyProfile(name);
+          await updateFirebaseProfile(user, { displayName: name });
         },
       }}
     >

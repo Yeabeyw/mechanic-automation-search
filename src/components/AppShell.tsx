@@ -36,6 +36,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link to="/mechanics" className={navLink} activeProps={active}>Find a mechanic</Link>
             {user && <Link to="/requests" className={navLink} activeProps={active}>My requests</Link>}
             {user && <Link to="/workshop" className={navLink} activeProps={active}>Mechanic workspace</Link>}
+            {user && <Link to="/profile" className={navLink} activeProps={active}>Profile</Link>}
             {hasRole("admin") && <Link to="/admin" className={navLink} activeProps={active}>Admin</Link>}
             <Link to="/ledger" className={navLink} activeProps={active}>Ledger</Link>
             <Link to="/project" className={navLink} activeProps={active}>Assignment evidence</Link>

@@ -2,7 +2,7 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() {
+    function isSignedIn() {
       return request.auth != null;
     }
 
@@ -11,62 +11,109 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return signedIn()
+      return isSignedIn()
         && exists(userPath(request.auth.uid))
         && get(userPath(request.auth.uid)).data.roles.hasAny(['admin']);
     }
 
+    function isSecurityAdmin() {
+      return isSignedIn()
+        && exists(userPath(request.auth.uid))
+        && get(userPath(request.auth.uid)).data.roles.hasAny(['security_admin']);
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
     function ownsMechanic(mechanicId) {
       let ownerPath = /databases/$(database)/documents/mechanic_owners/$(mechanicId);
-      return signedIn()
+      return isSignedIn()
         && exists(ownerPath)
         && get(ownerPath).data.user_id == request.auth.uid;
     }
 
     match /users/{userId} {
-      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
-      allow write: if false;
+      allow read: if isSignedIn() && (isOwner(userId) || isAdmin() || isSecurityAdmin());
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     match /mechanics/{mechanicId} {
-      allow read: if isAdmin()
+      allow get: if isAdmin()
         || ownsMechanic(mechanicId)
         || resource.data.verified == true;
-      allow write: if false;
+      allow list: if isAdmin()
+        || ownsMechanic(mechanicId)
+        || resource.data.verified == true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     match /mechanic_owners/{userId} {
-      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
-      allow write: if false;
+      allow get: if isSignedIn() && (isOwner(userId) || isAdmin());
+      allow list: if isSignedIn() && (isOwner(userId) || isAdmin());
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     match /service_requests/{requestId} {
-      allow read: if isAdmin()
-        || (signedIn() && resource.data.customer_id == request.auth.uid)
-        || (signedIn() && resource.data.mechanic_owner_id == request.auth.uid);
-      allow write: if false;
+      allow get: if isAdmin()
+        || (isSignedIn() && resource.data.customer_id == request.auth.uid)
+        || (isSignedIn() && resource.data.mechanic_owner_id == request.auth.uid);
+      allow list: if isAdmin()
+        || (isSignedIn() && resource.data.customer_id == request.auth.uid)
+        || (isSignedIn() && resource.data.mechanic_owner_id == request.auth.uid);
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     match /reviews/{reviewId} {
-      allow read: if true;
-      allow write: if false;
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     match /ledger_blocks/{blockId} {
-      allow read: if true;
-      allow write: if false;
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     match /ledger_secrets/{secretId} {
-      allow read, write: if false;
+      allow get: if false;
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     match /ledger_state/{stateId} {
-      allow read, write: if false;
+      allow get: if false;
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    match /security_audit/{auditId} {
+      allow get: if isSecurityAdmin();
+      allow list: if isSecurityAdmin();
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     match /{document=**} {
-      allow read, write: if false;
+      allow get, list, create, update, delete: if false;
     }
   }
 }

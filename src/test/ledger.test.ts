@@ -8,7 +8,7 @@ import {
   type RecordSnapshot,
 } from "@/lib/ledger";
 
-// Real blocks written by public.ledger_append in the database.
+// Real blocks written by Cloud Functions via appendLedgerEvent in Firestore.
 const genesis: LedgerBlock = {
   block_index: 0,
   ts: 1793956312,
