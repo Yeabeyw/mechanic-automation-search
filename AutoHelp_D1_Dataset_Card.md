@@ -1,14 +1,14 @@
 # AutoHelp D1 Dataset Card
 
-## Dataset Overview
+**File**: AutoHelp_D1_Dataset.csv  
+**Records**: 1000 (1000 synthetic, 0 real)  
+**Target**: `successful_match` (1 = the customer-mechanic match succeeded)  
+**Class balance**: 480 successful (48.0%) and 520 unsuccessful (52.0%)  
+**Generated**: 2026-11-11 with fixed seed 42 (`npm run ai:train` recreates it exactly)
 
-**Name**: AutoHelp_D1_Dataset.csv  
-**Purpose**: Training AI models to predict successful mechanic-customer matches for AutoHelp Lesotho  
-**Size**: 1,000 synthetic records  
-**Target Variable**: `successful_match` (1 = successful match, 0 = unsuccessful match)  
-**Date Created**: November 2026  
+## Objective
 
----
+The application helps drivers in Lesotho find a suitable mechanic. The AI objective is **content discovery**: rank verified mechanics by the predicted probability that a match with a given customer request will succeed, so the best-fit mechanic is shown first.
 
 ## Real Public Data Sources Used
 
@@ -59,187 +59,102 @@
 
 ---
 
-## Data Generation Method
+**Important**: these sources only informed the shape of the data (typical breakdown categories, price levels and the Lesotho district mix). No public dataset contains Lesotho mechanic-customer outcomes, so every row in this file is synthetic and is flagged `is_synthetic = TRUE`.
 
-### Synthetic Data Generation Rules
+## Schema
 
-The dataset was generated using a fixed random seed (42) to ensure reproducibility. The following rules were applied:
+| Column | Type | Meaning |
+|---|---|---|
+| `id` | string | Unique record id (SYN-0001 …) |
+| `district` | category | Lesotho district of the request (10 districts) |
+| `town` | category | Town within the district |
+| `problem_category` | category | Engine, Battery, Tyre, Brakes, Electrical, Other |
+| `vehicle_age_band` | category | 0-3, 4-7, 8-12 or 13+ years |
+| `specialty_match` | 0/1 | Mechanic specialties include the problem category |
+| `mechanic_verified` | 0/1 | Mechanic is verified on the platform |
+| `mechanic_experience_years` | integer | Years of mechanic experience |
+| `availability_status` | category | available / unavailable |
+| `distance_km` | number | Distance from customer to mechanic (km, synthetic) |
+| `historical_completion_rate` | number | Share of past jobs the mechanic completed |
+| `quoted_price_maloti` | integer | Quoted repair price in Maloti (M) |
+| `successful_match` | 0/1 | TARGET: the match succeeded |
+| `is_synthetic` | TRUE/FALSE | TRUE for generated rows |
+| `created_at` | date | Request date |
 
-#### 1. District Distribution
-Based on Lesotho population estimates:
-- Maseru: 35% (largest district, capital)
-- Leribe: 15%
-- Berea: 12%
-- Mafeteng: 10%
-- Mohale's Hoek: 8%
-- Quthing: 7%
-- Butha-Buthe: 6%
-- Thaba-Tseka: 4%
-- Qacha's Nek: 3%
+## Observed distributions
 
-#### 2. Problem Categories
-Based on JAF and MOT data distribution:
-- Engine: 25%
-- Brakes: 20%
-- Electrical: 15%
-- Transmission: 12%
-- Suspension: 10%
-- Air Conditioning: 8%
-- Tires: 6%
-- Starting/Charging: 4%
+### District
+| district | Records | Share |
+|---|---|---|
+| Maseru | 312 | 31.2% |
+| Leribe | 140 | 14.0% |
+| Berea | 112 | 11.2% |
+| Mafeteng | 112 | 11.2% |
+| Mohale's Hoek | 77 | 7.7% |
+| Quthing | 64 | 6.4% |
+| Butha-Buthe | 63 | 6.3% |
+| Thaba-Tseka | 44 | 4.4% |
+| Mokhotlong | 39 | 3.9% |
+| Qacha's Nek | 37 | 3.7% |
 
-#### 3. Vehicle Age Bands
-Based on regional vehicle fleet data:
-- 0-3 years: 20%
-- 4-7 years: 35%
-- 8-12 years: 30%
-- 13+ years: 15%
+### Problem category
+| problem_category | Records | Share |
+|---|---|---|
+| Battery | 217 | 21.7% |
+| Tyre | 173 | 17.3% |
+| Brakes | 168 | 16.8% |
+| Engine | 164 | 16.4% |
+| Electrical | 151 | 15.1% |
+| Other | 127 | 12.7% |
 
-#### 4. Specialty Match Rule
-`specialty_match = 1` if mechanic's specialty includes the problem category, else 0
+### Vehicle age band
+| vehicle_age_band | Records | Share |
+|---|---|---|
+| 8-12 years | 329 | 32.9% |
+| 4-7 years | 323 | 32.3% |
+| 0-3 years | 182 | 18.2% |
+| 13+ years | 166 | 16.6% |
 
-#### 5. Availability Status
-Randomly assigned: 70% available, 30% unavailable
+### Availability
+| availability_status | Records | Share |
+|---|---|---|
+| available | 715 | 71.5% |
+| unavailable | 285 | 28.5% |
 
-#### 6. Mechanic Verification
-Randomly assigned: 60% verified, 40% unverified
+### Numeric ranges
+| Column | Observed range |
+|---|---|
+| `mechanic_experience_years` | 4 to 24 (mean 8.82) |
+| `distance_km` | 2 to 128 (mean 53.51) |
+| `historical_completion_rate` | 0.62 to 0.97 (mean 0.79) |
+| `quoted_price_maloti` | 200 to 2798 (mean 887.41) |
 
-#### 7. Experience Years
-Based on realistic distribution: 1-25 years, skewed toward 5-15 years
+## How the data was generated
 
-#### 8. Distance_km
-Based on Lesotho geography: 1-150 km, with most within 50 km
+Rows are produced by `src/lib/ai/dataset.ts` (`generateSyntheticRecords`, seed 42):
 
-#### 9. Historical Completion Rate
-Based on mechanic experience and verification: 60-95%
+- District drawn with population-style weights (Maseru largest); town drawn from that district.
+- Problem category and vehicle age band drawn from weighted lists.
+- `specialty_match` = 1 for 58%, `mechanic_verified` = 1 for 62%, `availability_status` = available for 70%.
+- Distance: 2 to 40 km in Maseru, 8 to 128 km elsewhere. Price: uniform within a per-category range in Maloti.
+- Completion rate rises with verification and experience, then is clamped to 0.55 to 0.97.
 
-#### 10. Quoted Price (Maloti)
-Based on repair category and regional pricing:
-- Engine: M500-3000
-- Brakes: M300-1500
-- Electrical: M400-2000
-- Transmission: M800-4000
-- Suspension: M400-1800
-- Air Conditioning: M350-1200
-- Tires: M200-800
-- Starting/Charging: M300-1000
+**Target rule.** A success probability is computed as:
 
-#### 11. Target Variable (successful_match)
-Generated using a logistic-style rule with noise:
-- Base probability: 0.5
-- +0.3 if specialty_match = 1
-- +0.2 if availability_status = "available"
-- +0.15 if mechanic_verified = 1
-- +0.1 if historical_completion_rate > 0.8
-- -0.05 per 10 km distance
-- -0.1 if vehicle_age_band = "13+ years"
-- Add Gaussian noise (σ=0.15)
-- Threshold at 0.5 to get binary outcome
+`p = 0.22 + 0.32·specialty_match + 0.22 (available) or −0.18 (unavailable) + 0.14·verified + 0.35·max(0, completion − 0.70) + min(0.08, experience/250) − distance/280 − 0.08 (vehicle 13+ years) − max(0, price − 1800)/9000 + noise`
 
-This results in approximately 65% successful matches, reflecting realistic match rates.
+The noise is Gaussian with σ = 0.12, `p` is clamped to 0.03 to 0.97, and `successful_match = 1` when `p ≥ 0.5`.
 
----
+## Quality checks
 
-## Column Descriptions
+- Missing values: 0
+- Duplicate ids: 0
+- Target values: only 0 and 1 (verified)
+- All 10 Lesotho districts present: yes
 
-| Column | Type | Description | Range/Values |
-|--------|------|-------------|--------------|
-| district | string | Lesotho district | 10 districts |
-| town | string | Town within district | Various towns |
-| problem_category | string | Type of vehicle problem | Engine, Brakes, Electrical, etc. |
-| vehicle_age_band | string | Vehicle age category | 0-3, 4-7, 8-12, 13+ years |
-| specialty_match | integer | Mechanic specialty matches problem | 0 or 1 |
-| mechanic_verified | integer | Mechanic verification status | 0 or 1 |
-| mechanic_experience_years | integer | Years of mechanic experience | 1-25 |
-| availability_status | string | Mechanic current availability | "available", "unavailable" |
-| distance_km | float | Distance from customer to mechanic | 1-150 km |
-| historical_completion_rate | float | Mechanic's historical job completion rate | 0.60-0.95 |
-| quoted_price_maloti | integer | Quoted repair price in Maloti | 200-4000 M |
-| successful_match | integer | Target: was the match successful? | 0 or 1 |
-| is_synthetic | boolean | Whether record is synthetic | TRUE (all records) |
+## Limitations and responsible use
 
----
-
-## Class Balance
-
-- **Successful matches (1)**: 648 records (64.8%)
-- **Unsuccessful matches (0)**: 352 records (35.2%)
-
-The dataset is moderately imbalanced, reflecting realistic match success rates in service marketplaces.
-
----
-
-## Records per District
-
-| District | Count | Percentage |
-|----------|-------|------------|
-| Maseru | 350 | 35.0% |
-| Leribe | 150 | 15.0% |
-| Berea | 120 | 12.0% |
-| Mafeteng | 100 | 10.0% |
-| Mohale's Hoek | 80 | 8.0% |
-| Quthing | 70 | 7.0% |
-| Butha-Buthe | 60 | 6.0% |
-| Thaba-Tseka | 40 | 4.0% |
-| Qacha's Nek | 30 | 3.0% |
-
----
-
-## Limitations
-
-1. **Geographic Proxy**: Vehicle breakdown patterns are based on Japanese (JAF) and UK (MOT) data, which may not perfectly match Lesotho conditions (road quality, vehicle types, climate).
-
-2. **Pricing Adjustment**: Repair prices are estimated from US/UK sources and adjusted for Lesotho economy. Actual prices may vary significantly.
-
-3. **No Real App Data**: The current AutoHelp Lesotho app has no real completed/declined requests, so all records are synthetic. Real app data will be added as it becomes available.
-
-4. **Distance Estimation**: Distance_km is randomly generated based on district size, not actual GPS coordinates.
-
-5. **Simplified Matching**: The target variable uses a simplified rule-based generation. Real-world matching depends on many more factors (mechanic schedule, parts availability, customer urgency, etc.).
-
-6. **No Temporal Dimension**: The dataset is a snapshot with no time series data. Real matching success may vary by season, day of week, time of day.
-
-7. **Synthetic Towns**: Town names are representative but may not cover all actual towns in each district.
-
----
-
-## Reproducibility
-
-To regenerate this dataset, use the generation script with:
-- Random seed: 42
-- Number of records: 1000
-- Rules as documented above
-
-The dataset generation script is available in `scripts/generate-dataset.js`.
-
----
-
-## Data Storage
-
-The dataset is stored in Firestore collection `ai_training_data` with the following structure:
-- Document ID: Auto-incrementing integer (1-1000)
-- Fields: All columns from the CSV
-- Access: Read-only for all authenticated users, write-only for Admins
-
-No personal data (names, phones, emails) is included in the dataset.
-
----
-
-## Intended Use
-
-This dataset is intended for:
-1. Training machine learning models to predict successful mechanic-customer matches
-2. Evaluating model performance (accuracy, precision, recall, F1, ROC-AUC)
-3. Feature importance analysis
-4. Learning curve and saturation analysis
-
-It should NOT be used for:
-1. Individual decision-making without validation
-2. Legal or regulatory compliance
-3. Direct pricing recommendations without local calibration
-
----
-
-## License
-
-This synthetic dataset is provided as part of the AutoHelp Lesotho academic project. Real data sources have their own licenses and should be cited appropriately.
+- The labels come from a known formula, so models can only learn that formula. Scores measure how well a model recovers the rule, not how it would perform on real customers.
+- Distances are simulated, not GPS routes. Prices are indicative.
+- The dataset contains no personal data (no names, phone numbers or real vehicle registrations).
+- When real app outcomes arrive they should be appended with `is_synthetic = FALSE`, the models retrained, and results compared against this baseline.

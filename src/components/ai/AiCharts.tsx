@@ -9,8 +9,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  Area,
-  AreaChart,
+  ComposedChart,
   ReferenceLine,
   Cell,
 } from "recharts";
@@ -38,7 +37,14 @@ export function BarInsight({
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 24 }}>
           <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
-          <XAxis dataKey={xKey} tick={{ fill: "#9eb3d1", fontSize: 11 }} interval={0} angle={-25} textAnchor="end" height={50} />
+          <XAxis
+            dataKey={xKey}
+            tick={{ fill: "#9eb3d1", fontSize: 11 }}
+            interval={0}
+            angle={-25}
+            textAnchor="end"
+            height={50}
+          />
           <YAxis tick={{ fill: "#9eb3d1", fontSize: 11 }} />
           <Tooltip contentStyle={tooltipStyle} />
           <Bar dataKey={yKey} fill={color} radius={[6, 6, 0, 0]} />
@@ -67,7 +73,14 @@ export function LineInsight({
           <Tooltip contentStyle={tooltipStyle} />
           <Legend />
           {series.map((s) => (
-            <Line key={s.key} type="monotone" dataKey={s.key} stroke={s.color} dot={false} strokeWidth={2} />
+            <Line
+              key={s.key}
+              type="monotone"
+              dataKey={s.key}
+              stroke={s.color}
+              dot={false}
+              strokeWidth={2}
+            />
           ))}
         </LineChart>
       </ResponsiveContainer>
@@ -81,7 +94,7 @@ export function LearningChart({
   yVal,
   saturationSize,
 }: {
-  data: { size: number; train: number; val: number; trainLo: number; trainHi: number; valLo: number; valHi: number }[];
+  data: { size: number; train: number; val: number }[];
   yTrain: string;
   yVal: string;
   saturationSize?: number | null;
@@ -89,25 +102,33 @@ export function LearningChart({
   return (
     <div className="h-72 w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
+        <ComposedChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
           <CartesianGrid stroke="rgba(255,255,255,0.08)" />
           <XAxis dataKey="size" tick={{ fill: "#9eb3d1", fontSize: 11 }} />
           <YAxis domain={[0.4, 1]} tick={{ fill: "#9eb3d1", fontSize: 11 }} />
           <Tooltip contentStyle={tooltipStyle} />
-          <Area dataKey="trainHi" stroke="none" fill="#3b9eff" fillOpacity={0.08} />
-          <Area dataKey="trainLo" stroke="none" fill="#0b172a" fillOpacity={1} />
+          <Legend />
           <Line type="monotone" dataKey="train" stroke="#7ec8ff" name={yTrain} strokeWidth={2} />
-          <Line type="monotone" dataKey="val" stroke="#3b9eff" name={yVal} strokeWidth={2} />
+          <Line type="monotone" dataKey="val" stroke="#f5c15c" name={yVal} strokeWidth={2} />
           {saturationSize ? (
-            <ReferenceLine x={saturationSize} stroke="#f5c15c" strokeDasharray="4 4" label={{ value: "Saturation", fill: "#f5c15c", fontSize: 11 }} />
+            <ReferenceLine
+              x={saturationSize}
+              stroke="#5ee0a8"
+              strokeDasharray="4 4"
+              label={{ value: "Saturation", fill: "#5ee0a8", fontSize: 11 }}
+            />
           ) : null}
-        </AreaChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-export function HeatMatrix({ matrix }: { matrix: { tp: number; fp: number; tn: number; fn: number } }) {
+export function HeatMatrix({
+  matrix,
+}: {
+  matrix: { tp: number; fp: number; tn: number; fn: number };
+}) {
   const cells = [
     { label: "True pos", value: matrix.tp, color: "#3b9eff" },
     { label: "False pos", value: matrix.fp, color: "#f07178" },
@@ -121,7 +142,11 @@ export function HeatMatrix({ matrix }: { matrix: { tp: number; fp: number; tn: n
         <div
           key={c.label}
           className="rounded-xl p-4 text-center"
-          style={{ background: `${c.color}${Math.round(40 + (c.value / max) * 80).toString(16).padStart(2, "0")}` }}
+          style={{
+            background: `${c.color}${Math.round(40 + (c.value / max) * 80)
+              .toString(16)
+              .padStart(2, "0")}`,
+          }}
         >
           <p className="text-2xl font-bold">{c.value}</p>
           <p className="text-xs text-muted-foreground">{c.label}</p>
@@ -131,7 +156,11 @@ export function HeatMatrix({ matrix }: { matrix: { tp: number; fp: number; tn: n
   );
 }
 
-export function RocChart({ series }: { series: { name: string; color: string; points: { fpr: number; tpr: number }[] }[] }) {
+export function RocChart({
+  series,
+}: {
+  series: { name: string; color: string; points: { fpr: number; tpr: number }[] }[];
+}) {
   const data: Record<string, number>[] = [];
   const n = 21;
   for (let i = 0; i < n; i++) {
@@ -156,7 +185,14 @@ export function RocChart({ series }: { series: { name: string; color: string; po
           <Tooltip contentStyle={tooltipStyle} />
           <Legend />
           {series.map((s) => (
-            <Line key={s.name} type="monotone" dataKey={s.name} stroke={s.color} dot={false} strokeWidth={2} />
+            <Line
+              key={s.name}
+              type="monotone"
+              dataKey={s.name}
+              stroke={s.color}
+              dot={false}
+              strokeWidth={2}
+            />
           ))}
         </LineChart>
       </ResponsiveContainer>
@@ -172,7 +208,12 @@ export function ImportanceBars({ data }: { data: { feature: string; importance: 
         <BarChart data={top} layout="vertical" margin={{ left: 16, right: 12 }}>
           <CartesianGrid stroke="rgba(255,255,255,0.08)" horizontal={false} />
           <XAxis type="number" tick={{ fill: "#9eb3d1", fontSize: 11 }} />
-          <YAxis type="category" dataKey="feature" width={120} tick={{ fill: "#9eb3d1", fontSize: 10 }} />
+          <YAxis
+            type="category"
+            dataKey="feature"
+            width={120}
+            tick={{ fill: "#9eb3d1", fontSize: 10 }}
+          />
           <Tooltip contentStyle={tooltipStyle} />
           <Bar dataKey="importance" radius={[0, 6, 6, 0]}>
             {top.map((entry) => (

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, limit, orderBy } from "firebase/firestore";
-import { getFirebaseDb } from "@/integrations/firebase/client";
+import { bundledRecords } from "@/lib/ai/load";
+import type { MatchRecord } from "@/lib/ai/types";
 import { Button } from "@/components/ui/button";
 import { Download, Database, AlertTriangle } from "lucide-react";
 
@@ -15,22 +15,7 @@ export const Route = createFileRoute("/dataset")({
   component: DatasetPage,
 });
 
-type DatasetRecord = {
-  id: number;
-  district: string;
-  town: string;
-  problem_category: string;
-  vehicle_age_band: string;
-  specialty_match: number;
-  mechanic_verified: number;
-  mechanic_experience_years: number;
-  availability_status: string;
-  distance_km: number;
-  historical_completion_rate: number;
-  quoted_price_maloti: number;
-  successful_match: number;
-  is_synthetic: string;
-};
+type DatasetRecord = MatchRecord;
 
 function DatasetPage() {
   const [records, setRecords] = useState<DatasetRecord[]>([]);
@@ -44,55 +29,52 @@ function DatasetPage() {
   } | null>(null);
 
   useEffect(() => {
-    async function loadDataset() {
-      try {
-        const db = getFirebaseDb();
-        const q = query(collection(db, "ai_training_data"), orderBy("id"), limit(100));
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map(doc => doc.data() as DatasetRecord);
-        setRecords(data);
-
-        // Calculate statistics
-        const successful = data.filter(r => r.successful_match === 1).length;
-        const unsuccessful = data.filter(r => r.successful_match === 0).length;
-        
-        const districtCounts: Record<string, number> = {};
-        const categoryCounts: Record<string, number> = {};
-        
-        data.forEach(r => {
-          districtCounts[r.district] = (districtCounts[r.district] || 0) + 1;
-          categoryCounts[r.problem_category] = (categoryCounts[r.problem_category] || 0) + 1;
-        });
-
-        setStats({
-          total: data.length,
-          successful,
-          unsuccessful,
-          districtCounts,
-          categoryCounts,
-        });
-      } catch (error) {
-        console.error("Failed to load dataset:", error);
-      } finally {
-        setLoading(false);
-      }
+    const data = bundledRecords();
+    setRecords(data);
+    const districtCounts: Record<string, number> = {};
+    const categoryCounts: Record<string, number> = {};
+    for (const r of data) {
+      districtCounts[r.district] = (districtCounts[r.district] || 0) + 1;
+      categoryCounts[r.problem_category] = (categoryCounts[r.problem_category] || 0) + 1;
     }
-
-    loadDataset();
+    const successful = data.filter((r) => r.successful_match === 1).length;
+    setStats({
+      total: data.length,
+      successful,
+      unsuccessful: data.length - successful,
+      districtCounts,
+      categoryCounts,
+    });
+    setLoading(false);
   }, []);
 
   const columnDescriptions = [
     { name: "district", description: "Lesotho district where the request originated" },
     { name: "town", description: "Specific town within the district" },
-    { name: "problem_category", description: "Type of vehicle problem (Engine, Brakes, Electrical, etc.)" },
+    {
+      name: "problem_category",
+      description: "Type of vehicle problem (Engine, Battery, Tyre, Brakes, Electrical, Other)",
+    },
     { name: "vehicle_age_band", description: "Vehicle age category (0-3, 4-7, 8-12, 13+ years)" },
-    { name: "specialty_match", description: "Whether mechanic's specialty matches the problem (0 or 1)" },
+    {
+      name: "specialty_match",
+      description: "Whether mechanic's specialty matches the problem (0 or 1)",
+    },
     { name: "mechanic_verified", description: "Whether mechanic is verified (0 or 1)" },
     { name: "mechanic_experience_years", description: "Years of mechanic experience (1-25)" },
-    { name: "availability_status", description: "Mechanic's current availability (available/unavailable)" },
+    {
+      name: "availability_status",
+      description: "Mechanic's current availability (available/unavailable)",
+    },
     { name: "distance_km", description: "Distance from customer to mechanic in kilometers" },
-    { name: "historical_completion_rate", description: "Mechanic's historical job completion rate (0.60-0.95)" },
-    { name: "quoted_price_maloti", description: "Quoted repair price in Maloti (200-4000 M)" },
+    {
+      name: "historical_completion_rate",
+      description: "Mechanic's historical job completion rate (0.55-0.97)",
+    },
+    {
+      name: "quoted_price_maloti",
+      description: "Quoted repair price in Maloti (about 200-2800 M)",
+    },
     { name: "successful_match", description: "Target: was the match successful? (0 or 1)" },
     { name: "is_synthetic", description: "Whether record is synthetic (TRUE/FALSE)" },
   ];
@@ -115,7 +97,10 @@ function DatasetPage() {
               AutoHelp Lesotho Smart Mechanic Discovery dataset for ML model training
             </p>
           </div>
-          <Button variant="outline" onClick={() => window.open('/AutoHelp_D1_Dataset.csv', '_blank')}>
+          <Button
+            variant="outline"
+            onClick={() => window.open("/AutoHelp_D1_Dataset.csv", "_blank")}
+          >
             <Download className="mr-2 h-4 w-4" />
             Download CSV
           </Button>
@@ -124,9 +109,15 @@ function DatasetPage() {
         <div className="mb-6 flex items-center gap-2 rounded-lg bg-amber-50 p-4 dark:bg-amber-950/30">
           <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
           <p className="text-sm text-amber-800 dark:text-amber-200">
-            <strong>Synthetic Data:</strong> This dataset contains 1000 synthetically generated records for training purposes.
-            Real app data will be added as it becomes available. See the{" "}
-            <a href="/AutoHelp_D1_Dataset_Card.md" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+            <strong>Synthetic Data:</strong> This dataset contains 1000 synthetically generated
+            records for training purposes. Real app data will be added as it becomes available. See
+            the{" "}
+            <a
+              href="/AutoHelp_D1_Dataset_Card.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
               Dataset Card
             </a>{" "}
             for details.
@@ -141,7 +132,7 @@ function DatasetPage() {
                 <h3 className="font-semibold">Total Records</h3>
               </div>
               <p className="text-3xl font-bold">{stats.total}</p>
-              <p className="text-sm text-muted-foreground">Preview (first 100)</p>
+              <p className="text-sm text-muted-foreground">All records in the dataset</p>
             </div>
 
             <div className="rounded-xl border bg-card p-6">
@@ -267,7 +258,9 @@ function DatasetPage() {
                     <td className="px-3 py-2">{record.vehicle_age_band}</td>
                     <td className="px-3 py-2">{record.specialty_match}</td>
                     <td className="px-3 py-2">{record.mechanic_verified}</td>
-                    <td className="px-3 py-2">{record.availability_status === 'available' ? '✓' : '✗'}</td>
+                    <td className="px-3 py-2">
+                      {record.availability_status === "available" ? "✓" : "✗"}
+                    </td>
                     <td className="px-3 py-2">{record.distance_km.toFixed(1)}</td>
                     <td className="px-3 py-2">{record.quoted_price_maloti}</td>
                     <td className="px-3 py-2 font-bold">{record.successful_match}</td>

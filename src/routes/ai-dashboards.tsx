@@ -1,472 +1,661 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
-import { getFirebaseDb } from "@/integrations/firebase/client";
-import { useAuth } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import { BarChart3, TrendingUp, Brain, RefreshCw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { BarChart3, Brain, Gauge, TrendingUp } from "lucide-react";
+import {
+  BarInsight,
+  HeatMatrix,
+  ImportanceBars,
+  LearningChart,
+  LineInsight,
+  RocChart,
+} from "@/components/ai/AiCharts";
+import { PRICE_RANGE } from "@/lib/ai/dataset";
+import {
+  avgPriceByProblem,
+  busiestTowns,
+  categoriesOverTime,
+  filterRecords,
+  problemsByDistrict,
+  successRateByFlag,
+} from "@/lib/ai/insights";
+import { bundledArtifact, bundledRecords } from "@/lib/ai/load";
+import {
+  explainRow,
+  isProblemCategory,
+  rankMechanics,
+  scoreRows,
+  type RankedMechanic,
+} from "@/lib/ai/score";
+import {
+  DISTRICTS,
+  PROBLEM_CATEGORIES,
+  VEHICLE_AGE_BANDS,
+  type District,
+  type MatchRecord,
+  type ModelName,
+  type ProblemCategory,
+  type VehicleAgeBand,
+} from "@/lib/ai/types";
+import { listVerifiedMechanics } from "@/lib/firebase-data";
+import type { Mechanic } from "@/lib/mechanics";
 
 export const Route = createFileRoute("/ai-dashboards")({
   head: () => ({
     meta: [
       { title: "AI Dashboards — AutoHelp Lesotho" },
-      { name: "description", content: "AI model performance and insights dashboards." },
+      { name: "description", content: "AI model performance, insights and saturation dashboards." },
     ],
   }),
   component: AIDashboardsPage,
 });
 
-type DatasetRecord = {
-  id: number;
-  district: string;
-  problem_category: string;
-  vehicle_age_band: string;
-  specialty_match: number;
-  mechanic_verified: number;
-  quoted_price_maloti: number;
-  successful_match: number;
+const MODEL_LABEL: Record<ModelName, string> = {
+  baseline: "Baseline (rule)",
+  logistic: "Logistic Regression",
+  forest: "Random Forest",
 };
+const MODELS: ModelName[] = ["baseline", "logistic", "forest"];
+const MODEL_COLOR: Record<ModelName, string> = {
+  baseline: "#9eb3d1",
+  logistic: "#3b9eff",
+  forest: "#5ee0a8",
+};
+const CATEGORY_COLORS = ["#3b9eff", "#5ee0a8", "#f5c15c", "#f07178", "#c792ea", "#9eb3d1"];
+const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
 
-function AIDashboardsPage() {
-  const { hasRole } = useAuth();
-  const [activeTab, setActiveTab] = useState<"insights" | "predictor" | "performance">("insights");
-  const [records, setRecords] = useState<DatasetRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+type Tab = "insights" | "predictor" | "performance" | "saturation";
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const db = getFirebaseDb();
-        const q = query(collection(db, "ai_training_data"), orderBy("id"), limit(1000));
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map(doc => doc.data() as DatasetRecord);
-        setRecords(data);
-      } catch (error) {
-        console.error("Failed to load data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-12">
-        <div className="text-center">Loading dashboards...</div>
-      </div>
-    );
-  }
-
+export function AIDashboardsPage() {
+  const [tab, setTab] = useState<Tab>("insights");
+  const tabs: { id: Tab; label: string; icon: typeof BarChart3 }[] = [
+    { id: "insights", label: "Insights (D2)", icon: BarChart3 },
+    { id: "predictor", label: "Match Predictor (D2)", icon: Brain },
+    { id: "performance", label: "Model Performance (D2)", icon: Gauge },
+    { id: "saturation", label: "Accuracy & Saturation (D3)", icon: TrendingUp },
+  ];
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">AI Dashboards</h1>
-        <p className="text-muted-foreground">
-          Model performance, insights, and predictions for AutoHelp Lesotho
-        </p>
-      </div>
-
-      <div className="mb-6 flex gap-2 border-b">
-        <button
-          onClick={() => setActiveTab("insights")}
-          className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === "insights"
-              ? "border-b-2 border-primary text-primary"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <BarChart3 className="mr-2 inline h-4 w-4" />
-          Demand & Discovery
-        </button>
-        <button
-          onClick={() => setActiveTab("predictor")}
-          className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === "predictor"
-              ? "border-b-2 border-primary text-primary"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Brain className="mr-2 inline h-4 w-4" />
-          Match Predictor
-        </button>
-        <button
-          onClick={() => setActiveTab("performance")}
-          className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === "performance"
-              ? "border-b-2 border-primary text-primary"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <TrendingUp className="mr-2 inline h-4 w-4" />
-          Model Performance
-        </button>
-      </div>
-
       <div className="glass rounded-3xl p-8">
-        {activeTab === "insights" && <InsightsDashboard records={records} />}
-        {activeTab === "predictor" && <PredictorDashboard records={records} />}
-        {activeTab === "performance" && (
-          <PerformanceDashboard records={records} isAdmin={hasRole("admin")} />
-        )}
-      </div>
-    </div>
-  );
-}
-
-function InsightsDashboard({ records }: { records: DatasetRecord[] }) {
-  // Calculate statistics
-  const districtCounts: Record<string, number> = {};
-  const categoryCounts: Record<string, number> = {};
-  const categoryPrices: Record<string, { sum: number; count: number }> = {};
-
-  records.forEach(r => {
-    districtCounts[r.district] = (districtCounts[r.district] || 0) + 1;
-    categoryCounts[r.problem_category] = (categoryCounts[r.problem_category] || 0) + 1;
-    
-    if (!categoryPrices[r.problem_category]) {
-      categoryPrices[r.problem_category] = { sum: 0, count: 0 };
-    }
-    categoryPrices[r.problem_category].sum += r.quoted_price_maloti;
-    categoryPrices[r.problem_category].count += 1;
-  });
-
-  const avgPrices = Object.entries(categoryPrices).map(([cat, data]) => ({
-    category: cat,
-    avgPrice: data.sum / data.count,
-  })).sort((a, b) => b.avgPrice - a.avgPrice);
-
-  const specialtyMatchSuccess = records.filter(r => r.specialty_match === 1 && r.successful_match === 1).length;
-  const specialtyMatchTotal = records.filter(r => r.specialty_match === 1).length;
-  const specialtyMatchRate = specialtyMatchTotal > 0 ? (specialtyMatchSuccess / specialtyMatchTotal) * 100 : 0;
-
-  const verifiedSuccess = records.filter(r => r.mechanic_verified === 1 && r.successful_match === 1).length;
-  const verifiedTotal = records.filter(r => r.mechanic_verified === 1).length;
-  const verifiedRate = verifiedTotal > 0 ? (verifiedSuccess / verifiedTotal) * 100 : 0;
-
-  return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold">Demand & Discovery Insights</h2>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="font-semibold mb-4">Problems by District</h3>
-          <div className="space-y-3">
-            {Object.entries(districtCounts)
-              .sort((a, b) => b[1] - a[1])
-              .slice(0, 5)
-              .map(([district, count]) => (
-                <div key={district} className="flex items-center gap-3">
-                  <div className="w-24 text-sm">{district}</div>
-                  <div className="flex-1 h-6 rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-primary"
-                      style={{ width: `${(count / records.length) * 100}%` }}
-                    />
-                  </div>
-                  <div className="w-12 text-right text-sm font-medium">{count}</div>
-                </div>
-              ))}
+        <h1 className="mb-2 text-3xl font-bold">AI Dashboards</h1>
+        <p className="mb-6 text-muted-foreground">
+          Smart mechanic discovery for Lesotho: demand insights, match predictions, model
+          performance and saturation. All figures come from the trained model artifact and the
+          1,000-record synthetic dataset.
+        </p>
+        <div className="mb-6 grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border bg-card p-4 text-sm">
+            <p className="font-semibold">D1 · Dataset</p>
+            <p className="text-muted-foreground">
+              1,000 synthetic Lesotho records built for mechanic discovery.{" "}
+              <a href="/dataset" className="text-primary underline">
+                View the dataset
+              </a>
+            </p>
+          </div>
+          <div className="rounded-xl border bg-card p-4 text-sm">
+            <p className="font-semibold">D2 · Model and dashboards</p>
+            <p className="text-muted-foreground">
+              Baseline, Logistic Regression and Random Forest predict whether a match succeeds. Use
+              the Insights, Predictor and Performance tabs.
+            </p>
+          </div>
+          <div className="rounded-xl border bg-card p-4 text-sm">
+            <p className="font-semibold">D3 · Accuracy and saturation</p>
+            <p className="text-muted-foreground">
+              F1 against training size, tree-count sweep and training loss.{" "}
+              <button
+                type="button"
+                className="text-primary underline"
+                onClick={() => setTab("saturation")}
+              >
+                Go to D3 charts
+              </button>
+            </p>
           </div>
         </div>
-
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="font-semibold mb-4">Problem Categories</h3>
-          <div className="space-y-3">
-            {Object.entries(categoryCounts)
-              .sort((a, b) => b[1] - a[1])
-              .map(([category, count]) => (
-                <div key={category} className="flex items-center gap-3">
-                  <div className="w-24 text-sm">{category}</div>
-                  <div className="flex-1 h-6 rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-blue-500"
-                      style={{ width: `${(count / records.length) * 100}%` }}
-                    />
-                  </div>
-                  <div className="w-12 text-right text-sm font-medium">{count}</div>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-xl border bg-card p-6">
-        <h3 className="font-semibold mb-4">Average Quoted Price by Problem (Maloti)</h3>
-        <div className="space-y-3">
-          {avgPrices.map(({ category, avgPrice }) => (
-            <div key={category} className="flex items-center gap-3">
-              <div className="w-32 text-sm">{category}</div>
-              <div className="flex-1 h-6 rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-green-500"
-                  style={{ width: `${(avgPrice / 4000) * 100}%` }}
-                />
-              </div>
-              <div className="w-20 text-right text-sm font-medium">M {avgPrice.toFixed(0)}</div>
-            </div>
+        <div className="mb-8 flex flex-wrap gap-2 border-b pb-2">
+          {tabs.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setTab(id)}
+              className={`rounded-md px-4 py-2 text-sm font-medium ${tab === id ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+            >
+              <Icon className="mr-2 inline h-4 w-4" />
+              {label}
+            </button>
           ))}
         </div>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="font-semibold mb-4">Success Rate by Specialty Match</h3>
-          <div className="text-4xl font-bold text-green-600">{specialtyMatchRate.toFixed(1)}%</div>
-          <p className="text-sm text-muted-foreground mt-2">
-            When mechanic specialty matches problem category
-          </p>
-        </div>
-
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="font-semibold mb-4">Success Rate by Verification</h3>
-          <div className="text-4xl font-bold text-blue-600">{verifiedRate.toFixed(1)}%</div>
-          <p className="text-sm text-muted-foreground mt-2">
-            When mechanic is verified
-          </p>
-        </div>
+        {tab === "insights" && <InsightsDashboard />}
+        {tab === "predictor" && <PredictorDashboard />}
+        {tab === "performance" && <PerformanceDashboard />}
+        {tab === "saturation" && <SaturationDashboard />}
       </div>
     </div>
   );
 }
 
-function PredictorDashboard({ records }: { records: DatasetRecord[] }) {
-  const [district, setDistrict] = useState("Maseru");
-  const [problemCategory, setProblemCategory] = useState("Engine");
-  const [vehicleAge, setVehicleAge] = useState("4-7 years");
-  const [predictions, setPredictions] = useState<any[]>([]);
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border bg-card p-6">
+      <h3 className="mb-4 font-semibold">{title}</h3>
+      {children}
+    </div>
+  );
+}
 
-  const districts = [...new Set(records.map(r => r.district))];
-  const categories = [...new Set(records.map(r => r.problem_category))];
-  const ages = [...new Set(records.map(r => r.vehicle_age_band))];
+function InsightsDashboard() {
+  const all = useMemo(() => bundledRecords(), []);
+  const [district, setDistrict] = useState("all");
+  const rows = useMemo(() => filterRecords(all, { district }), [all, district]);
+  const specialty = successRateByFlag(rows, "specialty_match");
+  const verified = successRateByFlag(rows, "mechanic_verified");
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-2xl font-bold">Demand & Discovery Insights</h2>
+        <label className="text-sm">
+          District{" "}
+          <select
+            value={district}
+            onChange={(e) => setDistrict(e.target.value)}
+            className="ml-2 rounded-md border bg-background px-3 py-2"
+          >
+            <option value="all">All districts</option>
+            {DISTRICTS.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <p className="text-sm text-muted-foreground">{rows.length} requests in view.</p>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card title="Requests by district">
+          <BarInsight data={problemsByDistrict(rows)} xKey="district" yKey="count" />
+        </Card>
+        <Card title="Busiest towns">
+          <BarInsight data={busiestTowns(rows)} xKey="town" yKey="count" color="#5ee0a8" />
+        </Card>
+        <Card title="Problem categories over time">
+          <LineInsight
+            data={categoriesOverTime(rows)}
+            xKey="month"
+            series={PROBLEM_CATEGORIES.map((key, i) => ({
+              key,
+              color: CATEGORY_COLORS[i] ?? "#9eb3d1",
+            }))}
+          />
+        </Card>
+        <Card title="Average quoted price by problem (Maloti)">
+          <BarInsight data={avgPriceByProblem(rows)} xKey="category" yKey="avg" color="#f5c15c" />
+        </Card>
+        <Card title="Success rate (%) by specialty match">
+          <BarInsight
+            data={specialty.map((s) => ({
+              label: `${s.label} (n=${s.n})`,
+              rate: Math.round(s.rate * 1000) / 10,
+            }))}
+            xKey="label"
+            yKey="rate"
+            color="#3b9eff"
+          />
+        </Card>
+        <Card title="Success rate (%) by verification">
+          <BarInsight
+            data={verified.map((s) => ({
+              label: `${s.label} (n=${s.n})`,
+              rate: Math.round(s.rate * 1000) / 10,
+            }))}
+            xKey="label"
+            yKey="rate"
+            color="#5ee0a8"
+          />
+        </Card>
+      </div>
+    </div>
+  );
+}
 
-  function predictMatch() {
-    // Simple rule-based prediction for demo
-    const matchingRecords = records.filter(
-      r => r.district === district && r.problem_category === problemCategory
-    );
+function describe(w: { feature: string; contribution: number }) {
+  return `${w.feature} (${w.contribution >= 0 ? "+" : ""}${w.contribution.toFixed(2)})`;
+}
 
-    const predictions = matchingRecords.slice(0, 5).map(r => {
-      let score = 50;
-      if (r.specialty_match === 1) score += 30;
-      if (r.mechanic_verified === 1) score += 15;
-      if (r.historical_completion_rate > 0.8) score += 10;
-      score -= r.distance_km * 0.1;
-      score = Math.max(0, Math.min(100, score));
+function PredictorDashboard() {
+  const bundle = useMemo(() => bundledArtifact().bundle, []);
+  const [model, setModel] = useState<ModelName>(bundle.bestModel);
+  const [district, setDistrict] = useState<District>("Maseru");
+  const [problem, setProblem] = useState<ProblemCategory>("Engine");
+  const [age, setAge] = useState<VehicleAgeBand>("4-7 years");
+  const [mechanics, setMechanics] = useState<Mechanic[] | null>(null);
+  const [whatIf, setWhatIf] = useState({
+    specialty: true,
+    verified: true,
+    available: true,
+    distance: 20,
+    completion: 0.8,
+    experience: 8,
+  });
 
-      return {
-        mechanicId: r.id,
-        score: score.toFixed(1),
-        specialtyMatch: r.specialty_match === 1,
-        verified: r.mechanic_verified === 1,
-        completionRate: (r.historical_completion_rate * 100).toFixed(0),
-        distance: r.distance_km.toFixed(1),
-      };
-    }).sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
+  useEffect(() => {
+    let alive = true;
+    listVerifiedMechanics()
+      .then((list) => {
+        if (alive) setMechanics(list);
+      })
+      .catch(() => {
+        if (alive) setMechanics([]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
-    setPredictions(predictions);
-  }
+  const ranked: RankedMechanic[] = useMemo(
+    () =>
+      mechanics && mechanics.length
+        ? rankMechanics(bundle, mechanics, problem, age, district, model).slice(0, 5)
+        : [],
+    [bundle, mechanics, problem, age, district, model],
+  );
 
+  const [lo, hi] = PRICE_RANGE[problem];
+  const row: MatchRecord = {
+    id: "what-if",
+    district,
+    town: district,
+    problem_category: problem,
+    vehicle_age_band: age,
+    specialty_match: whatIf.specialty ? 1 : 0,
+    mechanic_verified: whatIf.verified ? 1 : 0,
+    mechanic_experience_years: whatIf.experience,
+    availability_status: whatIf.available ? "available" : "unavailable",
+    distance_km: whatIf.distance,
+    historical_completion_rate: whatIf.completion,
+    quoted_price_maloti: Math.round((lo + hi) / 2),
+    successful_match: 0,
+    is_synthetic: true,
+    created_at: new Date().toISOString().slice(0, 10),
+  };
+  const score = scoreRows(bundle, [row], model)[0] ?? 0;
+  const why = explainRow(bundle, row, model);
+
+  const select = "mt-1 w-full rounded-md border bg-background px-3 py-2";
   return (
     <div className="space-y-8">
       <h2 className="text-2xl font-bold">Match Predictor</h2>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <div>
-          <label className="block text-sm font-medium mb-2">District</label>
+      <div className="grid gap-4 md:grid-cols-4">
+        <label className="text-sm font-medium">
+          District
           <select
+            className={select}
             value={district}
-            onChange={e => setDistrict(e.target.value)}
-            className="w-full rounded-md border bg-background px-3 py-2"
+            onChange={(e) => setDistrict(e.target.value as District)}
           >
-            {districts.map(d => (
-              <option key={d} value={d}>{d}</option>
+            {DISTRICTS.map((d) => (
+              <option key={d}>{d}</option>
             ))}
           </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Problem Category</label>
+        </label>
+        <label className="text-sm font-medium">
+          Problem
           <select
-            value={problemCategory}
-            onChange={e => setProblemCategory(e.target.value)}
-            className="w-full rounded-md border bg-background px-3 py-2"
+            className={select}
+            value={problem}
+            onChange={(e) => {
+              if (isProblemCategory(e.target.value)) setProblem(e.target.value);
+            }}
           >
-            {categories.map(c => (
-              <option key={c} value={c}>{c}</option>
+            {PROBLEM_CATEGORIES.map((c) => (
+              <option key={c}>{c}</option>
             ))}
           </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Vehicle Age</label>
+        </label>
+        <label className="text-sm font-medium">
+          Vehicle age
           <select
-            value={vehicleAge}
-            onChange={e => setVehicleAge(e.target.value)}
-            className="w-full rounded-md border bg-background px-3 py-2"
+            className={select}
+            value={age}
+            onChange={(e) => setAge(e.target.value as VehicleAgeBand)}
           >
-            {ages.map(a => (
-              <option key={a} value={a}>{a}</option>
+            {VEHICLE_AGE_BANDS.map((a) => (
+              <option key={a}>{a}</option>
             ))}
           </select>
-        </div>
+        </label>
+        <label className="text-sm font-medium">
+          Model
+          <select
+            className={select}
+            value={model}
+            onChange={(e) => setModel(e.target.value as ModelName)}
+          >
+            {MODELS.map((m) => (
+              <option key={m} value={m}>
+                {MODEL_LABEL[m]}
+                {m === bundle.bestModel ? " (best)" : ""}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
-      <Button onClick={predictMatch} className="w-full md:w-auto">
-        Predict Matches
-      </Button>
-
-      {predictions.length > 0 && (
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="font-semibold mb-4">Top Mechanics for Your Request</h3>
-          <div className="space-y-4">
-            {predictions.map((p, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-muted">
+      <Card title="Top verified mechanics for this request">
+        {mechanics === null ? (
+          <p className="text-sm text-muted-foreground">Loading mechanics…</p>
+        ) : ranked.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No verified mechanics could be loaded. Use the what-if scorer below.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {ranked.map((r) => (
+              <div
+                key={r.mechanic.id}
+                className="flex items-center justify-between rounded-lg bg-muted p-4"
+              >
                 <div>
-                  <div className="font-medium">Mechanic #{p.mechanicId}</div>
+                  <div className="font-medium">
+                    {r.mechanic.name} · {r.mechanic.workshop}
+                  </div>
                   <div className="text-sm text-muted-foreground">
-                    {p.specialtyMatch ? "✓ Specialty match" : "✗ No specialty match"} · 
-                    {p.verified ? " ✓ Verified" : " ✗ Unverified"} · 
-                    {p.completionRate}% completion rate · 
-                    {p.distance} km away
+                    {r.mechanic.town} · {r.why.slice(0, 3).map(describe).join(", ")}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-primary">{p.score}%</div>
-                  <div className="text-xs text-muted-foreground">Match Score</div>
+                  <div className="text-2xl font-bold text-primary">{pct(r.score)}</div>
+                  <div className="text-xs text-muted-foreground">Match score</div>
                 </div>
               </div>
             ))}
           </div>
+        )}
+      </Card>
+
+      <Card title="What-if scorer">
+        <div className="grid gap-4 md:grid-cols-3">
+          {(["specialty", "verified", "available"] as const).map((k) => (
+            <label key={k} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={whatIf[k]}
+                onChange={(e) => setWhatIf({ ...whatIf, [k]: e.target.checked })}
+              />
+              {k === "specialty"
+                ? "Specialty matches problem"
+                : k === "verified"
+                  ? "Mechanic verified"
+                  : "Mechanic available"}
+            </label>
+          ))}
+          <label className="text-sm">
+            Distance: {whatIf.distance} km
+            <input
+              type="range"
+              min={2}
+              max={128}
+              value={whatIf.distance}
+              onChange={(e) => setWhatIf({ ...whatIf, distance: Number(e.target.value) })}
+              className="w-full"
+            />
+          </label>
+          <label className="text-sm">
+            Completion rate: {pct(whatIf.completion)}
+            <input
+              type="range"
+              min={0.55}
+              max={0.97}
+              step={0.01}
+              value={whatIf.completion}
+              onChange={(e) => setWhatIf({ ...whatIf, completion: Number(e.target.value) })}
+              className="w-full"
+            />
+          </label>
+          <label className="text-sm">
+            Experience: {whatIf.experience} years
+            <input
+              type="range"
+              min={1}
+              max={25}
+              value={whatIf.experience}
+              onChange={(e) => setWhatIf({ ...whatIf, experience: Number(e.target.value) })}
+              className="w-full"
+            />
+          </label>
         </div>
-      )}
+        <p className="mt-4 text-3xl font-bold text-primary">
+          {pct(score)}{" "}
+          <span className="text-sm font-normal text-muted-foreground">
+            predicted match success ({MODEL_LABEL[model]})
+          </span>
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Main drivers: {why.map(describe).join(", ")}
+        </p>
+      </Card>
     </div>
   );
 }
 
-function PerformanceDashboard({ records, isAdmin }: { records: DatasetRecord[]; isAdmin: boolean }) {
-  // Mock model performance data (would come from actual training)
-  const modelMetrics = [
-    { model: "Baseline", accuracy: 0.542, precision: 0.523, recall: 0.612, f1: 0.489, rocAuc: 0.542 },
-    { model: "Logistic Regression", accuracy: 0.766, precision: 0.748, recall: 0.762, f1: 0.743, rocAuc: 0.781 },
-    { model: "Random Forest", accuracy: 0.793, precision: 0.778, recall: 0.789, f1: 0.764, rocAuc: 0.812 },
-  ];
-
-  const confusionMatrix = {
-    tp: 79,
-    tn: 80,
-    fp: 21,
-    fn: 20,
-  };
-
+function PerformanceDashboard() {
+  const bundle = useMemo(() => bundledArtifact().bundle, []);
+  const [model, setModel] = useState<ModelName>(bundle.bestModel);
+  const m = bundle.models[model];
+  const importance = model === "baseline" ? [] : bundle.models[model].importance;
+  const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-2xl font-bold">Model Performance</h2>
-        {isAdmin && (
-          <Button variant="outline">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Retrain Model
-          </Button>
-        )}
+        <label className="text-sm">
+          Inspect model{" "}
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value as ModelName)}
+            className="ml-2 rounded-md border bg-background px-3 py-2"
+          >
+            {MODELS.map((n) => (
+              <option key={n} value={n}>
+                {MODEL_LABEL[n]}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
-      <div className="rounded-xl border bg-card p-6">
-        <h3 className="font-semibold mb-4">Model Comparison</h3>
+      <Card title={`Model comparison (held-out test set, n=${bundle.testSize})`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted">
               <tr>
-                <th className="px-4 py-2 text-left font-medium">Model</th>
-                <th className="px-4 py-2 text-left font-medium">Accuracy</th>
-                <th className="px-4 py-2 text-left font-medium">Precision</th>
-                <th className="px-4 py-2 text-left font-medium">Recall</th>
-                <th className="px-4 py-2 text-left font-medium">F1</th>
-                <th className="px-4 py-2 text-left font-medium">ROC-AUC</th>
+                {["Model", "Accuracy", "Precision", "Recall", "F1", "ROC-AUC", "5-fold CV F1"].map(
+                  (h) => (
+                    <th key={h} className="px-4 py-2 text-left font-medium">
+                      {h}
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody>
-              {modelMetrics.map((m) => (
-                <tr key={m.model} className="border-b">
-                  <td className="px-4 py-2 font-medium">{m.model}</td>
-                  <td className="px-4 py-2">{(m.accuracy * 100).toFixed(1)}%</td>
-                  <td className="px-4 py-2">{(m.precision * 100).toFixed(1)}%</td>
-                  <td className="px-4 py-2">{(m.recall * 100).toFixed(1)}%</td>
-                  <td className="px-4 py-2">{(m.f1 * 100).toFixed(1)}%</td>
-                  <td className="px-4 py-2">{m.rocAuc.toFixed(3)}</td>
-                </tr>
-              ))}
+              {MODELS.map((n) => {
+                const x = bundle.models[n];
+                return (
+                  <tr key={n} className="border-b">
+                    <td className="px-4 py-2 font-medium">
+                      {MODEL_LABEL[n]}
+                      {n === bundle.bestModel ? " ★" : ""}
+                    </td>
+                    <td className="px-4 py-2">{pct(x.metrics.accuracy)}</td>
+                    <td className="px-4 py-2">{pct(x.metrics.precision)}</td>
+                    <td className="px-4 py-2">{pct(x.metrics.recall)}</td>
+                    <td className="px-4 py-2">{pct(x.metrics.f1)}</td>
+                    <td className="px-4 py-2">{x.metrics.rocAuc.toFixed(3)}</td>
+                    <td className="px-4 py-2">{pct(mean(x.cvF1))}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
-      </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          ★ best model by test F1 (ties broken by ROC-AUC).
+        </p>
+      </Card>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="font-semibold mb-4">Confusion Matrix (Random Forest)</h3>
-          <div className="grid grid-cols-2 gap-2 text-center">
-            <div className="p-4 rounded bg-green-100 dark:bg-green-900/30">
-              <div className="text-2xl font-bold text-green-700 dark:text-green-300">{confusionMatrix.tp}</div>
-              <div className="text-xs text-muted-foreground">True Positive</div>
-            </div>
-            <div className="p-4 rounded bg-red-100 dark:bg-red-900/30">
-              <div className="text-2xl font-bold text-red-700 dark:text-red-300">{confusionMatrix.fp}</div>
-              <div className="text-xs text-muted-foreground">False Positive</div>
-            </div>
-            <div className="p-4 rounded bg-red-100 dark:bg-red-900/30">
-              <div className="text-2xl font-bold text-red-700 dark:text-red-300">{confusionMatrix.fn}</div>
-              <div className="text-xs text-muted-foreground">False Negative</div>
-            </div>
-            <div className="p-4 rounded bg-green-100 dark:bg-green-900/30">
-              <div className="text-2xl font-bold text-green-700 dark:text-green-300">{confusionMatrix.tn}</div>
-              <div className="text-xs text-muted-foreground">True Negative</div>
-            </div>
-          </div>
-        </div>
+        <Card title={`Confusion matrix (${MODEL_LABEL[model]})`}>
+          <HeatMatrix matrix={m.metrics.confusion} />
+        </Card>
+        <Card title="ROC curves">
+          <RocChart
+            series={MODELS.map((n) => ({
+              name: MODEL_LABEL[n],
+              color: MODEL_COLOR[n],
+              points: bundle.models[n].roc,
+            }))}
+          />
+        </Card>
+        <Card title={`Feature importance (${MODEL_LABEL[model]})`}>
+          {importance.length ? (
+            <ImportanceBars data={importance} />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              The rule-based baseline has no learned features.
+            </p>
+          )}
+        </Card>
+        <Card title="Training information">
+          <dl className="grid grid-cols-2 gap-3 text-sm">
+            <dt className="text-muted-foreground">Dataset size</dt>
+            <dd className="font-semibold">{bundle.datasetSize} records</dd>
+            <dt className="text-muted-foreground">Train / test</dt>
+            <dd className="font-semibold">
+              {bundle.trainSize} / {bundle.testSize}
+            </dd>
+            <dt className="text-muted-foreground">Random seed</dt>
+            <dd className="font-semibold">{bundle.seed}</dd>
+            <dt className="text-muted-foreground">Trained at</dt>
+            <dd className="font-semibold">{new Date(bundle.trainedAt).toLocaleString()}</dd>
+            <dt className="text-muted-foreground">Best model</dt>
+            <dd className="font-semibold">{MODEL_LABEL[bundle.bestModel]}</dd>
+          </dl>
+        </Card>
+      </div>
+    </div>
+  );
+}
 
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="font-semibold mb-4">Feature Importance (Random Forest)</h3>
-          <div className="space-y-3">
-            {[
-              { feature: "Specialty Match", importance: 0.32 },
-              { feature: "Availability", importance: 0.24 },
-              { feature: "Historical Completion Rate", importance: 0.18 },
-              { feature: "Distance", importance: 0.12 },
-              { feature: "Verification", importance: 0.08 },
-              { feature: "Experience", importance: 0.06 },
-            ].map((f) => (
-              <div key={f.feature} className="flex items-center gap-3">
-                <div className="w-32 text-sm">{f.feature}</div>
-                <div className="flex-1 h-6 rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: `${f.importance * 100}%` }}
-                  />
-                </div>
-                <div className="w-12 text-right text-sm font-medium">{(f.importance * 100).toFixed(0)}%</div>
-              </div>
+function SaturationDashboard() {
+  const art = useMemo(() => bundledArtifact(), []);
+  const [model, setModel] = useState<ModelName>("logistic");
+  const points = art.curves[model] ?? [];
+  const sat = art.saturation[model];
+  const last = points[points.length - 1];
+  const gap = last ? last.trainF1Mean - last.valF1Mean : 0;
+  const lossData = art.logisticLoss
+    .map((loss, i) => ({ iteration: i + 1, loss: Math.round(loss * 10000) / 10000 }))
+    .filter((_, i) => i % 10 === 0 || i === art.logisticLoss.length - 1);
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-2xl font-bold">Accuracy & Saturation</h2>
+        <label className="text-sm">
+          Model{" "}
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value as ModelName)}
+            className="ml-2 rounded-md border bg-background px-3 py-2"
+          >
+            {MODELS.map((n) => (
+              <option key={n} value={n}>
+                {MODEL_LABEL[n]}
+              </option>
             ))}
-          </div>
-        </div>
+          </select>
+        </label>
       </div>
 
-      <div className="rounded-xl border bg-card p-6">
-        <h3 className="font-semibold mb-4">Training Information</h3>
-        <div className="grid gap-4 md:grid-cols-3">
-          <div>
-            <div className="text-sm text-muted-foreground">Dataset Size</div>
-            <div className="text-xl font-bold">{records.length} records</div>
-          </div>
-          <div>
-            <div className="text-sm text-muted-foreground">Last Training</div>
-            <div className="text-xl font-bold">Nov 10, 2026</div>
-          </div>
-          <div>
-            <div class="text-sm text-muted-foreground">Best Model</div>
-            <div className="text-xl font-bold">Random Forest</div>
-          </div>
-        </div>
+      <Card
+        title={`Learning curve: ${MODEL_LABEL[model]} (F1 vs training size, mean of 5 repeats)`}
+      >
+        <LearningChart
+          data={points.map((p) => ({ size: p.size, train: p.trainF1Mean, val: p.valF1Mean }))}
+          yTrain="Training F1"
+          yVal="Validation F1"
+          saturationSize={model === "baseline" ? null : (sat?.size ?? null)}
+        />
+        <p className="mt-3 text-sm">
+          {model === "baseline"
+            ? "The baseline is a fixed rule with no training, so its curve only shows sampling noise and saturation does not apply."
+            : sat?.note}
+        </p>
+        {model !== "baseline" && last && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            At {last.size} records the train–validation F1 gap is {(gap * 100).toFixed(1)} points:{" "}
+            {gap > 0.05
+              ? "a noticeable gap, so the model is overfitting."
+              : "a small gap, so it generalises well."}
+          </p>
+        )}
+      </Card>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card title="Random Forest: number of trees vs F1">
+          <LineInsight
+            data={art.treeSweep.map((t) => ({
+              nTrees: t.nTrees,
+              trainF1: Math.round(t.trainF1 * 1000) / 1000,
+              valF1: Math.round(t.valF1 * 1000) / 1000,
+            }))}
+            xKey="nTrees"
+            series={[
+              { key: "trainF1", color: "#7ec8ff" },
+              { key: "valF1", color: "#f5c15c" },
+            ]}
+          />
+          <p className="mt-3 text-sm">
+            Later tree counts add less than 1 F1 point after about {art.treeSat.nTrees} trees
+            (validation F1 {pct(art.treeSat.f1)}).
+          </p>
+        </Card>
+        <Card title="Logistic Regression: training loss per iteration">
+          <LineInsight
+            data={lossData}
+            xKey="iteration"
+            series={[{ key: "loss", color: "#3b9eff" }]}
+          />
+          <p className="mt-3 text-sm">
+            Loss falls from 0.693 to{" "}
+            {(art.logisticLoss[art.logisticLoss.length - 1] ?? 0).toFixed(3)} and flattens, which
+            shows convergence.
+          </p>
+        </Card>
       </div>
+
+      <Card title="How to read this">
+        <ul className="list-disc space-y-2 pl-5 text-sm">
+          <li>
+            <strong>Saturation</strong> means more training data no longer lifts validation F1 by 1
+            point or more. Where no saturation line is drawn, the model was still improving at 800
+            records, so more data would help.
+          </li>
+          <li>
+            <strong>Overfitting</strong> shows as high training F1 with much lower validation F1
+            (the gap above). <strong>Underfitting</strong> shows as both scores staying low.
+          </li>
+          <li>
+            <strong>Accuracy can mislead</strong> on imbalanced data. Here{" "}
+            {pct(art.recordsMeta.positiveRate)} of matches succeed, so classes are fairly balanced,
+            but precision, recall, F1 and ROC-AUC are still reported next to accuracy.
+          </li>
+          <li>
+            The data is synthetic, so these scores describe how well the models recover the
+            generator rules, not real-world performance.
+          </li>
+        </ul>
+      </Card>
     </div>
   );
 }

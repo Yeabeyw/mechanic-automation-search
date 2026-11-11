@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Cog, BatteryCharging, CircleDot, Disc3, Zap, HelpCircle, ShieldCheck, Link2, ArrowRight } from "lucide-react";
+import { Cog, BatteryCharging, CircleDot, Disc3, Zap, HelpCircle, ShieldCheck, Link2, ArrowRight, Brain } from "lucide-react";
 import hero from "@/assets/hero-workshop.jpg";
 import { Button } from "@/components/ui/button";
+import { bundledArtifact } from "@/lib/ai/load";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,6 +28,8 @@ const cats = [
 ];
 
 function Index() {
+  const ai = bundledArtifact();
+  const best = ai.bundle.models[ai.bundle.bestModel].metrics;
   return (
     <div>
       <section className="relative isolate overflow-hidden">
@@ -72,6 +75,22 @@ function Index() {
             <p className="mt-1 text-sm text-muted-foreground">{d}</p>
           </div>
         ))}
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-14">
+        <div className="glass rounded-2xl p-6">
+          <Brain className="size-6 text-primary" />
+          <h2 className="mt-3 text-xl font-bold">AI-powered mechanic discovery</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            A model trained on {ai.bundle.datasetSize} synthetic Lesotho requests predicts which mechanic is most likely to give you a successful match
+            (test accuracy {(best.accuracy * 100).toFixed(1)}%, F1 {(best.f1 * 100).toFixed(1)}%). Use “AI Recommended” on the Find page, or open the dashboards to see the dataset, model performance and saturation analysis.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Button asChild variant="hero"><Link to="/mechanics">Try AI Recommended</Link></Button>
+            <Button asChild variant="glass"><Link to="/ai-dashboards">AI dashboards</Link></Button>
+            <Button asChild variant="glass"><Link to="/dataset">AI dataset</Link></Button>
+          </div>
+        </div>
       </section>
     </div>
   );

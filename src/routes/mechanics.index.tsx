@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Search, Brain } from "lucide-react";
@@ -7,6 +7,8 @@ import { CATEGORIES, type Mechanic } from "@/lib/mechanics";
 import { MechanicCard } from "@/components/MechanicBits";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { bundledArtifact } from "@/lib/ai/load";
+import { isProblemCategory, mechanicAsRecord, scoreRows } from "@/lib/ai/score";
 
 
 type Search = { category?: string | undefined };
@@ -47,18 +49,18 @@ function FindMechanic() {
   const noSpecialtyMatch = Boolean(category && list.length > 0 && matchingSpecialty.length === 0);
   let displayedMechanics = noSpecialtyMatch ? list : matchingSpecialty;
 
-  // AI sorting: calculate match score based on features
+  // AI ranking: every mechanic is scored by the trained model (see /ai-dashboards).
+  const ai = bundledArtifact();
+  const aiModel = ai.bundle.bestModel;
+  const aiLabel = { baseline: "rule-based baseline", logistic: "Logistic Regression", forest: "Random Forest" }[aiModel];
+  const aiMetrics = ai.bundle.models[aiModel].metrics;
+  const aiScores = new Map<string, number>();
   if (aiSort) {
-    displayedMechanics = [...displayedMechanics].map(m => {
-      let score = 50;
-      if (category && m.specialties.includes(category)) score += 30;
-      if (m.verified) score += 15;
-      if (m.available) score += 10;
-      score += Math.min(m.rating * 5, 10); // Rating contribution
-      score -= (m.jobs_completed > 0 ? Math.log(m.jobs_completed) : 0) * 2; // Experience bonus
-      score = Math.max(0, Math.min(100, score));
-      return { ...m, aiScore: score };
-    }).sort((a, b) => (b as any).aiScore - (a as any).aiScore);
+    const problem = category && isProblemCategory(category) ? category : "Other";
+    const rows = displayedMechanics.map((m) => mechanicAsRecord(m, problem, "4-7 years"));
+    const scores = scoreRows(ai.bundle, rows, aiModel);
+    displayedMechanics.forEach((m, i) => aiScores.set(m.id, (scores[i] ?? 0) * 100));
+    displayedMechanics = [...displayedMechanics].sort((a, b) => (aiScores.get(b.id) ?? 0) - (aiScores.get(a.id) ?? 0));
   }
 
   const chip = (active: boolean) =>
@@ -89,6 +91,23 @@ function FindMechanic() {
           AI Recommended
         </button>
       </div>
+      {aiSort && (
+        <div className="mt-4 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm">
+          <p className="font-semibold">
+            <Brain className="mr-1 inline size-4" />
+            AI-ranked results
+          </p>
+          <p className="mt-1 text-muted-foreground">
+            Mechanics are ordered by their predicted chance of a successful match. The score comes from a {aiLabel} model trained on {ai.bundle.datasetSize} synthetic
+            records (test accuracy {(aiMetrics.accuracy * 100).toFixed(1)}%, F1 {(aiMetrics.f1 * 100).toFixed(1)}%). It uses the problem type ({category ?? "general"}), specialty,
+            verification, availability, experience and completion history; distance is estimated from the town.
+          </p>
+          <p className="mt-2 flex flex-wrap gap-4">
+            <Link to="/ai-dashboards" className="text-primary underline">Model performance and saturation</Link>
+            <Link to="/dataset" className="text-primary underline">Training dataset</Link>
+          </p>
+        </div>
+      )}
       <div className="mt-6 grid gap-3">
         {isLoading && <p className="text-muted-foreground">Loading mechanics…</p>}
         {displayedMechanics.map((m) => (
@@ -96,7 +115,7 @@ function FindMechanic() {
             key={m.id} 
             m={m} 
             specialtyMayNotMatch={noSpecialtyMatch} 
-            aiScore={aiSort ? (m as any).aiScore : undefined}
+            {...(aiSort && aiScores.has(m.id) ? { aiScore: aiScores.get(m.id) ?? 0 } : {})}
           />
         ))}
         {!isLoading && displayedMechanics.length === 0 && <p className="glass rounded-2xl p-6 text-center text-muted-foreground">No verified mechanics match yet — try another search or town.</p>}

@@ -1,328 +1,130 @@
 # AutoHelp D4: Accuracy and Saturation Report
 
-**Date**: November 2026  
-**Dataset**: AutoHelp_D1_Dataset.csv (1000 synthetic records)  
-**Models**: Baseline, Logistic Regression, Random Forest
+**Generated**: 2026-11-11 from `src/lib/ai/trained-artifact.json` (trained 2026-11-11, seed 42)  
+**Dataset**: AutoHelp_D1_Dataset.csv, 1000 synthetic records, 48.0% positive  
+**Models**: Baseline rule, Logistic Regression, Random Forest (all implemented in TypeScript in `src/lib/ai`)  
+**Split**: 800 train / 200 test (stratified 80/20), 5-fold cross-validation on the training part
+
+## 1. Summary
+
+- The best model is **Logistic Regression**: accuracy 85.5%, F1 84.7%, ROC-AUC 0.929 on the held-out test set.
+- Both learned models beat the rule-based baseline (accuracy 80.5%, F1 78.2%). The majority-class rate is 52.0%, so every model is well above guessing.
+- **Saturation**: Logistic Regression: not saturated by 800 records. Random Forest: not saturated by 800 records. The baseline does not learn, so saturation does not apply.
+- The test set has only 200 rows, so one accuracy figure carries roughly ±4.9 points of sampling error (95% interval). Differences of a few points between models on a single split should not be over-read.
+- The data is synthetic, so scores show how well each model recovers the generator rule, not real-world performance.
+
+## 2. Test-set results
+
+| Model | Accuracy | Precision | Recall | F1 | ROC-AUC | 5-fold CV F1 (mean ± sd) |
+|---|---|---|---|---|---|---|
+| Baseline (rule) | 80.5% | 84.3% | 72.9% | 78.2% | 0.802 | 78.8% ± 3.5% |
+| Logistic Regression ★ | 85.5% | 86.0% | 83.3% | 84.7% | 0.929 | 86.8% ± 2.8% |
+| Random Forest | 82.5% | 84.3% | 78.1% | 81.1% | 0.910 | 82.6% ± 5.1% |
+
+Confusion matrices (test set):
+
+| Model | True pos | False pos | True neg | False neg |
+|---|---|---|---|---|
+| Baseline (rule) | 70 | 13 | 91 | 26 |
+| Logistic Regression | 80 | 13 | 91 | 16 |
+| Random Forest | 75 | 14 | 90 | 21 |
+
+Logistic Regression had a higher cross-validated F1 than Random Forest in 4 of 5 folds (86.8% against 82.6% on average), which supports choosing it. The labels were built from an additive formula, which suits a linear model well. A forest needs more data to approximate the same thresholds.
+
+## 3. Learning curves and saturation
+
+Method: for each training size (50, 100, 200, 300, 500, 700, 800) the model was trained on a random sample, scored on its own training rows and on a held-out 20%, and repeated 5 times with different seeds. **Saturation** is the smallest size after which validation F1 never improves by 1 percentage point or more.
+
+### Logistic Regression
+| Training size | Train F1 | Validation F1 | Val F1 std | Gap (train − val) |
+|---|---|---|---|---|
+| 50 | 0.986 | 0.655 | 0.195 | 0.331 |
+| 100 | 0.928 | 0.781 | 0.059 | 0.148 |
+| 200 | 0.898 | 0.827 | 0.020 | 0.071 |
+| 300 | 0.891 | 0.839 | 0.026 | 0.052 |
+| 500 | 0.887 | 0.847 | 0.058 | 0.040 |
+| 700 | 0.895 | 0.856 | 0.020 | 0.039 |
+| 800 | 0.872 | 0.869 | 0.038 | 0.003 |
+
+Not saturated: validation F1 was still improving at the largest size tested (800 records, F1 86.9%). From 50 to 800 records validation F1 rose by 21.4 points, and from 300 to 800 by 3.0 points.
+
+### Random Forest
+| Training size | Train F1 | Validation F1 | Val F1 std | Gap (train − val) |
+|---|---|---|---|---|
+| 50 | 0.837 | 0.587 | 0.363 | 0.250 |
+| 100 | 0.914 | 0.686 | 0.183 | 0.227 |
+| 200 | 0.910 | 0.778 | 0.051 | 0.132 |
+| 300 | 0.913 | 0.787 | 0.080 | 0.126 |
+| 500 | 0.896 | 0.802 | 0.043 | 0.094 |
+| 700 | 0.890 | 0.825 | 0.030 | 0.064 |
+| 800 | 0.876 | 0.836 | 0.020 | 0.040 |
+
+Not saturated: validation F1 was still improving at the largest size tested (800 records, F1 83.6%). From 300 to 800 records validation F1 rose by 4.9 points.
+
+### Baseline
+| Training size | Train F1 | Validation F1 | Val F1 std | Gap (train − val) |
+|---|---|---|---|---|
+| 50 | 0.787 | 0.753 | 0.139 | 0.034 |
+| 100 | 0.773 | 0.851 | 0.090 | -0.078 |
+| 200 | 0.796 | 0.790 | 0.052 | 0.006 |
+| 300 | 0.783 | 0.774 | 0.039 | 0.009 |
+| 500 | 0.793 | 0.786 | 0.053 | 0.008 |
+| 700 | 0.797 | 0.797 | 0.034 | 0.000 |
+| 800 | 0.786 | 0.790 | 0.020 | -0.004 |
+
+Not applicable. The baseline is a fixed rule (specialty match and available), so it learns nothing from more data. Its curve only shows sampling noise.
+
+## 4. Overfitting and underfitting
+
+- **Overfitting** is a high training score with a much lower validation score. **Underfitting** is both scores staying low.
+- Logistic Regression at 50 records: train F1 0.986 against validation 0.655 (gap 0.331), clear overfitting on tiny samples. At 800 records the gap is 0.003, so it generalises well.
+- Random Forest at 50 records: gap 0.250. At 800 records the gap is still 0.040: trees fit the training rows more closely than new rows, a mild overfit.
+- The baseline sits near 0.790 F1 at every size. It is a rigid rule that ignores distance, verification and history, which is mild **underfitting** (high bias).
+
+## 5. Random Forest: number of trees
+
+| Trees | Train F1 | Validation F1 | Validation accuracy |
+|---|---|---|---|
+| 1 | 0.734 | 0.647 | 63.5% |
+| 5 | 0.859 | 0.698 | 71.0% |
+| 10 | 0.894 | 0.794 | 80.5% |
+| 20 | 0.897 | 0.811 | 82.0% |
+| 40 | 0.911 | 0.824 | 83.5% |
+| 80 | 0.900 | 0.800 | 81.5% |
+| 120 | 0.906 | 0.804 | 82.0% |
+| 160 | 0.898 | 0.793 | 81.0% |
+| 200 | 0.906 | 0.802 | 81.5% |
+
+Validation F1 peaks at 40 trees (0.824). From 40 to 200 trees it only moves within 0.793 to 0.824, which is noise on a 200-row test set, not a trend. Adding trees raises cost without raising accuracy, so the model uses 40 trees. Training F1 stays near 0.90 against about 0.80 on validation, which confirms the overfit described above.
+
+## 6. Logistic Regression convergence
+
+| Iteration | Training loss |
+|---|---|
+| 1 | 0.6932 |
+| 25 | 0.4470 |
+| 50 | 0.3816 |
+| 100 | 0.3402 |
+| 200 | 0.3215 |
+| 300 | 0.3175 |
+| 400 | 0.3165 |
 
----
+Loss starts at 0.693 (a coin flip) and falls to 0.316. It gains less than 0.001 over any further 50 iterations from about iteration 272, so the 400 iterations used are enough. Only training loss is recorded, so convergence is judged on training loss plus the validation curves above.
 
-## Executive Summary
+## 7. Why accuracy alone can mislead
 
-This report analyzes the accuracy and saturation levels of the AutoHelp Lesotho machine learning models. We examine learning curves to understand how model performance scales with training data size, detect saturation points where additional data provides diminishing returns, and analyze model-specific convergence behavior.
+Accuracy hides which kind of mistake is made. A model that always predicts the majority class scores 52.0% here without learning anything, and on a 90/10 dataset it would score 90% while never finding a good match. This dataset is nearly balanced (48.0% positive), so accuracy is a fair headline, but the report still gives precision (how many recommended matches succeed), recall (how many good matches are found), F1 and ROC-AUC. For Logistic Regression: precision 86.0%, recall 83.3%. A false positive sends a driver to a mechanic who then fails them, so precision matters most for this app.
 
-**Key Findings**:
-- **Random Forest** achieves the highest performance but saturates at ~500 records
-- **Logistic Regression** shows steady improvement and converges around 300 iterations
-- **Baseline model** has fixed performance regardless of data size
-- **Saturation point** for Random Forest F1 score: 500 records (1% improvement threshold)
+## 8. What saturation means and how to go past it
 
----
+Saturation means more data of the same kind no longer improves the model. Typical causes are limited model capacity, noise in the labels, or features that do not carry more signal. Here neither learned model has saturated by 800 records, so collecting more records is the cheapest next step. Beyond that:
 
-## 1. Learning Curves
+1. Replace synthetic rows with real app outcomes (`is_synthetic = FALSE`) and retrain.
+2. Add features: real driving distance, parts availability, mechanic schedule, urgency, customer reviews.
+3. Tune hyperparameters (tree depth, regularisation) with cross-validation and try gradient boosting.
+4. Re-run the learning curves after each data increase to see whether the curve has flattened.
 
-### 1.1 Methodology
+## 9. Reproducing and cross-checking
 
-Learning curves were generated by training each model on increasing dataset sizes:
-- Training sizes: 50, 100, 200, 300, 500, 700, 800 records
-- 5 repeats per size with different random seeds
-- 80/20 stratified train/test split
-- Metrics: Accuracy and F1 score on validation set
-
-### 1.2 Results
-
-#### Random Forest Learning Curve
-
-| Training Size | Mean Accuracy | Std Accuracy | Mean F1 | Std F1 |
-|--------------|---------------|-------------|---------|---------|
-| 50 | 0.621 | 0.045 | 0.587 | 0.052 |
-| 100 | 0.689 | 0.032 | 0.654 | 0.038 |
-| 200 | 0.742 | 0.025 | 0.712 | 0.029 |
-| 300 | 0.768 | 0.021 | 0.738 | 0.024 |
-| 500 | 0.785 | 0.018 | 0.756 | 0.020 |
-| 700 | 0.791 | 0.016 | 0.762 | 0.018 |
-| 800 | 0.793 | 0.015 | 0.764 | 0.017 |
-
-**Saturation Point**: 500 records  
-- F1 improvement from 500 to 700: 0.006 (0.6%)
-- F1 improvement from 500 to 800: 0.008 (1.1%)
-- First size where improvement < 1%: 500 records
-
-#### Logistic Regression Learning Curve
-
-| Training Size | Mean Accuracy | Std Accuracy | Mean F1 | Std F1 |
-|--------------|---------------|-------------|---------|---------|
-| 50 | 0.602 | 0.052 | 0.567 | 0.058 |
-| 100 | 0.654 | 0.038 | 0.621 | 0.044 |
-| 200 | 0.701 | 0.028 | 0.678 | 0.032 |
-| 300 | 0.729 | 0.023 | 0.701 | 0.026 |
-| 500 | 0.751 | 0.019 | 0.728 | 0.022 |
-| 700 | 0.762 | 0.017 | 0.739 | 0.020 |
-| 800 | 0.766 | 0.016 | 0.743 | 0.019 |
-
-**Saturation Point**: 300 records  
-- F1 improvement from 300 to 500: 0.027 (3.9%)
-- F1 improvement from 500 to 700: 0.011 (1.5%)
-- First size where improvement < 1%: 500 records (but 300 shows diminishing returns)
-
-#### Baseline Model Learning Curve
-
-| Training Size | Mean Accuracy | Std Accuracy | Mean F1 | Std F1 |
-|--------------|---------------|-------------|---------|---------|
-| 50 | 0.542 | 0.000 | 0.489 | 0.000 |
-| 100 | 0.542 | 0.000 | 0.489 | 0.000 |
-| 200 | 0.542 | 0.000 | 0.489 | 0.000 |
-| 300 | 0.542 | 0.000 | 0.489 | 0.000 |
-| 500 | 0.542 | 0.000 | 0.489 | 0.000 |
-| 700 | 0.542 | 0.000 | 0.489 | 0.000 |
-| 800 | 0.542 | 0.000 | 0.489 | 0.000 |
-
-**Note**: Baseline model has fixed performance as it uses rule-based logic independent of training data.
-
----
-
-## 2. Saturation Analysis
-
-### 2.1 Saturation Point Detection
-
-**Definition**: The smallest training size after which validation F1 score improves by less than 1 percentage point when doubling the data size.
-
-**Random Forest Saturation**:
-- 300 → 500: +0.018 F1 (2.4% improvement) → Not saturated
-- 500 → 700: +0.006 F1 (0.8% improvement) → **Saturated at 500**
-- 700 → 800: +0.002 F1 (0.3% improvement) → Confirmed saturation
-
-**Logistic Regression Saturation**:
-- 200 → 300: +0.023 F1 (3.4% improvement) → Not saturated
-- 300 → 500: +0.027 F1 (3.9% improvement) → Not saturated
-- 500 → 700: +0.011 F1 (1.5% improvement) → **Saturated at 500**
-
-**Conclusion**: Both models saturate at approximately 500 records for this dataset.
-
-### 2.2 Interpretation
-
-Saturation indicates that:
-- The model has learned the patterns present in the data
-- Additional data of similar distribution provides diminishing returns
-- To improve beyond saturation, we need:
-  - More diverse data (different districts, vehicle types, problem categories)
-  - Additional features (GPS distance, parts availability, mechanic schedule)
-  - Real-world data instead of synthetic data
-
----
-
-## 3. Random Forest Tree Analysis
-
-### 3.1 Number of Trees vs Performance
-
-We trained Random Forest with varying numbers of trees (1-200) to find the optimal tree count.
-
-| Trees | Accuracy | F1 Score | Training Time (s) |
-|-------|----------|----------|-------------------|
-| 1 | 0.698 | 0.654 | 0.12 |
-| 10 | 0.758 | 0.728 | 0.45 |
-| 25 | 0.776 | 0.745 | 0.89 |
-| 50 | 0.782 | 0.751 | 1.67 |
-| 100 | 0.785 | 0.756 | 3.21 |
-| 150 | 0.786 | 0.757 | 4.78 |
-| 200 | 0.786 | 0.757 | 6.34 |
-
-**Optimal Tree Count**: 100 trees
-- Performance plateaus after 100 trees
-- F1 improvement from 100 to 200: 0.001 (0.1%)
-- Training time increases linearly with tree count
-
-### 3.2 Interpretation
-
-- **Underfitting** (< 10 trees): Individual trees have high variance, ensemble not stabilized
-- **Optimal range** (50-100 trees): Good bias-variance tradeoff, stable predictions
-- **Overfitting risk** (> 150 trees): Minimal performance gain, increased computational cost
-
----
-
-## 4. Logistic Regression Convergence
-
-### 4.1 Training Loss per Iteration
-
-Logistic Regression uses gradient descent with learning rate 0.01.
-
-| Iteration | Training Loss | Validation Loss |
-|-----------|---------------|-----------------|
-| 0 | 0.693 | 0.693 |
-| 100 | 0.542 | 0.567 |
-| 200 | 0.489 | 0.521 |
-| 300 | 0.456 | 0.498 |
-| 400 | 0.434 | 0.485 |
-| 500 | 0.418 | 0.478 |
-| 600 | 0.406 | 0.474 |
-| 700 | 0.397 | 0.472 |
-| 800 | 0.390 | 0.471 |
-| 900 | 0.384 | 0.470 |
-| 1000 | 0.379 | 0.470 |
-
-**Convergence Point**: ~600 iterations
-- Training loss continues to decrease after 600 iterations
-- Validation loss plateaus at 0.470 after 600 iterations
-- Gap between training and validation loss indicates slight overfitting
-
-### 4.2 Interpretation
-
-- **Early iterations** (0-200): Rapid learning, large gradient updates
-- **Mid iterations** (200-600): Slower improvement, fine-tuning weights
-- **Late iterations** (600-1000): Diminishing returns, potential overfitting
-
----
-
-## 5. Accuracy Misleading with Imbalanced Classes
-
-### 5.1 The Problem
-
-Accuracy can be misleading when classes are imbalanced. Our dataset has:
-- Successful matches: 49.3%
-- Unsuccessful matches: 50.7%
-
-While this is nearly balanced, if we had a 90/10 split, a model that always predicts the majority class would achieve 90% accuracy while being completely useless.
-
-### 5.2 Why Other Metrics Matter
-
-- **Precision**: Of all predicted successful matches, how many were actually successful? Important to avoid false promises to customers.
-- **Recall**: Of all actual successful matches, how many did we predict? Important to not miss good mechanic matches.
-- **F1 Score**: Harmonic mean of precision and recall, balances both concerns.
-- **ROC-AUC**: Measures ability to distinguish between classes across all thresholds.
-
-### 5.3 Our Model Performance
-
-| Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
-|-------|----------|-----------|--------|-----|---------|
-| Baseline | 0.542 | 0.523 | 0.612 | 0.489 | 0.542 |
-| Logistic Regression | 0.766 | 0.748 | 0.762 | 0.743 | 0.781 |
-| Random Forest | 0.793 | 0.778 | 0.789 | 0.764 | 0.812 |
-
-All metrics show consistent improvement, indicating the models are genuinely learning patterns rather than exploiting class imbalance.
-
----
-
-## 6. Overfitting and Underfitting
-
-### 6.1 Visual Indicators on Learning Curves
-
-**Underfitting** (High Bias):
-- Training and validation scores both low
-- Gap between training and validation is small
-- Example: Baseline model at all data sizes
-
-**Good Fit**:
-- Training score high, validation score close to training
-- Small gap between training and validation
-- Example: Random Forest at 500+ records
-
-**Overfitting** (High Variance):
-- Training score high, validation score significantly lower
-- Large gap between training and validation
-- Example: Logistic Regression after 600 iterations (training loss continues decreasing but validation plateaus)
-
-### 6.2 Our Models
-
-- **Random Forest**: Shows good fit at 500+ records, minimal overfitting
-- **Logistic Regression**: Slight overfitting after 600 iterations, but manageable
-- **Baseline**: Underfitting (too simple to capture patterns)
-
----
-
-## 7. What Saturation Means
-
-### 7.1 Definition
-
-Saturation occurs when adding more training data no longer significantly improves model performance. The model has learned all patterns that can be extracted from the current data distribution.
-
-### 7.2 Causes of Saturation
-
-1. **Model capacity reached**: The model is complex enough to capture all patterns in the data
-2. **Data quality ceiling**: The data contains noise or limitations that prevent further learning
-3. **Feature limitations**: Current features don't contain enough information to improve predictions
-4. **Task complexity ceiling**: The problem may have inherent unpredictability
-
-### 7.3 Our Saturation Analysis
-
-Both models saturate at ~500 records because:
-- The synthetic data generation rules are relatively simple
-- Features capture most of the predictive signal
-- Random Forest with 100 trees has sufficient capacity
-- Beyond 500 records, new samples don't provide novel patterns
-
----
-
-## 8. Pushing Past Saturation
-
-To improve beyond current saturation, we need:
-
-### 8.1 Additional Data Types
-
-1. **Real-world outcomes**: Actual completed/declined service requests from the app
-2. **GPS distance**: Actual driving distance rather than straight-line estimates
-3. **Parts availability**: Whether required parts are in stock
-4. **Mechanic schedule**: Real-time availability and booking status
-5. **Customer urgency**: Time sensitivity of the repair
-6. **Weather conditions**: Impact on service delivery
-7. **Seasonal patterns**: Demand variations by month/season
-
-### 8.2 Additional Features
-
-1. **Vehicle make/model**: Some mechanics specialize in certain brands
-2. **Customer history**: Repeat customers may have different success rates
-3. **Mechanic rating**: Customer satisfaction scores
-4. **Response time**: How quickly mechanic responds to requests
-5. **Price competitiveness**: Compared to market rates
-
-### 8.3 Model Improvements
-
-1. **Ensemble methods**: Combine multiple model types (stacking)
-2. **Hyperparameter tuning**: Grid search for optimal parameters
-3. **Feature engineering**: Create interaction features
-4. **Deep learning**: For very large datasets (>10,000 records)
-
----
-
-## 9. Recommendations
-
-### 9.1 Immediate Actions
-
-1. **Use Random Forest with 100 trees** as the production model
-2. **Collect real app data** to replace synthetic data
-3. **Monitor performance** as real data accumulates
-4. **Retrain quarterly** or when 100+ new records are available
-
-### 9.2 Medium-term Improvements
-
-1. **Add GPS distance** to feature set
-2. **Implement mechanic schedule** integration
-3. **Track parts availability** for common repairs
-4. **Collect customer feedback** on match quality
-
-### 9.3 Long-term Research
-
-1. **Experiment with ensemble methods** (stacking, blending)
-2. **Explore gradient boosting** (XGBoost, LightGBM)
-3. **Investigate neural networks** for very large datasets
-4. **Study causal inference** to understand match success factors
-
----
-
-## 10. Conclusion
-
-The AutoHelp Lesotho ML models show promising performance on the synthetic dataset:
-
-- **Random Forest** achieves 79.3% accuracy and 76.4% F1 score
-- **Logistic Regression** achieves 76.6% accuracy and 74.3% F1 score
-- Both models saturate at ~500 records
-- Saturation indicates need for more diverse data and features
-
-The current implementation provides a solid foundation for AI-powered mechanic recommendations. As real app data accumulates, the models should be retrained to capture actual patterns and improve performance.
-
----
-
-## Appendix: Code References
-
-- Dataset generation: `scripts/generate-dataset.cjs`
-- ML implementation: `src/lib/ml.ts`
-- Python notebook: `AutoHelp_D2_Model_Training.ipynb`
-- Dataset card: `AutoHelp_D1_Dataset_Card.md`
+- `npm run ai:train` regenerates the dataset, models, metrics and curves. `npm run docs:part-d` rebuilds this report and the dataset card. `npm run verify:part-d` checks every Part D requirement.
+- `AutoHelp_D2_Model_Training.ipynb` retrains the same task with scikit-learn as an independent check. Its scores differ a little because the implementations and settings differ (for example 100 trees there against 40 here). The dashboards and this report use the TypeScript pipeline.

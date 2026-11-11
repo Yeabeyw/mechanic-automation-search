@@ -33,12 +33,7 @@ function subsample(rows: MatchRecord[], n: number, rng: () => number) {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function scoresFor(
-  name: ModelName,
-  train: MatchRecord[],
-  evalRows: MatchRecord[],
-  seed: number,
-) {
+function scoresFor(name: ModelName, train: MatchRecord[], evalRows: MatchRecord[], seed: number) {
   if (name === "baseline") return baselineScores(evalRows);
   const tr = encodeRecords(train);
   const ev = encodeRecords(evalRows);
@@ -50,7 +45,12 @@ function scoresFor(
   return forestScores(model, ev.X);
 }
 
-export function learningCurve(rows: MatchRecord[], name: ModelName, repeats = 5, seed = 42): CurvePoint[] {
+export function learningCurve(
+  rows: MatchRecord[],
+  name: ModelName,
+  repeats = 5,
+  seed = 42,
+): CurvePoint[] {
   const points: CurvePoint[] = [];
   for (const size of LEARNING_SIZES) {
     const trainAcc: number[] = [];
@@ -96,7 +96,7 @@ export function detectSaturation(points: CurvePoint[], model: ModelName): Satura
     for (let j = i + 1; j < points.length; j++) {
       laterGain = Math.max(laterGain, points[j]!.valF1Mean - base);
     }
-    if (i === points.length - 1 || laterGain < 0.01) {
+    if (i < points.length - 1 && laterGain < 0.01) {
       return {
         model,
         size: points[i]!.size,
@@ -104,7 +104,12 @@ export function detectSaturation(points: CurvePoint[], model: ModelName): Satura
       };
     }
   }
-  return { model, size: null, note: "Validation F1 was still improving by at least 1 percentage point at the largest size tested." };
+  const last = points[points.length - 1]!;
+  return {
+    model,
+    size: null,
+    note: `Not saturated: validation F1 was still improving at the largest size tested (${last.size} records, F1 ${(last.valF1Mean * 100).toFixed(1)}%).`,
+  };
 }
 
 export function forestTreeSweep(rows: MatchRecord[], seed = 42) {
@@ -123,10 +128,14 @@ export function detectTreeSaturation(points: { nTrees: number; valF1: number }[]
   for (let i = 0; i < points.length; i++) {
     const base = points[i]!.valF1;
     let laterGain = 0;
-    for (let j = i + 1; j < points.length; j++) laterGain = Math.max(laterGain, points[j]!.valF1 - base);
+    for (let j = i + 1; j < points.length; j++)
+      laterGain = Math.max(laterGain, points[j]!.valF1 - base);
     if (i === points.length - 1 || laterGain < 0.01) {
       return { nTrees: points[i]!.nTrees, f1: base };
     }
   }
-  return { nTrees: points[points.length - 1]?.nTrees ?? 0, f1: points[points.length - 1]?.valF1 ?? 0 };
+  return {
+    nTrees: points[points.length - 1]?.nTrees ?? 0,
+    f1: points[points.length - 1]?.valF1 ?? 0,
+  };
 }
