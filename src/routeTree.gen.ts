@@ -11,7 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AiDashboardsRouteImport } from './routes/ai-dashboards'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DataClassificationRouteImport } from './routes/data-classification'
+import { Route as DatasetRouteImport } from './routes/dataset'
+import { Route as GdprRouteImport } from './routes/gdpr'
 import { Route as LedgerRouteImport } from './routes/ledger'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -32,9 +36,29 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiDashboardsRoute = AiDashboardsRouteImport.update({
+  id: '/ai-dashboards',
+  path: '/ai-dashboards',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataClassificationRoute = DataClassificationRouteImport.update({
+  id: '/data-classification',
+  path: '/data-classification',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatasetRoute = DatasetRouteImport.update({
+  id: '/dataset',
+  path: '/dataset',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GdprRoute = GdprRouteImport.update({
+  id: '/gdpr',
+  path: '/gdpr',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LedgerRoute = LedgerRouteImport.update({
@@ -86,7 +110,11 @@ const RequestMechanicIdRoute = RequestMechanicIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ai-dashboards': typeof AiDashboardsRoute
   '/auth': typeof AuthRoute
+  '/data-classification': typeof DataClassificationRoute
+  '/dataset': typeof DatasetRoute
+  '/gdpr': typeof GdprRoute
   '/ledger': typeof LedgerRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
@@ -100,7 +128,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ai-dashboards': typeof AiDashboardsRoute
   '/auth': typeof AuthRoute
+  '/data-classification': typeof DataClassificationRoute
+  '/dataset': typeof DatasetRoute
+  '/gdpr': typeof GdprRoute
   '/ledger': typeof LedgerRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
@@ -115,7 +147,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ai-dashboards': typeof AiDashboardsRoute
   '/auth': typeof AuthRoute
+  '/data-classification': typeof DataClassificationRoute
+  '/dataset': typeof DatasetRoute
+  '/gdpr': typeof GdprRoute
   '/ledger': typeof LedgerRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
@@ -131,7 +167,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/ai-dashboards'
     | '/auth'
+    | '/data-classification'
+    | '/dataset'
+    | '/gdpr'
     | '/ledger'
     | '/privacy'
     | '/profile'
@@ -145,7 +185,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/ai-dashboards'
     | '/auth'
+    | '/data-classification'
+    | '/dataset'
+    | '/gdpr'
     | '/ledger'
     | '/privacy'
     | '/profile'
@@ -159,7 +203,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/ai-dashboards'
     | '/auth'
+    | '/data-classification'
+    | '/dataset'
+    | '/gdpr'
     | '/ledger'
     | '/privacy'
     | '/profile'
@@ -174,7 +222,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AiDashboardsRoute: typeof AiDashboardsRoute
   AuthRoute: typeof AuthRoute
+  DataClassificationRoute: typeof DataClassificationRoute
+  DatasetRoute: typeof DatasetRoute
+  GdprRoute: typeof GdprRoute
   LedgerRoute: typeof LedgerRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
@@ -202,11 +254,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-dashboards': {
+      id: '/ai-dashboards'
+      path: '/ai-dashboards'
+      fullPath: '/ai-dashboards'
+      preLoaderRoute: typeof AiDashboardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data-classification': {
+      id: '/data-classification'
+      path: '/data-classification'
+      fullPath: '/data-classification'
+      preLoaderRoute: typeof DataClassificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dataset': {
+      id: '/dataset'
+      path: '/dataset'
+      fullPath: '/dataset'
+      preLoaderRoute: typeof DatasetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gdpr': {
+      id: '/gdpr'
+      path: '/gdpr'
+      fullPath: '/gdpr'
+      preLoaderRoute: typeof GdprRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ledger': {
@@ -278,7 +358,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AiDashboardsRoute: AiDashboardsRoute,
   AuthRoute: AuthRoute,
+  DataClassificationRoute: DataClassificationRoute,
+  DatasetRoute: DatasetRoute,
+  GdprRoute: GdprRoute,
   LedgerRoute: LedgerRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,

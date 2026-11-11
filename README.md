@@ -65,13 +65,13 @@ To regenerate the Android launcher and splash resources after changing the logo,
 
 ## Firebase setup for the Android app
 
-The Android app uses Firebase Authentication and Cloud Firestore through the Firebase JavaScript SDK inside its Capacitor WebView. Registering a Firebase **Web app** in the project is needed to obtain that SDK configuration; it does not turn AutoHelp into a website or change the Android app target. `VITE_FIREBASE_MUTATIONS_ENABLED` defaults to `false`, so the app stays read-only and makes no Cloud Functions requests until a secure backend is deployed.
+The Android app uses Firebase Authentication and Cloud Firestore through the Firebase JavaScript SDK inside its Capacitor WebView. Registering a Firebase **Web app** in the project is needed to obtain that SDK configuration; it does not turn AutoHelp into a website or change the Android app target. Email/password and Google sign-in, plus creation of a constrained customer profile with recorded consent, work without Cloud Functions. `VITE_FIREBASE_MUTATIONS_ENABLED` defaults to `false`; service requests, mechanic applications, profile edits, and other protected business updates remain disabled until a secure backend is deployed.
 
 1. Use the `musolink-lesotho` Firebase project. Its registered Web app configuration is in your Firebase Console under **Project settings**.
 2. Put the Web app SDK configuration in a local `.env` file based on [`.env.example`](./.env.example). These values identify the Firebase project and are not server credentials.
 3. In **Authentication → Sign-in method**, enable Email/Password. Enable Google only if Google sign-in is required and complete its provider setup.
 4. Create the Firestore database. Register the Android app as `ls.co.autohelp` (not the Firebase Console placeholder `com.company.appname`) and download its `google-services.json` into `android/app/`. Use the Web app configuration from step 2 for the JavaScript SDK; the Android config file is needed for native Google sign-in.
-5. To enable app mutations, upgrade the Firebase project to the **Blaze (pay-as-you-go) plan** before deploying Cloud Functions. Functions use Firebase Admin SDK writes to enforce role and ownership checks, so they cannot be replaced with unrestricted client writes. Enable billing only if you accept Google Cloud usage charges. Until then, leave the app in read-only mode.
+5. To enable business-record mutations, upgrade the Firebase project to the **Blaze (pay-as-you-go) plan** before deploying Cloud Functions. Functions use Firebase Admin SDK writes to enforce role and ownership checks, so they cannot be replaced with unrestricted client writes. Enable billing only if you accept Google Cloud usage charges. Until then, account sign-in and basic customer registration remain available, but business updates stay disabled.
 6. After upgrading, install the Firebase CLI, select the project, and build/deploy the backend:
 
    ```powershell
@@ -85,10 +85,10 @@ The Android app uses Firebase Authentication and Cloud Firestore through the Fir
 
    Cloud Functions are configured for `africa-south1`. The selected Firebase project must support deploying Functions in that region.
 7. After a successful deployment, set `VITE_FIREBASE_MUTATIONS_ENABLED=true` in the local `.env`, then restart the app. Do not enable the flag before the callable functions are deployed.
-8. Create an account in the app. The `ensureUserProfile` function creates a customer profile. To bootstrap the first administrator, find that account's UID in Firebase Authentication and add `"admin"` to the `roles` array on `users/{uid}` in Firestore. Do not grant roles from the client.
+8. Create an account in the app. Firestore rules allow the signed-in user to create only their own customer profile, recording the accepted privacy policy and server timestamp. To bootstrap the first administrator, find that account's UID in Firebase Authentication and add `"admin"` to the `roles` array on `users/{uid}` in Firestore. Do not grant roles from the client.
 9. Run `npm run android:sync` to register the native Firebase plugin, then follow the Android development steps above. For a release, build the app with the Firebase `.env` values set, then sync and package it with Android Studio.
 
-Firestore client writes are blocked by [`firestore.rules`](./firestore.rules); authenticated Cloud Functions validate and perform app mutations. Rules and required query indexes are deployed with the command above. Keep any Functions secrets out of the client `.env`.
+Firestore rules allow only that narrowly constrained customer-profile creation by a signed-in user; all business-record writes, profile updates/deletes, and unmatched paths remain denied to clients. Authenticated Cloud Functions validate and perform protected app mutations. Rules and required query indexes are deployed with the command above. Keep any Functions secrets out of the client `.env`.
 
 If a browser reports CORS errors for `ensureUserProfile` or another callable function, first confirm Cloud Functions has been deployed to the configured project and `africa-south1` region. Callable functions handle CORS automatically; a 404 / missing `Access-Control-Allow-Origin` response usually means the endpoint is not deployed or its APIs are unavailable, not that browser CORS should be bypassed.
 
@@ -110,7 +110,7 @@ The current TanStack Start build includes a server-rendered Nitro output and doe
 
 A separate security configuration module is hosted on a different domain for role management, audit logging, and security monitoring.
 
-**Security Console URL**: `https://musolink-security.web.app` (to be configured with custom domain)
+**Planned Security Console URL**: `https://lesotho-digital-trust-security.web.app` (separate Hosting target configured locally; this site is not registered or deployed in the Firebase project)
 
 **Deploy Security Console**:
 ```bash
@@ -158,20 +158,22 @@ firebase deploy --only hosting:security
 
 ### Cloud Functions
 
-**Status**: ✅ Deployed with server-side security checks
+**Status**: Functions source implemented; not deployed. The project is intentionally left on the Spark plan. Authentication and basic customer profiles are available; Cloud Functions-backed business mutations remain read-only.
 
 **Functions**:
 - `listUserRoles`: Lists all users with roles (security_admin only)
 - `setUserRole`: Grants/revokes admin and mechanic roles (security_admin only)
-- `getSecurityPolicy`: Returns permission matrix (authenticated)
+- `getSecurityPolicy`: Returns the shared permission matrix (Security Admin only)
 - `listAuditLog`: Returns audit log with filtering (security_admin only)
-- `verifyMechanic`: Verifies mechanic applications with audit logging (admin only)
+- `verifyMechanic` / `suspendMechanic`: Verify or suspend mechanics with audit logging (admin only)
+- `recordSecurityConsoleAccess`, `recordDataExport`, `deleteUser`: Backend audit and account-rights functions
+- `anonymizeOldRequests`: Scheduled 12-month request anonymisation
+- `beforeSignInAudit`: Identity Platform sign-in blocking event audit
 
 **Audit Logging**:
-- All role changes are logged to `security_audit` collection
-- Mechanic verifications are logged with before/after status
-- Ledger events are appended for immutable record
-- Audit log is append-only and read-only for security_admin
+- Source records role changes, mechanic verification/suspension, request status changes, exports, deletion, console access, and sign-ins.
+- Functions, the scheduled anonymisation job, Identity Platform sign-in blocking, and security Hosting headers have not been deployed or verified.
+- The shared policy source is `functions/src/security-policy.json`; both the Functions endpoint and Security Console matrix read it.
 
 ### Main App Security Enhancements
 
@@ -186,7 +188,7 @@ firebase deploy --only hosting:security
 
 ### Data Classification
 
-**Status**: ✅ Documented in `docs/data-classification.md`
+**Status**: Workbook and in-app page available; evidence is source-level until deployment.
 
 **Classification Levels**:
 - **Public**: Reviews, ledger block hashes
@@ -194,13 +196,11 @@ firebase deploy --only hosting:security
 - **Confidential**: User roles, verification status, audit log
 - **Restricted**: Ledger secrets (salt)
 
-**Documentation**: See `docs/data-classification.md` for complete classification table.
+**Workbooks**: `AutoHelp_C1_Data_Classification.xlsx`, `AutoHelp_C2_Permission_Matrix.xlsx`, and `AutoHelp_C3_GDPR_Compliance.xlsx`.
 
 ### GDPR Compliance
 
-**Status**: ✅ Partially compliant (see `security-console/src/data/gdpr-checklist.json`)
-
-**Compliance Score**: 35% (7/20 requirements fully compliant)
+**Status**: Readiness checklist at `/gdpr` and in the Security Console; score is calculated from items marked Implemented.
 
 **Key Areas**:
 - ✅ Data minimization
@@ -246,9 +246,9 @@ firebase deploy --only hosting:security
 
 **Firestore Rules Tests**:
 ```bash
-firebase emulators:start --only firestore
-firebase emulators:exec "mocha firestore.rules.test.js"
+npm run test:rules
 ```
+The command requires the Firebase CLI and JDK 21+, runs the local Firestore emulator and `firestore.rules.test.cjs`, and does not deploy rules or change production data.
 
 **Cloud Functions Tests**:
 ```bash
@@ -269,7 +269,7 @@ node functions/test/functions.test.js
 
 ### Seeding Test Data
 
-A seed script is provided to populate Firebase with test data for development and testing.
+A seed script is present for isolated development only. Do not run it against the production project or use a production service-account key. The current task did not seed or modify Firebase data.
 
 **Usage**:
 ```bash

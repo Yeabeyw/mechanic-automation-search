@@ -1,25 +1,15 @@
 {
   "projects": {
-    "default": "lesotho-digital-trust"
+    "default": "musolink-lesotho"
   },
   "targets": {
-    "hosting": {
-      "main": {
-        "site": "lesotho-digital-trust",
-        "public": ".output/public",
-        "ignore": [
-          "firebase.json",
-          "**/.*",
-          "**/node_modules/**"
-        ]
-      },
-      "security": {
-        "site": "lesotho-digital-trust-security",
-        "public": "security-console/dist",
-        "ignore": [
-          "firebase.json",
-          "**/.*",
-          "**/node_modules/**"
+    "musolink-lesotho": {
+      "hosting": {
+        "main": [
+          "lesotho-auto-search90e0d"
+        ],
+        "security": [
+          "lesotho-digital-trust-security"
         ]
       }
     }

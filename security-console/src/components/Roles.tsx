@@ -74,7 +74,7 @@ export default function Roles() {
       <div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">User Roles</h1>
         <p className="text-slate-600 dark:text-slate-400 mt-1">
-          Manage admin and mechanic roles. Security Admin role cannot be granted or revoked.
+          Manage administrator access. Mechanic access comes from an approved workshop profile, not an account role. Security Admin access is assigned separately and cannot be changed here.
         </p>
       </div>
 
@@ -151,8 +151,6 @@ export default function Roles() {
                               ? 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300'
                               : role === 'admin'
                               ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                              : role === 'mechanic'
-                              ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
                               : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                           }`}
                         >
@@ -181,28 +179,6 @@ export default function Roles() {
                           className="p-2 hover:bg-red-100 dark:hover:bg-red-900 rounded-lg transition-colors text-red-600 dark:text-red-400 disabled:opacity-50 min-h-[36px] min-w-[36px]"
                           title="Revoke admin"
                           aria-label={`Revoke admin from ${user.full_name}`}
-                        >
-                          <UserMinus size={16} />
-                        </button>
-                      )}
-                      {!user.roles.includes('mechanic') && (
-                        <button
-                          onClick={() => handleRoleChange(user, 'mechanic', 'grant')}
-                          disabled={actionInProgress === user.uid}
-                          className="p-2 hover:bg-green-100 dark:hover:bg-green-900 rounded-lg transition-colors text-green-600 dark:text-green-400 disabled:opacity-50 min-h-[36px] min-w-[36px]"
-                          title="Grant mechanic"
-                          aria-label={`Grant mechanic to ${user.full_name}`}
-                        >
-                          <UserPlus size={16} />
-                        </button>
-                      )}
-                      {user.roles.includes('mechanic') && (
-                        <button
-                          onClick={() => handleRoleChange(user, 'mechanic', 'revoke')}
-                          disabled={actionInProgress === user.uid}
-                          className="p-2 hover:bg-red-100 dark:hover:bg-red-900 rounded-lg transition-colors text-red-600 dark:text-red-400 disabled:opacity-50 min-h-[36px] min-w-[36px]"
-                          title="Revoke mechanic"
-                          aria-label={`Revoke mechanic from ${user.full_name}`}
                         >
                           <UserMinus size={16} />
                         </button>

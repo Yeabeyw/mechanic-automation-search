@@ -1,27 +1,11 @@
-import { useState, useEffect } from 'react';
-import { getSecurityPolicy } from '../lib/firebase';
+import { useState } from 'react';
+import securityPolicy from '../../../functions/src/security-policy.json';
 import type { SecurityPolicy } from '../lib/types';
 import { Check, X } from 'lucide-react';
 
 export default function PermissionMatrix() {
-  const [policy, setPolicy] = useState<SecurityPolicy | null>(null);
-  const [loading, setLoading] = useState(true);
+  const policy = securityPolicy as SecurityPolicy;
   const [highlightActor, setHighlightActor] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadPolicy();
-  }, []);
-
-  const loadPolicy = async () => {
-    try {
-      const result = await getSecurityPolicy();
-      setPolicy(result.data);
-    } catch (error) {
-      console.error('Failed to load policy:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getPermissionColor = (value: string) => {
     if (value === 'Full') return 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300';
@@ -36,22 +20,6 @@ export default function PermissionMatrix() {
     if (status === 'Partly enforced') return 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300';
     return 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300';
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-slate-600 dark:text-slate-400">Loading permission matrix...</div>
-      </div>
-    );
-  }
-
-  if (!policy) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-slate-600 dark:text-slate-400">Failed to load permission matrix</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">

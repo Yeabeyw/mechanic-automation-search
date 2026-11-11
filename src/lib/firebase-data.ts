@@ -6,6 +6,8 @@ import {
   limit,
   orderBy,
   query,
+  runTransaction,
+  serverTimestamp,
   startAfter,
   where,
   type DocumentData,
@@ -13,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import {
+  getFirebaseAuth,
   getFirebaseDb,
   getFirebaseFunctions,
   isFirebaseMutationsEnabled,
@@ -26,9 +29,47 @@ export type CustomerRequest = ServiceRequest & {
   reviews: Pick<Review, "id"> | null;
 };
 
-export type AdminRequest = Pick<ServiceRequest, "id" | "ref" | "category" | "status" | "created_at"> & {
-  mechanics: Pick<Mechanic, "name"> | null;
+export type MechanicInboxRequest = Pick<
+  ServiceRequest,
+  | "id"
+  | "category"
+  | "created_at"
+  | "mechanic_id"
+  | "mechanic_owner_id"
+  | "ref"
+  | "status"
+  | "updated_at"
+> &
+  Partial<
+    Pick<
+      ServiceRequest,
+      | "contact_phone"
+      | "customer_name"
+      | "description"
+      | "status_history"
+      | "vehicle_make"
+      | "vehicle_model"
+      | "vehicle_year"
+    >
+  > & { returned_to_pool: boolean };
+
+export type AdminRequest = Pick<
+  ServiceRequest,
+  "id" | "ref" | "category" | "status" | "created_at" | "mechanic_id"
+> & {
+  mechanics: Pick<Mechanic, "name" | "verified" | "available"> | null;
+  description?: string;
+  contact_phone?: string | null;
 };
+
+export type AppUser = {
+  uid: string;
+  full_name: string;
+  roles: AppRole[];
+  mechanic_profile: boolean;
+};
+
+export type Vehicle = { make: string; model: string; year: number | null };
 
 function rowFromSnapshot<T>(snapshot: QueryDocumentSnapshot<DocumentData>): T {
   return { id: snapshot.id, ...snapshot.data() } as T;
@@ -44,17 +85,66 @@ async function callFunction<Input, Output>(name: string, input: Input): Promise<
   return result.data;
 }
 
-export async function ensureUserProfile(fullName?: string) {
-  return callFunction<{ fullName?: string }, { roles: AppRole[] }>("ensureUserProfile", {
-    ...(fullName ? { fullName } : {}),
+export async function ensureUserProfile(fullName?: string, consentAccepted = false) {
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error("Sign in before creating your user profile.");
+
+  const profileRef = doc(getFirebaseDb(), "users", user.uid);
+  return runTransaction(getFirebaseDb(), async (transaction) => {
+    const profile = await transaction.get(profileRef);
+    if (profile.exists()) {
+      const roles: unknown = profile.data()["roles"];
+      if (
+        !Array.isArray(roles) ||
+        !roles.every(
+          (role) =>
+            role === "customer" ||
+            role === "admin" ||
+            role === "security_admin" ||
+            role === "mechanic",
+        )
+      ) {
+        throw new Error("Your Firebase user profile has invalid role data.");
+      }
+      return { roles: roles.filter((role): role is AppRole => role !== "mechanic") };
+    }
+    if (!consentAccepted) {
+      throw new Error("Accept the Privacy Policy to finish creating your account.");
+    }
+    if (!user.email) {
+      throw new Error("A verified email address is required to create an AutoHelp profile.");
+    }
+
+    transaction.set(profileRef, {
+      full_name: (fullName ?? user.displayName ?? "").trim().slice(0, 100),
+      email: user.email,
+      roles: ["customer"],
+      created_at: serverTimestamp(),
+      consent: {
+        accepted: true,
+        accepted_at: serverTimestamp(),
+        policy_version: "privacy-2026-03",
+      },
+    });
+    return { roles: ["customer"] as AppRole[] };
   });
+}
+
+export async function recordDataExport() {
+  return callFunction<Record<string, never>, { ok: true }>("recordDataExport", {});
+}
+
+export async function deleteMyAccount() {
+  return callFunction<Record<string, never>, { ok: true }>("deleteUser", {});
 }
 
 export async function listVerifiedMechanics(): Promise<Mechanic[]> {
   const result = await getDocs(
     query(collection(getFirebaseDb(), "mechanics"), where("verified", "==", true)),
   );
-  return result.docs.map((snapshot) => rowFromSnapshot<Mechanic>(snapshot))
+  return result.docs
+    .map((snapshot) => rowFromSnapshot<Mechanic>(snapshot))
+    .filter((mechanic) => mechanic.available)
     .sort((a, b) => b.rating - a.rating);
 }
 
@@ -77,7 +167,17 @@ export async function getMechanicsForAdmin(): Promise<Mechanic[]> {
   const result = await getDocs(
     query(collection(getFirebaseDb(), "mechanics"), orderBy("created_at", "desc")),
   );
-  return result.docs.map((snapshot) => rowFromSnapshot<Mechanic>(snapshot));
+  return Promise.all(
+    result.docs.map(async (snapshot) => {
+      const privateProfile = await getDoc(doc(getFirebaseDb(), "mechanic_private", snapshot.id));
+      return {
+        ...rowFromSnapshot<Mechanic>(snapshot),
+        id_reference: privateProfile.exists()
+          ? String(privateProfile.data()["id_reference"] ?? "")
+          : null,
+      };
+    }),
+  );
 }
 
 export async function getMechanicReviews(mechanicId: string) {
@@ -99,9 +199,33 @@ export async function getCustomerRequests(customerId: string): Promise<CustomerR
       orderBy("created_at", "desc"),
     ),
   );
-  const requests = result.docs.map((snapshot) => rowFromSnapshot<ServiceRequest>(snapshot));
-  const mechanicIds = [...new Set(requests.map((request) => request.mechanic_id))];
-  const mechanics = await Promise.all(mechanicIds.map(async (id) => [id, await getMechanic(id)] as const));
+  const requests = await Promise.all(
+    result.docs.map(async (snapshot) => {
+      const privateRequest = await getDoc(
+        doc(getFirebaseDb(), "service_request_private", snapshot.id),
+      );
+      return {
+        ...rowFromSnapshot<ServiceRequest>(snapshot),
+        ...(privateRequest.exists() ? privateRequest.data() : {}),
+        returned_to_pool:
+          !snapshot.data()["mechanic_owner_id"] &&
+          Array.isArray(snapshot.data()["status_history"]) &&
+          snapshot
+            .data()
+            ["status_history"].some(
+              (event: unknown) =>
+                typeof event === "object" &&
+                event !== null &&
+                "status" in event &&
+                event.status === "declined",
+            ),
+      } as ServiceRequest;
+    }),
+  );
+  const mechanicIds = [...new Set(requests.map((request) => request.mechanic_id).filter(Boolean))];
+  const mechanics = await Promise.all(
+    mechanicIds.map(async (id) => [id, await getMechanic(id)] as const),
+  );
   const mechanicsById = new Map(mechanics);
   const reviews = await Promise.all(
     requests.map(async (request) => {
@@ -112,35 +236,58 @@ export async function getCustomerRequests(customerId: string): Promise<CustomerR
   const reviewsByRequest = new Map(reviews);
 
   return requests.map((request) => {
-    const mechanic = mechanicsById.get(request.mechanic_id);
+    const mechanic = request.mechanic_id ? mechanicsById.get(request.mechanic_id) : null;
     return {
       ...request,
       mechanics: mechanic
-        ? { name: mechanic.name, workshop: mechanic.workshop, town: mechanic.town, code: mechanic.code }
+        ? {
+            name: mechanic.name,
+            workshop: mechanic.workshop,
+            town: mechanic.town,
+            code: mechanic.code,
+          }
         : null,
       reviews: reviewsByRequest.get(request.id) ?? null,
     };
   });
 }
 
-export async function getMechanicRequests(mechanicOwnerId: string): Promise<ServiceRequest[]> {
-  const result = await getDocs(
-    query(
-      collection(getFirebaseDb(), "service_requests"),
-      where("mechanic_owner_id", "==", mechanicOwnerId),
-      orderBy("created_at", "desc"),
-    ),
-  );
-  return result.docs.map((snapshot) => rowFromSnapshot<ServiceRequest>(snapshot));
+export async function getMechanicRequests(
+  mechanicOwnerId: string,
+): Promise<MechanicInboxRequest[]> {
+  if (getFirebaseAuth().currentUser?.uid !== mechanicOwnerId) {
+    throw new Error("You can only load your own mechanic workspace.");
+  }
+  const { requests } = await callFunction<
+    Record<string, never>,
+    { requests: MechanicInboxRequest[] }
+  >("getMechanicInbox", {});
+  return requests;
 }
 
 export async function getAdminRequests(): Promise<AdminRequest[]> {
   const result = await getDocs(
-    query(collection(getFirebaseDb(), "service_requests"), orderBy("created_at", "desc"), limit(50)),
+    query(
+      collection(getFirebaseDb(), "service_requests"),
+      orderBy("created_at", "desc"),
+      limit(50),
+    ),
   );
-  const requests = result.docs.map((snapshot) => rowFromSnapshot<ServiceRequest>(snapshot));
-  const mechanicIds = [...new Set(requests.map((request) => request.mechanic_id))];
-  const mechanics = await Promise.all(mechanicIds.map(async (id) => [id, await getMechanic(id)] as const));
+  const requests = await Promise.all(
+    result.docs.map(async (snapshot) => {
+      const privateRequest = await getDoc(
+        doc(getFirebaseDb(), "service_request_private", snapshot.id),
+      );
+      return {
+        ...rowFromSnapshot<ServiceRequest>(snapshot),
+        ...(privateRequest.exists() ? privateRequest.data() : {}),
+      } as ServiceRequest;
+    }),
+  );
+  const mechanicIds = [...new Set(requests.map((request) => request.mechanic_id).filter(Boolean))];
+  const mechanics = await Promise.all(
+    mechanicIds.map(async (id) => [id, await getMechanic(id)] as const),
+  );
   const mechanicsById = new Map(mechanics);
   return requests.map((request) => ({
     id: request.id,
@@ -148,14 +295,70 @@ export async function getAdminRequests(): Promise<AdminRequest[]> {
     category: request.category,
     status: request.status,
     created_at: request.created_at,
+    mechanic_id: request.mechanic_id,
+    description: request.description,
+    contact_phone: request.contact_phone,
     mechanics: mechanicsById.get(request.mechanic_id)
-      ? { name: mechanicsById.get(request.mechanic_id)!.name }
+      ? {
+          name: mechanicsById.get(request.mechanic_id)!.name,
+          verified: mechanicsById.get(request.mechanic_id)!.verified,
+          available: mechanicsById.get(request.mechanic_id)!.available,
+        }
       : null,
+  }));
+}
+
+export async function getAdminUsers(): Promise<AppUser[]> {
+  const [users, mechanicOwners] = await Promise.all([
+    getDocs(query(collection(getFirebaseDb(), "users"), orderBy("full_name"), limit(200))),
+    getDocs(collection(getFirebaseDb(), "mechanic_owners")),
+  ]);
+  const mechanicUids = new Set(
+    mechanicOwners.docs.map((snapshot) => String(snapshot.data()["user_id"] ?? "")),
+  );
+  return users.docs.map((snapshot) => ({
+    uid: snapshot.id,
+    full_name: String(snapshot.data()["full_name"] ?? ""),
+    roles: Array.isArray(snapshot.data()["roles"])
+      ? snapshot
+          .data()
+          ["roles"].filter(
+            (role: unknown): role is AppRole =>
+              role === "customer" || role === "admin" || role === "security_admin",
+          )
+      : [],
+    mechanic_profile: mechanicUids.has(snapshot.id),
   }));
 }
 
 export async function updateMyProfile(fullName: string) {
   return callFunction<{ fullName: string }, { ok: boolean }>("updateMyProfile", { fullName });
+}
+
+export async function updateMyVehicles(
+  vehicles: { make: string; model: string; year: number | null }[],
+) {
+  return callFunction<{ vehicles: typeof vehicles }, { ok: boolean }>("updateMyVehicles", {
+    vehicles,
+  });
+}
+
+export async function getMyVehicles(uid: string): Promise<Vehicle[]> {
+  const profile = await getDoc(doc(getFirebaseDb(), "users", uid));
+  if (!profile.exists()) return [];
+  const vehicles: unknown = profile.data()["vehicles"];
+  if (!Array.isArray(vehicles)) return [];
+  return vehicles.filter(
+    (vehicle): vehicle is Vehicle =>
+      typeof vehicle === "object" &&
+      vehicle !== null &&
+      "make" in vehicle &&
+      typeof vehicle.make === "string" &&
+      "model" in vehicle &&
+      typeof vehicle.model === "string" &&
+      "year" in vehicle &&
+      (typeof vehicle.year === "number" || vehicle.year === null),
+  );
 }
 
 /** Everything the app holds about one user, for the GDPR access/portability download. */
@@ -166,7 +369,15 @@ export async function exportMyData(uid: string): Promise<Record<string, unknown>
   const sent = await getDocs(
     query(collection(db, "service_requests"), where("customer_id", "==", uid)),
   );
-  const requestsSent = sent.docs.map((snapshot) => rowFromSnapshot<ServiceRequest>(snapshot));
+  const requestsSent = await Promise.all(
+    sent.docs.map(async (snapshot) => {
+      const privateRequest = await getDoc(doc(db, "service_request_private", snapshot.id));
+      return {
+        ...rowFromSnapshot<ServiceRequest>(snapshot),
+        ...(privateRequest.exists() ? privateRequest.data() : {}),
+      } as ServiceRequest;
+    }),
+  );
   const reviewSnapshots = await Promise.all(
     requestsSent.map((request) => getDoc(doc(db, "reviews", request.id))),
   );
@@ -175,10 +386,7 @@ export async function exportMyData(uid: string): Promise<Record<string, unknown>
     .map((snapshot) => ({ id: snapshot.id, ...snapshot.data() }));
 
   const mechanic = await getMechanicForUser(uid);
-  const received = await getDocs(
-    query(collection(db, "service_requests"), where("mechanic_owner_id", "==", uid)),
-  );
-  const requestsReceived = received.docs.map((snapshot) => rowFromSnapshot<ServiceRequest>(snapshot));
+  const requestsReceived = mechanic ? await getMechanicRequests(uid) : [];
   const reviewsReceived = mechanic ? await getMechanicReviews(mechanic.id) : [];
 
   return {
@@ -204,6 +412,7 @@ export async function submitMechanicApplication(input: {
   experience_years: number;
   specialties: string[];
   bio: string;
+  id_reference: string;
 }) {
   return callFunction<typeof input, { id: string }>("submitMechanicApplication", input);
 }
@@ -242,6 +451,34 @@ export async function submitReview(input: {
 
 export async function verifyMechanic(id: string) {
   return callFunction<{ id: string }, void>("verifyMechanic", { id });
+}
+
+export async function suspendMechanic(id: string) {
+  return callFunction<{ id: string }, void>("suspendMechanic", { id });
+}
+
+export async function reassignServiceRequest(id: string, mechanicId: string) {
+  return callFunction<{ id: string; mechanic_id: string }, void>("reassignServiceRequest", {
+    id,
+    mechanic_id: mechanicId,
+  });
+}
+
+export async function publishAiDataset(input: {
+  records: unknown[];
+  n_synthetic: number;
+  n_real: number;
+}) {
+  return callFunction<typeof input, { ok: true; size: number }>("publishAiDataset", input);
+}
+
+export async function publishAiModels(input: {
+  bundle: unknown;
+  dataset_size: number;
+  trained_at: string;
+  best_model: string;
+}) {
+  return callFunction<typeof input, { ok: true }>("publishAiModels", input);
 }
 
 export async function getLedgerBlocks(): Promise<LedgerBlock[]> {
@@ -287,7 +524,10 @@ export async function getLatestLedgerBlocks(count: number): Promise<LedgerBlock[
   return result.docs.map((snapshot) => rowFromSnapshot<LedgerBlock>(snapshot));
 }
 
-export async function verifyLedgerRecord(recordRef: string, recordType: "mechanic" | "service_request") {
+export async function verifyLedgerRecord(
+  recordRef: string,
+  recordType: "mechanic" | "service_request",
+) {
   return callFunction<
     { recordRef: string; recordType: "mechanic" | "service_request" },
     { ok: boolean }

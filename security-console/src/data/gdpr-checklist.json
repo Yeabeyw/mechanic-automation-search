@@ -1,162 +1,155 @@
 [
   {
-    "requirement": "Lawful basis for processing",
-    "level_today": "Partially compliant",
-    "target": "Compliant",
-    "gap": "Consent mechanism exists but needs documented legal basis",
-    "action": "Document legal basis for each data processing activity",
-    "priority": "High"
-  },
-  {
-    "requirement": "Data minimisation",
-    "level_today": "Compliant",
-    "target": "Compliant",
-    "gap": "",
-    "action": "",
+    "requirement": "Lawfulness, fairness and transparency",
+    "articles": "GDPR Art. 5(1)(a), Art. 6",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "The notice and purpose are documented; lawful basis must be confirmed for each activity.",
+    "action": "Document the lawful basis per processing purpose and obtain legal review.",
     "priority": "High"
   },
   {
     "requirement": "Purpose limitation",
-    "level_today": "Compliant",
-    "target": "Compliant",
-    "gap": "",
-    "action": "",
+    "articles": "GDPR Art. 5(1)(b)",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "Purpose is stated, but purpose-specific controls need operational verification.",
+    "action": "Keep request, authentication, and security-log purposes separated.",
     "priority": "High"
   },
   {
-    "requirement": "Data accuracy",
-    "level_today": "Compliant",
-    "target": "Compliant",
+    "requirement": "Data minimisation",
+    "articles": "GDPR Art. 5(1)(c)",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "Free-text request and review fields may contain unnecessary personal data.",
+    "action": "Limit fields and warn users not to include sensitive personal information.",
+    "priority": "High"
+  },
+  {
+    "requirement": "Accuracy",
+    "articles": "GDPR Art. 5(1)(d), Art. 16",
+    "level_today": "Implemented",
+    "target": "Implemented",
     "gap": "",
     "action": "",
     "priority": "High"
   },
   {
     "requirement": "Storage limitation",
-    "level_today": "Partially compliant",
-    "target": "Compliant",
-    "gap": "No automated data deletion after retention period",
-    "action": "Implement scheduled Cloud Functions for data deletion",
-    "priority": "Medium"
-  },
-  {
-    "requirement": "Integrity and confidentiality",
-    "level_today": "Compliant",
-    "target": "Compliant",
-    "gap": "",
-    "action": "",
+    "articles": "GDPR Art. 5(1)(e)",
+    "level_today": "Planned",
+    "target": "Implemented",
+    "gap": "A 12-month request retention rule is stated; scheduled anonymisation is source-only and not deployed.",
+    "action": "Deploy and monitor the scheduled anonymisation job; verify it in a test environment.",
     "priority": "High"
   },
   {
-    "requirement": "Right to be informed",
-    "level_today": "Partially compliant",
-    "target": "Compliant",
-    "gap": "Privacy notice page exists but needs more detail",
-    "action": "Expand privacy notice with all required GDPR information",
+    "requirement": "Integrity and confidentiality",
+    "articles": "GDPR Art. 5(1)(f), Art. 32",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "Rules and server-side writes are in source; production deployment has not been verified.",
+    "action": "Run the emulator rules suite and review deployed rules before launch.",
+    "priority": "High"
+  },
+  {
+    "requirement": "Lawful basis",
+    "articles": "GDPR Art. 6",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "Contract performance is relevant to service requests; the controller must confirm basis for each use.",
+    "action": "Record an approved lawful-basis mapping and retention justification.",
+    "priority": "High"
+  },
+  {
+    "requirement": "Consent records",
+    "articles": "GDPR Art. 7",
+    "level_today": "Planned",
+    "target": "Implemented",
+    "gap": "A signup checkbox exists; its timestamp and policy version are not currently persisted.",
+    "action": "Persist consent server-side with a trusted timestamp and policy version.",
+    "priority": "High"
+  },
+  {
+    "requirement": "Information to data subjects",
+    "articles": "GDPR Art. 12, Art. 13, Art. 14",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "Privacy notice needs controller contact details and complete recipient/lawful-basis information.",
+    "action": "Complete and legally review the notice before production use.",
     "priority": "High"
   },
   {
     "requirement": "Right of access",
-    "level_today": "Compliant",
-    "target": "Compliant",
-    "gap": "",
-    "action": "",
+    "articles": "GDPR Art. 15",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "JSON export is client-generated and is not audit-logged.",
+    "action": "Add a server-side export authorization audit record.",
     "priority": "High"
   },
   {
     "requirement": "Right to rectification",
-    "level_today": "Compliant",
-    "target": "Compliant",
-    "gap": "",
-    "action": "",
-    "priority": "High"
+    "articles": "GDPR Art. 16",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "Profile editing is available only when secure backend functions are deployed.",
+    "action": "Verify profile correction flow against deployed backend.",
+    "priority": "Medium"
   },
   {
     "requirement": "Right to erasure",
-    "level_today": "Non-compliant",
-    "target": "Compliant",
-    "gap": "No account deletion mechanism",
-    "action": "Implement account deletion request process",
+    "articles": "GDPR Art. 17",
+    "level_today": "Planned",
+    "target": "Implemented",
+    "gap": "Account deletion needs a trusted backend; immutable ledger hashes may remain.",
+    "action": "Implement and test authenticated deletion and data-removal workflow.",
     "priority": "High"
-  },
-  {
-    "requirement": "Right to restrict processing",
-    "level_today": "Non-compliant",
-    "target": "Compliant",
-    "gap": "No mechanism to restrict processing",
-    "action": "Implement data restriction functionality",
-    "priority": "Medium"
   },
   {
     "requirement": "Right to data portability",
-    "level_today": "Partially compliant",
-    "target": "Compliant",
-    "gap": "JSON export implemented but not machine-readable formats (CSV, XML)",
-    "action": "Add CSV and XML export options",
+    "articles": "GDPR Art. 20",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "JSON export exists but is not audit-logged or verified against every data collection.",
+    "action": "Audit the export schema and record export requests server-side.",
     "priority": "Medium"
   },
   {
-    "requirement": "Right to object",
-    "level_today": "Non-compliant",
-    "target": "Compliant",
-    "gap": "No objection mechanism",
-    "action": "Implement objection handling process",
-    "priority": "Low"
-  },
-  {
-    "requirement": "Data breach notification",
-    "level_today": "Non-compliant",
-    "target": "Compliant",
-    "gap": "No breach detection or notification process",
-    "action": "Implement breach detection and notification workflow",
+    "requirement": "Privacy by design and default",
+    "articles": "GDPR Art. 25",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "Default-deny rules exist in source; deployed configuration and review cadence are unverified.",
+    "action": "Keep client writes denied and review rules/indexes before each release.",
     "priority": "High"
   },
   {
-    "requirement": "Data Protection Impact Assessment (DPIA)",
-    "level_today": "Non-compliant",
-    "target": "Compliant",
-    "gap": "No DPIA conducted",
-    "action": "Conduct DPIA for high-risk processing activities",
-    "priority": "Medium"
-  },
-  {
-    "requirement": "Data Protection Officer (DPO)",
-    "level_today": "Non-compliant",
-    "target": "Compliant",
-    "gap": "No DPO appointed",
-    "action": "Appoint DPO if required by scale of processing",
-    "priority": "Low"
-  },
-  {
-    "requirement": "Records of processing activities",
-    "level_today": "Partially compliant",
-    "target": "Compliant",
-    "gap": "Partial documentation exists",
-    "action": "Complete ROPA documentation",
-    "priority": "Medium"
-  },
-  {
-    "requirement": "International data transfers",
-    "level_today": "Compliant",
-    "target": "Compliant",
-    "gap": "",
-    "action": "",
+    "requirement": "Security of processing",
+    "articles": "GDPR Art. 32",
+    "level_today": "Partially",
+    "target": "Implemented",
+    "gap": "Separate hosting headers and audit coverage need deployment verification.",
+    "action": "Verify headers, least privilege, backups, and incident response controls.",
     "priority": "High"
   },
   {
-    "requirement": "Privacy by design and by default",
-    "level_today": "Partially compliant",
-    "target": "Compliant",
-    "gap": "Privacy considerations not fully integrated into development",
-    "action": "Integrate privacy impact assessment into development process",
-    "priority": "Medium"
+    "requirement": "Personal data breach notification",
+    "articles": "GDPR Art. 33",
+    "level_today": "Planned",
+    "target": "Implemented",
+    "gap": "No operational breach detection and notification workflow is configured.",
+    "action": "Document incident triage, regulator deadlines, and data-subject communications.",
+    "priority": "High"
   },
   {
-    "requirement": "Consent management",
-    "level_today": "Partially compliant",
-    "target": "Compliant",
-    "gap": "Consent checkbox exists but no granular consent preferences",
-    "action": "Implement granular consent management",
+    "requirement": "Data Protection Impact Assessment",
+    "articles": "GDPR Art. 35",
+    "level_today": "Planned",
+    "target": "Implemented",
+    "gap": "A completed DPIA has not been supplied as evidence.",
+    "action": "Complete and approve a DPIA if processing risks require one.",
     "priority": "Medium"
   }
 ]

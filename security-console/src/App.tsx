@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { onAuthChange, signOut, getSecurityPolicy } from './lib/firebase';
+import { onAuthChange, signOut, getSecurityPolicy, recordSecurityConsoleAccess } from './lib/firebase';
 import type { User as FirebaseUser } from 'firebase/auth';
 import SignIn from './components/SignIn';
 import Overview from './components/Overview';
@@ -27,9 +27,11 @@ function App() {
       setUser(authUser);
       if (authUser) {
         try {
+          await recordSecurityConsoleAccess();
           await getSecurityPolicy();
           setHasSecurityAdmin(true);
         } catch (error) {
+          console.error('Security console access was denied or could not be audited:', error);
           setHasSecurityAdmin(false);
         }
       } else {

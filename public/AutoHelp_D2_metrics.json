@@ -1,0 +1,92 @@
+{
+  "bestModel": "logistic",
+  "testSize": 200,
+  "trainSize": 800,
+  "trainingMs": 6049,
+  "trainedAt": "2026-11-10T13:11:31.572Z",
+  "metrics": {
+    "baseline": {
+      "accuracy": 0.805,
+      "precision": 0.8434,
+      "recall": 0.7292,
+      "f1": 0.7821,
+      "rocAuc": 0.8021,
+      "confusion": {
+        "tp": 70,
+        "fp": 13,
+        "tn": 91,
+        "fn": 26
+      }
+    },
+    "logistic": {
+      "accuracy": 0.855,
+      "precision": 0.8602,
+      "recall": 0.8333,
+      "f1": 0.8466,
+      "rocAuc": 0.9294,
+      "confusion": {
+        "tp": 80,
+        "fp": 13,
+        "tn": 91,
+        "fn": 16
+      }
+    },
+    "forest": {
+      "accuracy": 0.825,
+      "precision": 0.8427,
+      "recall": 0.7813,
+      "f1": 0.8108,
+      "rocAuc": 0.9098,
+      "confusion": {
+        "tp": 75,
+        "fp": 14,
+        "tn": 90,
+        "fn": 21
+      }
+    }
+  },
+  "cvF1": {
+    "baseline": [
+      0.8266666666666668,
+      0.7891156462585034,
+      0.7972972972972973,
+      0.8057553956834532,
+      0.7234042553191491
+    ],
+    "logistic": [
+      0.8516129032258064,
+      0.8993288590604027,
+      0.8846153846153846,
+      0.8843537414965986,
+      0.8211920529801323
+    ],
+    "forest": [
+      0.8333333333333334,
+      0.8194444444444445,
+      0.8917197452229298,
+      0.8513513513513514,
+      0.7361111111111112
+    ]
+  },
+  "saturation": {
+    "baseline": {
+      "model": "baseline",
+      "size": 100,
+      "note": "Validation F1 at 100 records is 85.1%. Later sizes improve it by less than 1 percentage point."
+    },
+    "logistic": {
+      "model": "logistic",
+      "size": 800,
+      "note": "Validation F1 at 800 records is 86.9%. Later sizes improve it by less than 1 percentage point."
+    },
+    "forest": {
+      "model": "forest",
+      "size": 800,
+      "note": "Validation F1 at 800 records is 83.6%. Later sizes improve it by less than 1 percentage point."
+    }
+  },
+  "treeSat": {
+    "nTrees": 40,
+    "f1": 0.823529411764706
+  }
+}

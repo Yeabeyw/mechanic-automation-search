@@ -1,14 +1,15 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { onAuthStateChanged, signOut, updateProfile as updateFirebaseProfile, type User } from "firebase/auth";
-import { getDoc, doc } from "firebase/firestore";
 import {
-  getFirebaseAuth,
-  getFirebaseDb,
-  isFirebaseMutationsEnabled,
-} from "@/integrations/firebase/client";
+  onAuthStateChanged,
+  signOut,
+  updateProfile as updateFirebaseProfile,
+  type User,
+} from "firebase/auth";
+import { getDoc, doc } from "firebase/firestore";
+import { getFirebaseAuth, getFirebaseDb } from "@/integrations/firebase/client";
 import { ensureUserProfile, updateMyProfile } from "@/lib/firebase-data";
 
-export type AppRole = "customer" | "mechanic" | "admin" | "security_admin";
+export type AppRole = "customer" | "admin" | "security_admin";
 
 type AuthState = {
   user: User | null;
@@ -17,6 +18,7 @@ type AuthState = {
   error: string | null;
   hasRole: (role: AppRole) => boolean;
   signOut: () => Promise<void>;
+  refreshProfile: (uid?: string) => Promise<void>;
   updateProfile: (name: string) => Promise<void>;
 };
 
@@ -24,6 +26,19 @@ const AuthContext = createContext<AuthState | null>(null);
 
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Firebase authentication failed.";
+}
+
+function getProfileRoles(value: unknown): AppRole[] {
+  if (
+    !Array.isArray(value) ||
+    !value.every(
+      (role): role is AppRole =>
+        role === "customer" || role === "admin" || role === "security_admin" || role === "mechanic",
+    )
+  ) {
+    throw new Error("Your Firebase user profile has invalid role data.");
+  }
+  return (value as string[]).filter((role): role is AppRole => role !== "mechanic");
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -49,30 +64,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         setLoading(true);
         try {
-          if (isFirebaseMutationsEnabled()) {
-            await ensureUserProfile(currentUser.displayName ?? undefined);
+          const consentAccepted =
+            typeof window !== "undefined" &&
+            window.sessionStorage.getItem("autohelp-privacy-consent") === "accepted";
+          if (consentAccepted) {
+            await ensureUserProfile(currentUser.displayName ?? undefined, true);
+            window.sessionStorage.removeItem("autohelp-privacy-consent");
           }
           const profile = await getDoc(doc(getFirebaseDb(), "users", currentUser.uid));
           if (!active) return;
           if (!profile.exists()) {
             throw new Error(
-              "Your Firebase user profile is not available. New profiles require the secure Firebase backend, which is currently disabled in read-only mode.",
+              "Your AutoHelp profile is missing. Accept the Privacy Policy during sign-in to create a basic customer profile.",
             );
           }
-          const profileRoles: unknown = profile.data()["roles"];
-          if (
-            !Array.isArray(profileRoles) ||
-            !profileRoles.every(
-              (role): role is AppRole =>
-                role === "customer" ||
-                role === "mechanic" ||
-                role === "admin" ||
-                role === "security_admin",
-            )
-          ) {
-            throw new Error("Your Firebase user profile has invalid role data.");
-          }
-          setRoles(profileRoles);
+          setRoles(getProfileRoles(profile.data()["roles"]));
         } catch (profileError) {
           console.error("[Firebase] Could not load the signed-in user's profile.", profileError);
           if (active) setError(errorMessage(profileError));
@@ -102,6 +108,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         hasRole: (role) => roles.includes(role),
         signOut: async () => {
           await signOut(getFirebaseAuth());
+        },
+        refreshProfile: async (uid) => {
+          const profileUid = uid ?? user?.uid;
+          if (!profileUid) throw new Error("Sign in before refreshing your profile.");
+          setLoading(true);
+          setError(null);
+          try {
+            const profile = await getDoc(doc(getFirebaseDb(), "users", profileUid));
+            if (!profile.exists()) throw new Error("Your AutoHelp profile could not be found.");
+            setRoles(getProfileRoles(profile.data()["roles"]));
+          } catch (profileError) {
+            setError(errorMessage(profileError));
+            throw profileError;
+          } finally {
+            setLoading(false);
+          }
         },
         updateProfile: async (name: string) => {
           if (!user) throw new Error("No user signed in");

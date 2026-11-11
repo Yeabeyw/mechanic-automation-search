@@ -3,10 +3,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ExternalLink, ShieldCheck, ShieldAlert } from "lucide-react";
 import {
+  getAdminUsers,
   getAdminRequests,
   getLedgerBlocks,
   getMechanicsForAdmin,
+  suspendMechanic,
   verifyMechanic,
+  reassignServiceRequest,
 } from "@/lib/firebase-data";
 import { useAuth } from "@/lib/auth";
 import { STATUS_LABEL, type Mechanic } from "@/lib/mechanics";
@@ -42,6 +45,11 @@ function Admin() {
     enabled: isAdmin,
     queryFn: getAdminRequests,
   });
+  const { data: users } = useQuery({
+    queryKey: ["admin-users"],
+    enabled: isAdmin,
+    queryFn: getAdminUsers,
+  });
   const { data: audit, error: auditError } = useQuery({
     queryKey: ["admin-ledger-audit"],
     enabled: isAdmin,
@@ -72,7 +80,28 @@ function Admin() {
     }
   }
 
-  const pending = (mechs ?? []).filter((m) => !m.verified);
+  async function suspend(m: Mechanic) {
+    if (!window.confirm(`Suspend and unverify ${m.name}?`)) return;
+    try {
+      await suspendMechanic(m.id);
+      toast.success(`${m.name} suspended and removed from the verified directory.`);
+      qc.invalidateQueries();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not suspend this mechanic.");
+    }
+  }
+
+  async function reassign(requestId: string, mechanicId: string) {
+    try {
+      await reassignServiceRequest(requestId, mechanicId);
+      toast.success("Request reassigned. The new mechanic must accept before customer details are shared.");
+      qc.invalidateQueries();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not reassign the request.");
+    }
+  }
+
+  const pending = (mechs ?? []).filter((m) => !m.verified && m.status !== "suspended");
   const counts = (reqs ?? []).reduce<Record<string, number>>((a, r) => ({ ...a, [r.status]: (a[r.status] ?? 0) + 1 }), {});
 
   return (
@@ -90,7 +119,11 @@ function Admin() {
         {pending.length === 0 && <p className="text-sm text-muted-foreground">Nothing waiting.</p>}
         {pending.map((m) => (
           <div key={m.id} className="glass flex flex-wrap items-center justify-between gap-3 rounded-xl p-4">
-            <div><p className="font-semibold">{m.name} · {m.workshop}</p><p className="text-xs text-muted-foreground">{m.code} · {m.town} · {m.specialties.join(", ")}</p></div>
+            <div>
+              <p className="font-semibold">{m.name} · {m.workshop}</p>
+              <p className="text-xs text-muted-foreground">{m.code} · {m.town} · {m.specialties.join(", ")}</p>
+              <p className="mt-1 text-xs">ID reference (restricted): <code>{m.id_reference || "Not supplied"}</code></p>
+            </div>
             <Button variant="hero" size="sm" onClick={() => verify(m)}>Verify</Button>
           </div>
         ))}
@@ -99,15 +132,22 @@ function Admin() {
       <h2 className="mt-8 text-lg font-semibold">All mechanics</h2>
       <div className="glass mt-3 overflow-x-auto rounded-xl">
         <table className="w-full text-sm">
-          <thead className="text-left text-muted-foreground"><tr><th className="p-3">Code</th><th>Name</th><th>Town</th><th>Status</th><th>Jobs</th></tr></thead>
+          <thead className="text-left text-muted-foreground"><tr><th className="p-3">Code</th><th>Name</th><th>Town</th><th>Status</th><th>Jobs</th><th>Action</th></tr></thead>
           <tbody>
             {(mechs ?? []).map((m) => (
               <tr key={m.id} className="border-t border-border">
                 <td className="p-3 font-mono text-xs">{m.code}</td>
                 <td className="flex items-center gap-2 py-3">{m.name} {m.is_demo && <DemoTag />}</td>
                 <td>{m.town}</td>
-                <td>{m.verified ? "Verified" : "Pending"}</td>
+                <td>{m.status ?? (m.verified ? "Verified" : "Pending")}</td>
                 <td>{m.jobs_completed}</td>
+                <td>
+                  {m.verified ? (
+                    <Button variant="outline" size="sm" onClick={() => suspend(m)}>Suspend / unverify</Button>
+                  ) : (
+                    <Button variant="outline" size="sm" onClick={() => verify(m)}>Verify / reinstate</Button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -117,11 +157,52 @@ function Admin() {
       <h2 className="mt-8 text-lg font-semibold">Recent requests</h2>
       <div className="mt-3 space-y-2">
         {(reqs ?? []).map((r) => (
-          <div key={r.id} className="glass flex justify-between rounded-xl p-3 text-sm">
-            <span><span className="font-mono text-xs text-muted-foreground">{r.ref}</span> · {r.category} · {r.mechanics?.name}</span>
+          <div key={r.id} className="glass flex flex-wrap items-center justify-between gap-3 rounded-xl p-3 text-sm">
+            <span>
+              <span className="font-mono text-xs text-muted-foreground">{r.ref}</span> · {r.category} · {r.mechanics?.name ?? "Unassigned"}
+              {r.description && <span className="block text-xs text-muted-foreground">{r.description}</span>}
+              {r.contact_phone && <span className="block text-xs text-muted-foreground">Customer contact: {r.contact_phone}</span>}
+            </span>
             <span>{STATUS_LABEL[r.status]}</span>
+            {["sent", "accepted", "in_progress"].includes(r.status) &&
+              (!r.mechanics?.verified || r.status !== "sent") && (
+                <label className="flex items-center gap-2 text-xs">
+                  Reassign
+                  <select
+                    className="rounded border border-border bg-background p-2"
+                    value=""
+                    onChange={(event) => {
+                      if (event.target.value) void reassign(r.id, event.target.value);
+                    }}
+                    aria-label={`Reassign request ${r.ref}`}
+                  >
+                    <option value="">Choose available mechanic</option>
+                    {(mechs ?? [])
+                      .filter((mechanic) => mechanic.verified && mechanic.available && mechanic.id !== r.mechanic_id)
+                      .map((mechanic) => <option key={mechanic.id} value={mechanic.id}>{mechanic.name} · {mechanic.town}</option>)}
+                  </select>
+                </label>
+              )}
           </div>
         ))}
+      </div>
+
+      <h2 className="mt-8 text-lg font-semibold">App users</h2>
+      <div className="glass mt-3 overflow-x-auto rounded-xl">
+        <table className="w-full text-left text-sm">
+          <thead className="text-muted-foreground"><tr><th className="p-3">Name</th><th>UID</th><th>Account role</th><th>Mechanic profile</th></tr></thead>
+          <tbody>
+            {(users ?? []).map((appUser) => (
+              <tr key={appUser.uid} className="border-t border-border">
+                <td className="p-3">{appUser.full_name || "Unnamed"}</td>
+                <td><code className="text-xs">{appUser.uid.slice(0, 10)}…</code></td>
+                <td>{appUser.roles.filter((role) => role !== "customer").join(", ") || "Customer"}</td>
+                <td>{appUser.mechanic_profile ? "Workshop profile" : "No"}</td>
+              </tr>
+            ))}
+            {users?.length === 0 && <tr><td className="p-3 text-muted-foreground" colSpan={4}>No registered app users.</td></tr>}
+          </tbody>
+        </table>
       </div>
 
       <section className="mt-8">

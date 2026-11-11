@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { listAuditLog } from '../lib/firebase';
 import type { AuditEntry } from '../lib/types';
-import { Filter, CheckCircle2, XCircle, ChevronDown, ChevronUp, Copy } from 'lucide-react';
+import { Filter, CheckCircle2, XCircle, ChevronDown, ChevronUp, Copy, Download } from 'lucide-react';
 
 export default function AuditLog() {
   const [entries, setEntries] = useState<AuditEntry[]>([]);
@@ -11,11 +11,7 @@ export default function AuditLog() {
   const [filterResult, setFilterResult] = useState<'Allowed' | 'Denied' | ''>('');
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadEntries();
-  }, [filterActor, filterAction, filterResult]);
-
-  const loadEntries = async () => {
+  const loadEntries = useCallback(async () => {
     setLoading(true);
     try {
       const result = await listAuditLog({
@@ -30,7 +26,11 @@ export default function AuditLog() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterActor, filterAction, filterResult]);
+
+  useEffect(() => {
+    void loadEntries();
+  }, [loadEntries]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -38,6 +38,19 @@ export default function AuditLog() {
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleString();
+  };
+
+  const exportCsv = () => {
+    const columns = ['timestamp', 'actor_uid', 'action', 'target_uid', 'role_changed', 'result', 'reason', 'record_ref', 'before_status', 'after_status'];
+    const escapeCsv = (value: unknown) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    const rows = [columns, ...entries.map((entry) => columns.map((column) => entry[column as keyof AuditEntry] ?? ''))];
+    const blob = new Blob([rows.map((row) => row.map(escapeCsv).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `autohelp-audit-${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
   if (loading) {
@@ -55,6 +68,9 @@ export default function AuditLog() {
         <p className="text-slate-600 dark:text-slate-400 mt-1">
           Security events and role changes (append-only, newest first)
         </p>
+        <button type="button" onClick={exportCsv} disabled={entries.length === 0} className="mt-3 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm text-white disabled:opacity-50">
+          <Download size={16} /> Export filtered entries as CSV
+        </button>
       </div>
 
       {/* Filters */}

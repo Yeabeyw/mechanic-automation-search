@@ -32,7 +32,9 @@ export async function sha256Hex(input: string): Promise<string> {
     .join("");
 }
 
-export function blockHashInput(b: Pick<LedgerBlock, "block_index" | "prev_hash" | "data_hash" | "ts">) {
+export function blockHashInput(
+  b: Pick<LedgerBlock, "block_index" | "prev_hash" | "data_hash" | "ts">,
+) {
   return `${b.block_index}|${b.prev_hash}|${b.data_hash}|${b.ts}`;
 }
 
@@ -70,7 +72,9 @@ export type RecordSnapshot =
 
 function fingerprintField(value: string | null): string {
   if (value === null) return "~";
-  return Array.from(new TextEncoder().encode(value), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return Array.from(new TextEncoder().encode(value), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
 }
 
 function canonicalRecord(snapshot: RecordSnapshot): string {
@@ -127,9 +131,7 @@ export async function verifyRecordSnapshot(
   const sorted = [...blocks].sort((a, b) => a.block_index - b.block_index);
   if (sorted.length === 0) return false;
   if (
-    sorted.some(
-      (block) => block.record_ref !== snapshot.ref || block.record_type !== snapshot.type,
-    )
+    sorted.some((block) => block.record_ref !== snapshot.ref || block.record_type !== snapshot.type)
   ) {
     return false;
   }
@@ -162,7 +164,13 @@ export async function verifyBlock(b: LedgerBlock, prev?: LedgerBlock | null): Pr
   const blockHashOk = (await sha256Hex(blockHashInput(b))) === b.block_hash;
   const expectedPrev = b.block_index === 0 ? GENESIS_PREV : prev?.block_hash;
   const linkOk = expectedPrev !== undefined && b.prev_hash === expectedPrev;
-  return { index: b.block_index, dataHashOk, blockHashOk, linkOk, ok: dataHashOk && blockHashOk && linkOk };
+  return {
+    index: b.block_index,
+    dataHashOk,
+    blockHashOk,
+    linkOk,
+    ok: dataHashOk && blockHashOk && linkOk,
+  };
 }
 
 export async function verifyChain(blocks: LedgerBlock[]): Promise<BlockCheck[]> {
@@ -170,7 +178,13 @@ export async function verifyChain(blocks: LedgerBlock[]): Promise<BlockCheck[]> 
   const out: BlockCheck[] = [];
   for (let i = 0; i < sorted.length; i++) {
     if (i > 0 && sorted[i]!.block_index !== sorted[i - 1]!.block_index + 1) {
-      out.push({ index: sorted[i]!.block_index, dataHashOk: false, blockHashOk: false, linkOk: false, ok: false });
+      out.push({
+        index: sorted[i]!.block_index,
+        dataHashOk: false,
+        blockHashOk: false,
+        linkOk: false,
+        ok: false,
+      });
       continue;
     }
     out.push(await verifyBlock(sorted[i]!, i > 0 ? sorted[i - 1] : null));

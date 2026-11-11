@@ -61,7 +61,7 @@ function Profile() {
         <div className="space-y-4 border-t border-border p-6">
           <p className="text-sm">{m.bio}</p>
           <div className="flex flex-wrap gap-2">{m.specialties.map((s) => <span key={s} className="rounded-lg bg-accent px-3 py-1 text-sm">{s}</span>)}</div>
-          <p className={m.available ? "text-sm font-medium text-success" : "text-sm text-muted-foreground"}>{m.available ? "● Available now" : "● Currently busy — you can still send a request"}</p>
+          <p className={m.available ? "text-sm font-medium text-success" : "text-sm text-muted-foreground"}>{m.available ? "● Available now" : "● Currently unavailable and removed from search"}</p>
           <LedgerProof recordRef={m.code} snapshot={{
             type: "mechanic",
             ref: m.code,
@@ -72,7 +72,11 @@ function Profile() {
             experienceYears: m.experience_years,
             verified: m.verified,
           }} />
-          <Button asChild variant="hero" size="xl" className="w-full"><Link to="/request/$mechanicId" params={{ mechanicId: m.id }}>Request help</Link></Button>
+          {m.available ? (
+            <Button asChild variant="hero" size="xl" className="w-full"><Link to="/request/$mechanicId" params={{ mechanicId: m.id }}>Request help</Link></Button>
+          ) : (
+            <Button variant="hero" size="xl" className="w-full" disabled>Currently unavailable</Button>
+          )}
         </div>
       </div>
       <h2 className="mt-8 text-lg font-semibold">Reviews</h2>

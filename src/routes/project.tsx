@@ -40,13 +40,13 @@ function Project() {
           <Item done>Mechanic workspace: apply, availability, accept/decline, start, complete</Item>
           <Item done>Admin: verify mechanics, oversee requests</Item>
           <Item done>Firebase Authentication and Firestore security rules protect access by user role</Item>
-          <Item>Publish to a public URL (pending — click Publish)</Item>
+          <Item done>Hosted on Firebase Hosting (public URL)</Item>
         </ul>
       </section>
 
       <section className="glass rounded-2xl p-5">
         <h2 className="text-xl font-semibold">Part B — Blockchain [20]</h2>
-        <p className="mt-2 text-sm text-muted-foreground">The ledger is a SHA-256 hash chain in Cloud Firestore whose head hash can be anchored to Ethereum Sepolia through the AutoHelpAnchor smart contract (see the ledger explorer for contract address and transaction links). Trusted Firebase Cloud Functions append proofs when a mechanic is verified, a request is created or changes status, and a review is submitted. Only hashes are published on-chain; no personal data.</p>
+        <p className="mt-2 text-sm text-muted-foreground">The ledger is a SHA-256 hash chain in Cloud Firestore whose head hash is anchored to Ethereum Sepolia through the AutoHelpAnchor smart contract (see the ledger explorer for contract address and transaction links). Trusted Firebase Cloud Functions append proofs when a mechanic is verified, a request is created or changes status, and a review is submitted. Only hashes are published on-chain; no personal data.</p>
         <pre className="mt-3 overflow-x-auto rounded-lg bg-background/60 p-3 font-mono text-xs">{`data_hash  = SHA256(payload)
 block_hash = SHA256(index | prev_hash | data_hash | timestamp)
 prev_hash  = block_hash of block (index − 1)   // genesis = 0×64`}</pre>
@@ -57,8 +57,8 @@ prev_hash  = block_hash of block (index − 1)   // genesis = 0×64`}</pre>
         <ul className="mt-4 space-y-1 text-sm">
           <Item done>Transparency and integrity: <Link to="/ledger" className="text-primary underline">ledger explorer</Link>, record checks, whole-chain verification, and a tamper test</Item>
           <Item done>Cloud Functions append tamper-evident proofs for mechanic verification, requests/statuses, job completion, and review submission</Item>
-          <Item done>Solidity event contract source: <code>contracts/AutoHelpLedger.sol</code> — deployment is not configured</Item>
-          <Item>Public distributed ledger, consensus finality, and explorer transaction links require a deployed contract and funded test wallet</Item>
+          <Item done>Solidity smart contracts: <code>contracts/AutoHelpAnchor.sol</code> is deployed on Ethereum Sepolia and stores the checkpoint hashes; <code>contracts/AutoHelpLedger.sol</code> can copy every block on-chain</Item>
+          <Item done>Distributed and public: the checkpoint hashes live on the Ethereum Sepolia blockchain, so anyone can verify them independently on the explorer (see the ledger page)</Item>
         </ul>
         <div className="mt-4 grid gap-3 rounded-xl border border-warning/40 bg-warning/10 p-4 text-sm md:grid-cols-2">
           <p><b>Network:</b> Hybrid: database hash-chain + public checkpoints. Contract address and transaction hashes are listed on the ledger explorer page.</p>
@@ -67,7 +67,7 @@ prev_hash  = block_hash of block (index − 1)   // genesis = 0×64`}</pre>
         <div className="mt-5">
           <h3 className="font-semibold">Data flow</h3>
           <ol className="mt-2 grid gap-2 text-center text-xs md:grid-cols-5">
-            {["Customer / mechanic action", "Cloud Function validates role and transition", "Function hashes minimal event metadata", "Firestore stores the proof; optional relay anchors it", "Admin or customer verifies proof"].map((step, index) => (
+            {["Customer / mechanic action", "Cloud Function validates role and transition", "Function hashes minimal event metadata", "Firestore stores the proof; the head hash is anchored on Ethereum Sepolia", "Admin or customer verifies proof"].map((step, index) => (
               <li key={step} className="rounded-lg bg-background/60 p-3">{index + 1}. {step}</li>
             ))}
           </ol>
@@ -99,10 +99,22 @@ prev_hash  = block_hash of block (index − 1)   // genesis = 0×64`}</pre>
       </section>
 
       <section className="glass rounded-2xl p-5">
-        <h2 className="text-xl font-semibold">Parts C & D — next</h2>
+        <h2 className="text-xl font-semibold">Part C — Security and privacy evidence</h2>
+        <p className="mt-2 text-sm text-muted-foreground">These pages document source-code controls. Backend functions and Hosting headers are not live until deployed; no production data was changed for this assessment.</p>
+        <ul className="mt-3 space-y-2 text-sm">
+          <li><Link to="/data-classification" className="text-primary underline">Data classification register</Link> — includes all four tiers and the required fields.</li>
+          <li><Link to="/gdpr" className="text-primary underline">GDPR compliance readiness</Link> — article-mapped checklist and implementation score.</li>
+          <li>Planned Security Console Hosting address: <a className="text-primary underline" href="https://lesotho-digital-trust-security.web.app" target="_blank" rel="noreferrer">https://lesotho-digital-trust-security.web.app</a> (site is not registered in the Firebase project; it is not live).</li>
+          <li><a className="text-primary underline" href="/AutoHelp_C1_Data_Classification.xlsx" download>Download C1 data classification workbook</a></li>
+          <li><a className="text-primary underline" href="/AutoHelp_C2_Permission_Matrix.xlsx" download>Download C2 permission matrix workbook</a></li>
+          <li><a className="text-primary underline" href="/AutoHelp_C3_GDPR_Compliance.xlsx" download>Download C3 GDPR workbook</a></li>
+        </ul>
+      </section>
+      <section className="glass rounded-2xl p-5">
+        <h2 className="text-xl font-semibold">Parts C & D — remaining work</h2>
         <ul className="mt-3 space-y-1 text-sm">
-          <Item>Data classification & GDPR spreadsheets</Item>
-          <Item>Separate-domain security configuration module</Item>
+          <Item>Deploy and verify the Security Console on its separate Firebase Hosting site</Item>
+          <Item>Deploy backend audit, consent, deletion, and scheduled anonymisation functions (requires paid-plan billing)</Item>
           <Item>Dataset, model training, accuracy & saturation dashboards</Item>
         </ul>
       </section>

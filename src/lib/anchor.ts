@@ -4,7 +4,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { verifyChain, type LedgerBlock } from "@/lib/ledger";
 
-export const CHECKPOINT_TOPIC = "0xbcad6c330b3fb4fec8e9a33323e21f6cf160ab212b63f8fcf66767f92ede453c"; // keccak256("Checkpoint(uint256,bytes32,uint256)")
+export const CHECKPOINT_TOPIC =
+  "0xbcad6c330b3fb4fec8e9a33323e21f6cf160ab212b63f8fcf66767f92ede453c"; // keccak256("Checkpoint(uint256,bytes32,uint256)")
 export const PUBLIC_RPC_URL = "https://ethereum-sepolia-rpc.publicnode.com";
 export const EXPLORER_TX = "https://sepolia.etherscan.io/tx/";
 export const EXPLORER_ADDRESS = "https://sepolia.etherscan.io/address/";
@@ -16,7 +17,13 @@ export type Anchor = {
   chainBlock: number;
   anchoredAt: string;
 };
-export type AnchorStore = { network: string; chainId: number; contract: string; deployTx?: string; anchors: Anchor[] };
+export type AnchorStore = {
+  network: string;
+  chainId: number;
+  contract: string;
+  deployTx?: string;
+  anchors: Anchor[];
+};
 
 export type RpcLog = { address: string; topics: string[]; data: string };
 export type RpcReceipt = { status: string; blockNumber: string; logs: RpcLog[] };
@@ -37,13 +44,18 @@ export function useAnchors() {
 }
 
 /** The first checkpoint that covers a block (a checkpoint commits to every block up to its index). */
-export function anchorFor(blockIndex: number, store: AnchorStore | null | undefined): Anchor | null {
+export function anchorFor(
+  blockIndex: number,
+  store: AnchorStore | null | undefined,
+): Anchor | null {
   if (!store) return null;
   return store.anchors.find((a) => a.checkpointIndex >= blockIndex) ?? null;
 }
 
 /** Decode a Checkpoint(uint256 indexed blockIndex, bytes32 blockHash, uint256 timestamp) log. */
-export function decodeCheckpointLog(log: RpcLog): { blockIndex: number; blockHash: string; timestamp: number } | null {
+export function decodeCheckpointLog(
+  log: RpcLog,
+): { blockIndex: number; blockHash: string; timestamp: number } | null {
   if (log.topics[0]?.toLowerCase() !== CHECKPOINT_TOPIC || log.topics.length < 2) return null;
   const data = log.data.startsWith("0x") ? log.data.slice(2) : log.data;
   if (data.length < 128) return null;
@@ -54,7 +66,11 @@ export function decodeCheckpointLog(log: RpcLog): { blockIndex: number; blockHas
   };
 }
 
-export function receiptMatchesAnchor(receipt: RpcReceipt | null, anchor: Anchor, contract: string): boolean {
+export function receiptMatchesAnchor(
+  receipt: RpcReceipt | null,
+  anchor: Anchor,
+  contract: string,
+): boolean {
   if (!receipt || receipt.status !== "0x1") return false;
   return receipt.logs.some((log) => {
     if (log.address.toLowerCase() !== contract.toLowerCase()) return false;
@@ -67,11 +83,19 @@ export function receiptMatchesAnchor(receipt: RpcReceipt | null, anchor: Anchor,
   });
 }
 
-export async function fetchReceipt(txHash: string, rpcUrl = PUBLIC_RPC_URL): Promise<RpcReceipt | null> {
+export async function fetchReceipt(
+  txHash: string,
+  rpcUrl = PUBLIC_RPC_URL,
+): Promise<RpcReceipt | null> {
   const res = await fetch(rpcUrl, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_getTransactionReceipt", params: [txHash] }),
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "eth_getTransactionReceipt",
+      params: [txHash],
+    }),
   });
   if (!res.ok) throw new Error(`RPC error ${res.status}`);
   const json = (await res.json()) as { result: RpcReceipt | null; error?: { message: string } };
@@ -89,16 +113,28 @@ export async function verifyAnchorOnChain(
   getReceipt: (tx: string) => Promise<RpcReceipt | null> = fetchReceipt,
 ): Promise<AnchorVerdict> {
   const covered = blocks.filter((b) => b.block_index <= anchor.checkpointIndex);
-  if (covered.length !== anchor.checkpointIndex + 1) return { ok: false, message: "Ledger is missing blocks covered by this checkpoint." };
+  if (covered.length !== anchor.checkpointIndex + 1)
+    return { ok: false, message: "Ledger is missing blocks covered by this checkpoint." };
   const checks = await verifyChain(covered);
-  if (!checks.every((c) => c.ok)) return { ok: false, message: "Hash-chain is broken before the checkpoint." };
+  if (!checks.every((c) => c.ok))
+    return { ok: false, message: "Hash-chain is broken before the checkpoint." };
   const head = covered.at(-1)!;
   if (head.block_hash.toLowerCase() !== anchor.blockHash.toLowerCase()) {
-    return { ok: false, message: `Block #${head.block_index} in the database differs from the hash that was published on-chain.` };
+    return {
+      ok: false,
+      message: `Block #${head.block_index} in the database differs from the hash that was published on-chain.`,
+    };
   }
   const receipt = await getReceipt(anchor.txHash);
   if (!receiptMatchesAnchor(receipt, anchor, contract)) {
-    return { ok: false, message: "Transaction not found on the public network, or it does not contain this checkpoint." };
+    return {
+      ok: false,
+      message:
+        "Transaction not found on the public network, or it does not contain this checkpoint.",
+    };
   }
-  return { ok: true, message: `Block #${anchor.checkpointIndex} hash matches the Ethereum Sepolia checkpoint (chain block ${anchor.chainBlock}).` };
+  return {
+    ok: true,
+    message: `Block #${anchor.checkpointIndex} hash matches the Ethereum Sepolia checkpoint (chain block ${anchor.chainBlock}).`,
+  };
 }

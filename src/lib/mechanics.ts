@@ -1,13 +1,9 @@
 export type RequestStatus =
-  | "sent"
-  | "accepted"
-  | "declined"
-  | "in_progress"
-  | "completed"
-  | "cancelled";
+  "sent" | "accepted" | "declined" | "in_progress" | "completed" | "cancelled";
 
 export type Mechanic = {
   id: string;
+  id_reference?: string | null;
   available: boolean;
   bio: string | null;
   code: string;
@@ -18,6 +14,7 @@ export type Mechanic = {
   name: string;
   photo_key: string | null;
   rating: number;
+  status?: "pending" | "verified" | "suspended";
   specialties: string[];
   town: string;
   verified: boolean;
@@ -32,10 +29,20 @@ export type ServiceRequest = {
   customer_id: string;
   description: string;
   mechanic_id: string;
+  mechanic_code?: string;
   mechanic_owner_id: string;
   ref: string;
   status: RequestStatus;
+  status_history?: {
+    status: RequestStatus;
+    actor_uid?: string;
+    mechanic_id?: string;
+    changed_at: string;
+    note?: string;
+  }[];
+  returned_to_pool?: boolean;
   updated_at: string;
+  customer_name?: string | null;
   vehicle_make: string;
   vehicle_model: string;
   vehicle_year: number | null;

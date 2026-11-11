@@ -15,7 +15,8 @@ const genesis: LedgerBlock = {
   event_type: "GENESIS",
   record_type: "system",
   record_ref: "AUTOHELP-LS",
-  payload: '{"note": "AutoHelp Lesotho ledger genesis", "event": "GENESIS", "recordRef": "AUTOHELP-LS", "timestamp": 1793956312, "recordType": "system"}',
+  payload:
+    '{"note": "AutoHelp Lesotho ledger genesis", "event": "GENESIS", "recordRef": "AUTOHELP-LS", "timestamp": 1793956312, "recordType": "system"}',
   data_hash: "33cf9600aa342737b1f9520975fcfbab0b130f0fdafa594789f755131994375c",
   record_hash: null,
   prev_hash: "0".repeat(64),
@@ -29,7 +30,8 @@ const block1: LedgerBlock = {
   event_type: "MECHANIC_VERIFIED",
   record_type: "mechanic",
   record_ref: "MECH-001",
-  payload: '{"event": "MECHANIC_VERIFIED", "recordRef": "MECH-001", "timestamp": 1793956312, "mechanicId": "MECH-001", "recordType": "mechanic"}',
+  payload:
+    '{"event": "MECHANIC_VERIFIED", "recordRef": "MECH-001", "timestamp": 1793956312, "mechanicId": "MECH-001", "recordType": "mechanic"}',
   data_hash: "dcf40b30e84896ef869dfb8bcca4e78e61bfdc398c9b1d083ad38d9531ab33c5",
   record_hash: null,
   prev_hash: "fd3e57080e998d84299634699869a7f61e1ddc008efc44f3987dedca8d0fcce0",
@@ -108,8 +110,26 @@ describe("ledger verification", () => {
       payload: JSON.stringify({ recordHash: acceptedHash, status: "accepted" }),
     };
     expect(await verifyRecordSnapshot([sent, accepted], acceptedSnapshot, salt)).toBe(true);
-    expect(await verifyRecordSnapshot([sent, accepted], { ...acceptedSnapshot, status: "completed" }, salt)).toBe(false);
-    expect(await verifyRecordSnapshot([sent, accepted], { ...acceptedSnapshot, category: "Brakes" }, salt)).toBe(false);
-    expect(await verifyRecordSnapshot([sent, accepted], { ...acceptedSnapshot, contactPhone: null }, salt)).toBe(false);
+    expect(
+      await verifyRecordSnapshot(
+        [sent, accepted],
+        { ...acceptedSnapshot, status: "completed" },
+        salt,
+      ),
+    ).toBe(false);
+    expect(
+      await verifyRecordSnapshot(
+        [sent, accepted],
+        { ...acceptedSnapshot, category: "Brakes" },
+        salt,
+      ),
+    ).toBe(false);
+    expect(
+      await verifyRecordSnapshot(
+        [sent, accepted],
+        { ...acceptedSnapshot, contactPhone: null },
+        salt,
+      ),
+    ).toBe(false);
   });
 });

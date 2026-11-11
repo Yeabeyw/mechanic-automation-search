@@ -1,0 +1,1001 @@
+id,district,town,problem_category,vehicle_age_band,specialty_match,mechanic_verified,mechanic_experience_years,availability_status,distance_km,historical_completion_rate,quoted_price_maloti,successful_match,is_synthetic,created_at
+SYN-0001,Butha-Buthe,Butha-Buthe,Electrical,8-12 years,1,1,11,unavailable,64.7,0.8,1453,0,TRUE,2026-05-09
+SYN-0002,Thaba-Tseka,Katse,Engine,4-7 years,0,1,10,available,15.4,0.78,2302,1,TRUE,2025-12-01
+SYN-0003,Leribe,Peka,Battery,4-7 years,1,1,9,available,85.5,0.77,447,1,TRUE,2026-05-25
+SYN-0004,Maseru,Mazenod,Engine,8-12 years,0,0,6,unavailable,18.4,0.8,815,0,TRUE,2025-03-01
+SYN-0005,Butha-Buthe,Oxbow,Engine,8-12 years,0,1,6,available,106.6,0.73,2790,0,TRUE,2026-01-26
+SYN-0006,Berea,Mapoteng,Battery,8-12 years,1,1,5,unavailable,114.8,0.78,604,0,TRUE,2025-07-03
+SYN-0007,Quthing,Mount Moorosi,Engine,4-7 years,0,1,5,unavailable,92,0.74,1449,0,TRUE,2025-04-19
+SYN-0008,Butha-Buthe,Oxbow,Battery,8-12 years,1,1,6,available,96.5,0.82,820,1,TRUE,2026-08-06
+SYN-0009,Maseru,Maseru,Brakes,8-12 years,1,1,13,available,39.8,0.87,1487,1,TRUE,2025-04-05
+SYN-0010,Berea,Mapoteng,Tyre,8-12 years,1,1,5,available,81.3,0.8,554,1,TRUE,2025-06-10
+SYN-0011,Mokhotlong,Mokhotlong,Battery,8-12 years,1,1,13,available,32.9,0.86,497,1,TRUE,2026-04-26
+SYN-0012,Maseru,Khubetsoana,Tyre,13+ years,0,1,13,unavailable,9.9,0.84,527,0,TRUE,2026-10-14
+SYN-0013,Qacha's Nek,Qacha's Nek,Engine,0-3 years,1,0,8,unavailable,83.8,0.8,2462,0,TRUE,2026-02-10
+SYN-0014,Thaba-Tseka,Thaba-Tseka,Other,8-12 years,1,0,12,available,18.3,0.8,927,1,TRUE,2026-10-25
+SYN-0015,Maseru,Mazenod,Engine,0-3 years,1,1,5,unavailable,31.8,0.74,2033,0,TRUE,2025-12-13
+SYN-0016,Berea,Teyateyaneng,Battery,0-3 years,1,1,10,available,60.5,0.77,252,1,TRUE,2025-04-27
+SYN-0017,Berea,Mapoteng,Engine,8-12 years,1,1,7,available,19.4,0.89,2226,1,TRUE,2026-03-23
+SYN-0018,Leribe,Hlotse,Engine,0-3 years,1,1,7,available,125.2,0.72,1412,0,TRUE,2025-08-08
+SYN-0019,Maseru,Khubetsoana,Other,4-7 years,1,0,5,available,32.8,0.68,694,1,TRUE,2026-05-16
+SYN-0020,Leribe,Peka,Other,8-12 years,1,0,8,available,113.4,0.7,1080,0,TRUE,2025-10-10
+SYN-0021,Butha-Buthe,Oxbow,Brakes,0-3 years,1,0,5,available,100.5,0.75,1158,0,TRUE,2025-05-24
+SYN-0022,Leribe,Hlotse,Tyre,13+ years,0,1,10,unavailable,70.1,0.75,300,0,TRUE,2025-03-04
+SYN-0023,Mohale's Hoek,Mpharane,Engine,0-3 years,1,0,10,available,117.1,0.82,1294,0,TRUE,2025-03-18
+SYN-0024,Maseru,Mazenod,Brakes,4-7 years,1,1,7,available,36.9,0.74,370,1,TRUE,2025-01-10
+SYN-0025,Mafeteng,Qalabane,Electrical,4-7 years,0,1,5,available,32.5,0.84,981,0,TRUE,2025-04-03
+SYN-0026,Mohale's Hoek,Mpharane,Tyre,13+ years,1,1,7,available,100.4,0.76,281,1,TRUE,2026-03-17
+SYN-0027,Mafeteng,Qalabane,Electrical,0-3 years,0,1,13,available,93.4,0.91,664,0,TRUE,2026-07-13
+SYN-0028,Leribe,Hlotse,Electrical,0-3 years,1,0,14,available,82.4,0.78,1193,1,TRUE,2025-04-28
+SYN-0029,Maseru,Roma,Electrical,4-7 years,1,1,11,unavailable,15.8,0.83,664,1,TRUE,2025-12-02
+SYN-0030,Mafeteng,Qalabane,Brakes,8-12 years,1,1,11,available,65,0.83,993,1,TRUE,2025-01-20
+SYN-0031,Maseru,Mazenod,Brakes,13+ years,1,1,7,available,23.6,0.81,830,1,TRUE,2025-11-22
+SYN-0032,Butha-Buthe,Oxbow,Electrical,4-7 years,1,0,18,available,89.8,0.83,1113,1,TRUE,2026-07-19
+SYN-0033,Mafeteng,Qalabane,Other,8-12 years,1,1,5,available,112.9,0.82,976,1,TRUE,2025-08-24
+SYN-0034,Mokhotlong,Mokhotlong,Engine,4-7 years,0,1,5,available,52.9,0.82,2742,0,TRUE,2025-10-23
+SYN-0035,Thaba-Tseka,Katse,Battery,8-12 years,0,1,9,available,45.8,0.82,594,1,TRUE,2026-10-05
+SYN-0036,Mokhotlong,Tlokoeng,Tyre,8-12 years,0,1,7,unavailable,29.8,0.84,625,0,TRUE,2026-01-16
+SYN-0037,Quthing,Quthing,Engine,0-3 years,0,1,19,available,97.4,0.93,503,0,TRUE,2025-09-24
+SYN-0038,Qacha's Nek,Sehlabathebe,Engine,8-12 years,0,0,9,available,57.3,0.76,947,0,TRUE,2025-03-20
+SYN-0039,Mafeteng,Qalabane,Tyre,8-12 years,1,0,5,available,49.2,0.79,505,1,TRUE,2026-09-07
+SYN-0040,Mafeteng,Qalabane,Other,0-3 years,0,1,4,unavailable,34.9,0.86,506,0,TRUE,2025-12-11
+SYN-0041,Mafeteng,Qalabane,Battery,4-7 years,1,1,14,unavailable,87.1,0.87,828,0,TRUE,2026-01-24
+SYN-0042,Leribe,Maputsoe,Brakes,8-12 years,1,1,9,available,47.2,0.74,450,0,TRUE,2026-03-08
+SYN-0043,Thaba-Tseka,Thaba-Tseka,Brakes,4-7 years,1,0,9,available,64.1,0.8,401,1,TRUE,2025-05-10
+SYN-0044,Mafeteng,Mafeteng,Battery,8-12 years,0,0,6,available,27.5,0.79,623,0,TRUE,2025-04-01
+SYN-0045,Leribe,Maputsoe,Brakes,13+ years,1,0,10,unavailable,18.6,0.7,1405,0,TRUE,2025-09-20
+SYN-0046,Berea,Mapoteng,Battery,8-12 years,0,0,13,available,70,0.82,622,0,TRUE,2025-09-28
+SYN-0047,Maseru,Maseru,Engine,0-3 years,1,0,10,available,39.9,0.79,1509,1,TRUE,2025-08-21
+SYN-0048,Maseru,Maseru,Electrical,4-7 years,1,0,4,available,4.5,0.72,1445,1,TRUE,2025-05-24
+SYN-0049,Leribe,Maputsoe,Engine,4-7 years,1,1,10,available,123.5,0.88,1028,1,TRUE,2025-03-06
+SYN-0050,Mafeteng,Qalabane,Other,4-7 years,0,1,5,available,109,0.87,1132,1,TRUE,2025-05-04
+SYN-0051,Mokhotlong,Tlokoeng,Engine,8-12 years,0,0,14,available,71.1,0.76,678,0,TRUE,2025-07-26
+SYN-0052,Maseru,Maseru,Electrical,0-3 years,0,1,6,unavailable,7.6,0.77,703,0,TRUE,2025-02-18
+SYN-0053,Mokhotlong,Tlokoeng,Engine,13+ years,0,0,7,available,59,0.66,2659,0,TRUE,2025-05-07
+SYN-0054,Leribe,Maputsoe,Tyre,4-7 years,1,0,14,available,85.8,0.85,713,0,TRUE,2025-11-22
+SYN-0055,Mokhotlong,Mokhotlong,Battery,13+ years,0,1,6,available,67.6,0.87,426,0,TRUE,2025-11-23
+SYN-0056,Berea,Sefikeng,Engine,13+ years,0,1,5,available,40.4,0.74,568,1,TRUE,2026-04-05
+SYN-0057,Quthing,Quthing,Brakes,8-12 years,1,1,9,available,101.8,0.89,1188,1,TRUE,2026-03-14
+SYN-0058,Mafeteng,Mafeteng,Tyre,4-7 years,1,0,7,available,102.9,0.74,794,0,TRUE,2026-08-26
+SYN-0059,Berea,Sefikeng,Battery,0-3 years,0,1,6,available,36.6,0.74,499,1,TRUE,2026-10-14
+SYN-0060,Quthing,Quthing,Electrical,4-7 years,1,1,4,unavailable,66.7,0.74,1120,0,TRUE,2026-02-08
+SYN-0061,Butha-Buthe,Oxbow,Tyre,13+ years,1,0,7,unavailable,94.2,0.79,345,0,TRUE,2025-03-24
+SYN-0062,Mohale's Hoek,Mohale's Hoek,Battery,8-12 years,1,1,6,available,71.8,0.75,305,1,TRUE,2026-08-09
+SYN-0063,Mokhotlong,Mokhotlong,Battery,4-7 years,1,0,5,available,98.5,0.65,625,0,TRUE,2025-11-17
+SYN-0064,Leribe,Maputsoe,Brakes,4-7 years,0,0,8,available,28.9,0.8,419,1,TRUE,2025-12-22
+SYN-0065,Leribe,Hlotse,Electrical,4-7 years,1,1,10,unavailable,125.5,0.77,352,0,TRUE,2026-07-23
+SYN-0066,Maseru,Mazenod,Electrical,4-7 years,1,1,5,unavailable,38.6,0.79,1423,0,TRUE,2026-09-20
+SYN-0067,Maseru,Maseru,Tyre,8-12 years,1,0,4,unavailable,11.2,0.76,242,0,TRUE,2025-07-15
+SYN-0068,Quthing,Mount Moorosi,Electrical,13+ years,0,0,9,available,74.8,0.66,810,0,TRUE,2025-05-21
+SYN-0069,Maseru,Ha Thetsane,Battery,0-3 years,1,1,6,available,14.5,0.87,734,1,TRUE,2025-05-10
+SYN-0070,Mohale's Hoek,Mpharane,Electrical,8-12 years,0,0,5,available,35.2,0.79,547,1,TRUE,2026-01-24
+SYN-0071,Mafeteng,Qalabane,Battery,4-7 years,1,0,8,available,12.8,0.76,501,1,TRUE,2025-03-18
+SYN-0072,Maseru,Maseru,Battery,4-7 years,0,0,12,available,21.2,0.72,421,1,TRUE,2026-04-14
+SYN-0073,Leribe,Hlotse,Other,4-7 years,0,1,15,unavailable,47.2,0.83,419,0,TRUE,2025-11-12
+SYN-0074,Leribe,Hlotse,Tyre,8-12 years,1,1,5,available,118.5,0.86,578,1,TRUE,2025-10-18
+SYN-0075,Maseru,Ha Thetsane,Electrical,4-7 years,0,1,9,available,20.6,0.78,814,0,TRUE,2025-11-04
+SYN-0076,Maseru,Mazenod,Battery,4-7 years,0,1,7,available,19.4,0.73,616,1,TRUE,2025-03-06
+SYN-0077,Leribe,Maputsoe,Electrical,8-12 years,1,0,8,available,90.5,0.81,1518,1,TRUE,2026-05-23
+SYN-0078,Maseru,Maseru,Other,8-12 years,1,1,11,unavailable,14,0.83,1195,0,TRUE,2026-08-21
+SYN-0079,Mafeteng,Mafeteng,Engine,0-3 years,1,1,6,available,14.7,0.88,1275,1,TRUE,2026-02-10
+SYN-0080,Qacha's Nek,Sehlabathebe,Battery,4-7 years,1,1,6,available,80.3,0.88,662,1,TRUE,2026-05-09
+SYN-0081,Maseru,Ha Thetsane,Engine,0-3 years,1,1,11,available,30.1,0.92,1603,1,TRUE,2025-11-11
+SYN-0082,Leribe,Hlotse,Battery,0-3 years,1,1,5,available,33.2,0.77,741,1,TRUE,2025-03-05
+SYN-0083,Berea,Teyateyaneng,Engine,13+ years,0,0,11,available,20.3,0.82,2041,0,TRUE,2025-04-26
+SYN-0084,Berea,Teyateyaneng,Brakes,4-7 years,1,0,6,unavailable,29.4,0.79,733,0,TRUE,2025-09-12
+SYN-0085,Mafeteng,Qalabane,Tyre,0-3 years,1,1,8,available,99.7,0.86,644,1,TRUE,2025-11-19
+SYN-0086,Maseru,Ha Thetsane,Tyre,4-7 years,0,0,6,available,8,0.79,774,1,TRUE,2026-01-27
+SYN-0087,Qacha's Nek,Sehlabathebe,Engine,0-3 years,1,1,5,available,44.3,0.79,1540,1,TRUE,2025-06-08
+SYN-0088,Mafeteng,Mafeteng,Tyre,0-3 years,1,0,12,available,120.5,0.75,647,0,TRUE,2026-01-13
+SYN-0089,Maseru,Khubetsoana,Electrical,8-12 years,1,1,12,unavailable,9,0.93,1518,1,TRUE,2025-02-10
+SYN-0090,Maseru,Maseru,Electrical,13+ years,0,1,8,available,12.1,0.91,469,1,TRUE,2025-09-04
+SYN-0091,Maseru,Khubetsoana,Battery,4-7 years,0,1,7,available,7,0.88,580,1,TRUE,2025-04-23
+SYN-0092,Maseru,Maseru,Other,8-12 years,1,0,8,available,33.7,0.7,504,1,TRUE,2026-04-13
+SYN-0093,Butha-Buthe,Oxbow,Brakes,8-12 years,1,1,7,available,113,0.83,1227,1,TRUE,2026-02-16
+SYN-0094,Maseru,Ha Thetsane,Engine,13+ years,0,1,20,unavailable,9.7,0.84,2664,0,TRUE,2025-10-05
+SYN-0095,Berea,Teyateyaneng,Other,13+ years,1,0,7,unavailable,120.3,0.73,1122,0,TRUE,2025-04-24
+SYN-0096,Maseru,Khubetsoana,Other,4-7 years,1,1,11,unavailable,3.1,0.88,815,0,TRUE,2025-12-20
+SYN-0097,Berea,Mapoteng,Battery,0-3 years,1,1,11,unavailable,22.1,0.87,268,1,TRUE,2025-03-26
+SYN-0098,Maseru,Mazenod,Battery,8-12 years,1,0,6,available,25.6,0.71,299,1,TRUE,2026-02-27
+SYN-0099,Mafeteng,Qalabane,Battery,0-3 years,1,0,6,available,107.8,0.71,338,0,TRUE,2026-09-28
+SYN-0100,Butha-Buthe,Butha-Buthe,Engine,4-7 years,0,1,5,available,27.8,0.86,1658,1,TRUE,2026-06-22
+SYN-0101,Leribe,Hlotse,Battery,8-12 years,0,1,7,available,16.4,0.77,597,1,TRUE,2025-03-04
+SYN-0102,Maseru,Maseru,Electrical,4-7 years,1,1,7,unavailable,7.3,0.83,1360,0,TRUE,2025-03-23
+SYN-0103,Berea,Mapoteng,Battery,0-3 years,1,1,9,unavailable,80.2,0.88,602,0,TRUE,2026-09-18
+SYN-0104,Mafeteng,Mafeteng,Tyre,13+ years,1,1,5,available,49,0.86,365,1,TRUE,2025-06-23
+SYN-0105,Thaba-Tseka,Thaba-Tseka,Brakes,8-12 years,0,1,11,available,97.9,0.9,890,0,TRUE,2026-08-08
+SYN-0106,Mafeteng,Qalabane,Brakes,8-12 years,0,0,10,available,111.6,0.68,770,0,TRUE,2026-04-02
+SYN-0107,Berea,Mapoteng,Engine,4-7 years,1,0,4,unavailable,13,0.77,2170,0,TRUE,2026-03-01
+SYN-0108,Maseru,Maseru,Battery,13+ years,0,1,19,unavailable,30.1,0.97,863,0,TRUE,2025-09-25
+SYN-0109,Maseru,Ha Thetsane,Engine,8-12 years,1,1,5,available,8.5,0.83,2394,1,TRUE,2026-03-20
+SYN-0110,Leribe,Maputsoe,Engine,4-7 years,1,1,5,available,115.9,0.77,2031,1,TRUE,2026-04-14
+SYN-0111,Maseru,Khubetsoana,Other,13+ years,1,1,13,available,21.4,0.82,868,1,TRUE,2025-09-13
+SYN-0112,Maseru,Roma,Engine,13+ years,1,1,10,available,7.6,0.77,1082,1,TRUE,2026-04-19
+SYN-0113,Berea,Mapoteng,Engine,8-12 years,1,1,7,available,76.1,0.85,1015,1,TRUE,2025-05-10
+SYN-0114,Berea,Teyateyaneng,Battery,4-7 years,0,1,4,available,108,0.82,661,0,TRUE,2025-10-26
+SYN-0115,Butha-Buthe,Oxbow,Other,13+ years,0,1,5,available,35.5,0.72,1181,0,TRUE,2025-11-04
+SYN-0116,Maseru,Khubetsoana,Brakes,4-7 years,0,0,11,available,7.9,0.7,847,1,TRUE,2025-02-17
+SYN-0117,Thaba-Tseka,Thaba-Tseka,Engine,13+ years,1,1,5,unavailable,11.5,0.82,2646,0,TRUE,2026-09-16
+SYN-0118,Maseru,Roma,Engine,4-7 years,1,0,6,available,7.5,0.65,1992,1,TRUE,2025-03-16
+SYN-0119,Leribe,Maputsoe,Other,13+ years,0,1,12,unavailable,55.5,0.88,751,0,TRUE,2025-07-08
+SYN-0120,Mafeteng,Mafeteng,Tyre,8-12 years,1,1,14,unavailable,71,0.94,431,0,TRUE,2025-06-22
+SYN-0121,Maseru,Khubetsoana,Tyre,0-3 years,0,1,11,unavailable,22,0.88,795,0,TRUE,2025-08-24
+SYN-0122,Maseru,Khubetsoana,Battery,0-3 years,0,1,11,unavailable,24.6,0.89,587,0,TRUE,2026-02-18
+SYN-0123,Maseru,Maseru,Brakes,13+ years,1,1,7,unavailable,33.3,0.79,598,0,TRUE,2026-10-11
+SYN-0124,Berea,Teyateyaneng,Brakes,0-3 years,0,1,8,available,72.8,0.88,1134,1,TRUE,2026-02-14
+SYN-0125,Leribe,Peka,Tyre,13+ years,0,1,4,unavailable,15.9,0.74,593,0,TRUE,2025-12-20
+SYN-0126,Leribe,Hlotse,Tyre,4-7 years,0,1,6,available,116.5,0.8,372,0,TRUE,2025-05-02
+SYN-0127,Maseru,Khubetsoana,Brakes,4-7 years,1,1,13,available,7.8,0.77,430,1,TRUE,2025-06-05
+SYN-0128,Mohale's Hoek,Mohale's Hoek,Electrical,0-3 years,1,1,11,available,112.4,0.91,637,1,TRUE,2025-01-14
+SYN-0129,Maseru,Mazenod,Brakes,8-12 years,0,0,13,available,37.1,0.69,1130,0,TRUE,2026-06-17
+SYN-0130,Maseru,Khubetsoana,Brakes,0-3 years,1,1,12,available,26.5,0.8,670,1,TRUE,2025-04-09
+SYN-0131,Qacha's Nek,Sehlabathebe,Other,4-7 years,0,1,5,available,107.4,0.77,811,0,TRUE,2026-02-28
+SYN-0132,Mafeteng,Qalabane,Brakes,8-12 years,1,1,6,unavailable,55.2,0.88,1369,0,TRUE,2026-06-28
+SYN-0133,Maseru,Khubetsoana,Electrical,4-7 years,0,1,8,unavailable,37.4,0.88,1150,0,TRUE,2026-04-19
+SYN-0134,Thaba-Tseka,Katse,Engine,4-7 years,0,0,7,unavailable,15.6,0.7,2776,0,TRUE,2025-07-04
+SYN-0135,Mafeteng,Qalabane,Battery,8-12 years,1,0,7,unavailable,115.7,0.76,332,0,TRUE,2026-01-23
+SYN-0136,Mohale's Hoek,Mohale's Hoek,Tyre,4-7 years,0,1,9,available,55.6,0.74,682,0,TRUE,2026-05-19
+SYN-0137,Maseru,Mazenod,Battery,8-12 years,1,1,5,available,15.2,0.72,511,1,TRUE,2025-04-02
+SYN-0138,Maseru,Khubetsoana,Other,8-12 years,1,1,10,unavailable,24.6,0.8,796,0,TRUE,2026-04-16
+SYN-0139,Thaba-Tseka,Thaba-Tseka,Other,8-12 years,0,1,4,available,81.5,0.87,254,0,TRUE,2026-02-05
+SYN-0140,Berea,Teyateyaneng,Brakes,13+ years,1,0,14,available,103.3,0.79,1201,0,TRUE,2026-03-03
+SYN-0141,Mokhotlong,Tlokoeng,Engine,0-3 years,1,0,15,available,125.4,0.8,2150,0,TRUE,2025-07-01
+SYN-0142,Maseru,Maseru,Engine,13+ years,0,1,7,available,24.1,0.75,1719,0,TRUE,2025-04-04
+SYN-0143,Maseru,Mazenod,Electrical,0-3 years,1,1,13,available,33.2,0.8,949,1,TRUE,2025-06-08
+SYN-0144,Mohale's Hoek,Mpharane,Other,0-3 years,1,0,5,available,91.6,0.78,605,0,TRUE,2026-08-09
+SYN-0145,Leribe,Hlotse,Battery,13+ years,0,1,10,available,63.8,0.83,615,0,TRUE,2026-07-23
+SYN-0146,Maseru,Ha Thetsane,Electrical,13+ years,0,1,7,available,29.1,0.74,836,0,TRUE,2025-11-03
+SYN-0147,Berea,Mapoteng,Engine,8-12 years,1,1,17,available,117.5,0.9,772,1,TRUE,2026-05-09
+SYN-0148,Maseru,Mazenod,Brakes,0-3 years,0,0,5,unavailable,6.9,0.66,667,0,TRUE,2025-02-19
+SYN-0149,Leribe,Maputsoe,Battery,8-12 years,0,0,4,available,42,0.71,588,0,TRUE,2025-05-03
+SYN-0150,Leribe,Peka,Engine,8-12 years,0,1,7,available,75.9,0.83,888,1,TRUE,2026-10-10
+SYN-0151,Thaba-Tseka,Katse,Battery,4-7 years,0,1,4,available,17.4,0.79,744,0,TRUE,2025-09-26
+SYN-0152,Mohale's Hoek,Mpharane,Battery,8-12 years,1,0,5,available,35.9,0.78,481,1,TRUE,2025-08-02
+SYN-0153,Berea,Teyateyaneng,Tyre,4-7 years,0,0,10,available,111.9,0.79,651,0,TRUE,2025-01-24
+SYN-0154,Mohale's Hoek,Mpharane,Brakes,0-3 years,1,0,12,unavailable,64,0.77,1349,0,TRUE,2025-10-12
+SYN-0155,Quthing,Quthing,Engine,8-12 years,0,1,6,available,66.6,0.89,647,0,TRUE,2025-07-06
+SYN-0156,Mafeteng,Qalabane,Tyre,8-12 years,1,1,6,unavailable,94.4,0.71,497,0,TRUE,2025-12-07
+SYN-0157,Quthing,Quthing,Tyre,13+ years,1,1,7,unavailable,113.1,0.87,200,0,TRUE,2025-02-19
+SYN-0158,Maseru,Mazenod,Electrical,0-3 years,1,1,5,available,8.9,0.86,488,1,TRUE,2025-08-27
+SYN-0159,Maseru,Ha Thetsane,Electrical,0-3 years,1,0,6,unavailable,11.2,0.69,1439,0,TRUE,2025-05-28
+SYN-0160,Mafeteng,Qalabane,Battery,4-7 years,1,1,16,unavailable,22.5,0.86,796,1,TRUE,2026-06-26
+SYN-0161,Mokhotlong,Tlokoeng,Other,8-12 years,1,0,16,available,47.3,0.84,583,1,TRUE,2025-04-25
+SYN-0162,Maseru,Ha Thetsane,Engine,0-3 years,1,0,13,unavailable,29.9,0.8,2026,0,TRUE,2026-06-06
+SYN-0163,Butha-Buthe,Oxbow,Other,13+ years,1,1,9,unavailable,70.5,0.88,1186,0,TRUE,2025-03-05
+SYN-0164,Berea,Teyateyaneng,Electrical,0-3 years,1,1,13,available,47.3,0.86,1248,1,TRUE,2025-12-21
+SYN-0165,Mafeteng,Mafeteng,Electrical,8-12 years,1,0,9,unavailable,43.7,0.79,1515,0,TRUE,2025-11-15
+SYN-0166,Berea,Teyateyaneng,Brakes,4-7 years,1,0,5,unavailable,82.1,0.76,1024,0,TRUE,2026-01-01
+SYN-0167,Maseru,Ha Thetsane,Battery,13+ years,1,1,7,unavailable,10.2,0.76,789,1,TRUE,2025-08-20
+SYN-0168,Mafeteng,Mafeteng,Brakes,13+ years,1,1,7,available,15.7,0.83,810,1,TRUE,2026-02-10
+SYN-0169,Maseru,Mazenod,Battery,4-7 years,0,1,5,available,18.8,0.81,625,1,TRUE,2026-06-01
+SYN-0170,Maseru,Mazenod,Electrical,4-7 years,0,1,10,available,36.6,0.83,938,1,TRUE,2026-06-17
+SYN-0171,Maseru,Maseru,Tyre,8-12 years,1,0,7,available,5.2,0.69,421,1,TRUE,2025-02-15
+SYN-0172,Butha-Buthe,Butha-Buthe,Battery,13+ years,0,0,4,available,68.3,0.66,771,0,TRUE,2026-05-14
+SYN-0173,Leribe,Peka,Brakes,4-7 years,1,1,7,available,56.6,0.85,707,1,TRUE,2025-09-11
+SYN-0174,Berea,Teyateyaneng,Engine,13+ years,1,1,9,unavailable,49.9,0.89,2082,0,TRUE,2026-09-18
+SYN-0175,Maseru,Roma,Battery,4-7 years,1,1,7,available,13.6,0.79,786,1,TRUE,2026-06-01
+SYN-0176,Thaba-Tseka,Thaba-Tseka,Other,4-7 years,0,1,9,available,58.8,0.82,507,0,TRUE,2026-05-06
+SYN-0177,Maseru,Maseru,Brakes,4-7 years,1,1,14,available,30,0.92,1463,1,TRUE,2025-04-17
+SYN-0178,Leribe,Peka,Electrical,8-12 years,1,0,13,unavailable,48.7,0.87,1227,0,TRUE,2025-02-09
+SYN-0179,Mohale's Hoek,Mohale's Hoek,Tyre,13+ years,1,0,5,available,99.6,0.67,623,0,TRUE,2026-10-19
+SYN-0180,Berea,Teyateyaneng,Brakes,8-12 years,0,1,6,available,71.2,0.88,810,0,TRUE,2025-06-23
+SYN-0181,Maseru,Roma,Electrical,4-7 years,1,1,9,available,32.4,0.91,508,1,TRUE,2026-05-14
+SYN-0182,Butha-Buthe,Butha-Buthe,Battery,8-12 years,1,0,7,available,98.3,0.82,667,0,TRUE,2025-10-10
+SYN-0183,Leribe,Maputsoe,Tyre,4-7 years,1,0,8,available,33.2,0.66,740,1,TRUE,2025-06-28
+SYN-0184,Mafeteng,Mafeteng,Battery,4-7 years,1,0,7,available,27.2,0.73,454,1,TRUE,2026-03-27
+SYN-0185,Butha-Buthe,Butha-Buthe,Other,0-3 years,1,1,17,unavailable,61.2,0.97,409,0,TRUE,2026-06-25
+SYN-0186,Mafeteng,Mafeteng,Brakes,8-12 years,1,0,8,available,85,0.69,1259,0,TRUE,2025-01-26
+SYN-0187,Berea,Sefikeng,Battery,8-12 years,1,1,11,available,44.5,0.78,280,1,TRUE,2025-03-03
+SYN-0188,Quthing,Mount Moorosi,Tyre,8-12 years,0,1,4,available,61.6,0.8,459,0,TRUE,2026-04-03
+SYN-0189,Maseru,Khubetsoana,Electrical,4-7 years,0,1,14,available,17.9,0.9,1345,1,TRUE,2025-08-15
+SYN-0190,Maseru,Ha Thetsane,Electrical,8-12 years,1,0,7,available,18.8,0.81,992,1,TRUE,2025-11-02
+SYN-0191,Maseru,Ha Thetsane,Electrical,4-7 years,1,0,16,unavailable,37.6,0.79,1492,0,TRUE,2025-07-02
+SYN-0192,Berea,Mapoteng,Electrical,8-12 years,1,1,6,available,123.8,0.76,383,1,TRUE,2026-04-24
+SYN-0193,Mohale's Hoek,Mpharane,Brakes,4-7 years,1,0,5,available,82.7,0.67,498,1,TRUE,2026-01-07
+SYN-0194,Berea,Teyateyaneng,Other,8-12 years,0,0,10,available,91.4,0.82,272,0,TRUE,2025-11-24
+SYN-0195,Qacha's Nek,Sehlabathebe,Electrical,0-3 years,1,1,14,available,69.7,0.94,761,1,TRUE,2026-01-19
+SYN-0196,Maseru,Khubetsoana,Tyre,0-3 years,1,1,8,available,26.5,0.85,361,1,TRUE,2025-08-26
+SYN-0197,Leribe,Maputsoe,Battery,4-7 years,1,0,10,available,74.6,0.69,877,1,TRUE,2025-05-06
+SYN-0198,Mafeteng,Qalabane,Tyre,4-7 years,0,1,6,available,37,0.74,565,0,TRUE,2026-04-13
+SYN-0199,Leribe,Hlotse,Tyre,8-12 years,1,1,12,available,65.3,0.88,504,1,TRUE,2026-04-03
+SYN-0200,Mafeteng,Mafeteng,Other,13+ years,1,0,6,available,121.8,0.74,421,0,TRUE,2026-05-12
+SYN-0201,Berea,Sefikeng,Engine,4-7 years,1,0,15,available,100.9,0.86,2537,1,TRUE,2025-06-24
+SYN-0202,Mohale's Hoek,Mohale's Hoek,Battery,8-12 years,1,1,6,available,105.7,0.88,455,0,TRUE,2026-06-10
+SYN-0203,Leribe,Hlotse,Brakes,4-7 years,0,0,16,unavailable,55.7,0.88,878,0,TRUE,2025-06-05
+SYN-0204,Maseru,Mazenod,Battery,13+ years,1,0,6,available,9.1,0.69,641,1,TRUE,2025-07-07
+SYN-0205,Quthing,Quthing,Engine,8-12 years,1,1,8,unavailable,81,0.87,1886,0,TRUE,2026-01-22
+SYN-0206,Mohale's Hoek,Mohale's Hoek,Tyre,0-3 years,0,1,15,available,34.5,0.95,599,1,TRUE,2025-03-26
+SYN-0207,Qacha's Nek,Sehlabathebe,Other,13+ years,1,1,8,available,63.8,0.74,1043,1,TRUE,2025-07-03
+SYN-0208,Thaba-Tseka,Thaba-Tseka,Other,13+ years,0,0,11,available,85.7,0.84,954,0,TRUE,2025-04-22
+SYN-0209,Maseru,Roma,Tyre,4-7 years,1,0,4,available,14.7,0.67,220,1,TRUE,2025-02-16
+SYN-0210,Maseru,Ha Thetsane,Other,13+ years,0,1,6,unavailable,25,0.81,686,0,TRUE,2026-01-25
+SYN-0211,Leribe,Peka,Other,0-3 years,1,0,8,available,112.1,0.65,344,0,TRUE,2026-02-17
+SYN-0212,Maseru,Mazenod,Brakes,8-12 years,1,1,7,unavailable,13.5,0.75,367,0,TRUE,2025-05-03
+SYN-0213,Leribe,Maputsoe,Other,8-12 years,0,0,11,unavailable,25.9,0.75,749,0,TRUE,2026-09-21
+SYN-0214,Leribe,Hlotse,Electrical,4-7 years,1,1,11,available,60.3,0.87,961,1,TRUE,2026-02-20
+SYN-0215,Butha-Buthe,Butha-Buthe,Other,13+ years,1,1,14,available,108.9,0.84,446,0,TRUE,2025-08-27
+SYN-0216,Maseru,Roma,Electrical,0-3 years,1,1,9,available,28.6,0.74,1142,1,TRUE,2025-11-10
+SYN-0217,Maseru,Mazenod,Brakes,8-12 years,0,0,7,available,28.9,0.79,1297,0,TRUE,2025-05-16
+SYN-0218,Mafeteng,Mafeteng,Tyre,4-7 years,1,1,5,available,22.4,0.84,417,1,TRUE,2026-01-09
+SYN-0219,Leribe,Hlotse,Brakes,13+ years,0,0,7,available,26.4,0.78,980,0,TRUE,2026-04-10
+SYN-0220,Leribe,Peka,Electrical,8-12 years,1,0,5,available,68.1,0.74,1469,1,TRUE,2026-09-25
+SYN-0221,Butha-Buthe,Oxbow,Engine,13+ years,1,0,6,available,110.7,0.66,2369,0,TRUE,2025-10-28
+SYN-0222,Qacha's Nek,Sehlabathebe,Battery,0-3 years,1,0,5,available,86.7,0.67,882,1,TRUE,2026-07-08
+SYN-0223,Berea,Mapoteng,Tyre,4-7 years,1,1,8,available,68.6,0.84,772,1,TRUE,2026-08-11
+SYN-0224,Leribe,Peka,Tyre,8-12 years,1,0,15,unavailable,104.6,0.8,746,0,TRUE,2026-05-06
+SYN-0225,Leribe,Maputsoe,Tyre,8-12 years,0,1,6,available,85.9,0.73,602,0,TRUE,2026-08-03
+SYN-0226,Thaba-Tseka,Katse,Brakes,0-3 years,1,1,8,available,58.1,0.81,1445,1,TRUE,2025-08-08
+SYN-0227,Butha-Buthe,Butha-Buthe,Battery,4-7 years,1,1,5,available,81,0.74,585,1,TRUE,2026-03-28
+SYN-0228,Maseru,Maseru,Tyre,8-12 years,1,1,9,available,35.7,0.77,522,1,TRUE,2025-01-25
+SYN-0229,Maseru,Khubetsoana,Battery,4-7 years,0,1,9,available,19.3,0.76,845,1,TRUE,2026-10-28
+SYN-0230,Mafeteng,Mafeteng,Electrical,4-7 years,1,0,7,available,50.4,0.75,649,1,TRUE,2026-10-25
+SYN-0231,Berea,Mapoteng,Battery,4-7 years,1,0,9,unavailable,114.2,0.74,589,0,TRUE,2026-05-21
+SYN-0232,Thaba-Tseka,Katse,Tyre,13+ years,1,0,7,available,61.6,0.65,660,0,TRUE,2026-02-06
+SYN-0233,Leribe,Maputsoe,Engine,13+ years,0,1,5,available,27.7,0.82,1392,0,TRUE,2025-05-14
+SYN-0234,Butha-Buthe,Oxbow,Engine,4-7 years,1,1,11,available,84.3,0.85,1392,1,TRUE,2026-06-14
+SYN-0235,Quthing,Mount Moorosi,Brakes,0-3 years,0,1,8,available,118.3,0.82,680,0,TRUE,2025-10-02
+SYN-0236,Mohale's Hoek,Mohale's Hoek,Battery,8-12 years,1,1,11,available,67.1,0.82,492,1,TRUE,2025-11-03
+SYN-0237,Maseru,Roma,Brakes,8-12 years,0,1,13,available,11.1,0.77,553,1,TRUE,2026-09-08
+SYN-0238,Berea,Teyateyaneng,Electrical,4-7 years,1,1,9,unavailable,26.3,0.79,1327,0,TRUE,2026-10-04
+SYN-0239,Butha-Buthe,Butha-Buthe,Battery,0-3 years,0,1,7,available,51.8,0.88,474,0,TRUE,2025-02-15
+SYN-0240,Berea,Mapoteng,Engine,8-12 years,0,0,6,available,60.7,0.75,1099,0,TRUE,2025-02-01
+SYN-0241,Maseru,Ha Thetsane,Engine,13+ years,0,1,8,available,29.2,0.89,2707,0,TRUE,2026-04-10
+SYN-0242,Butha-Buthe,Butha-Buthe,Tyre,8-12 years,1,1,7,available,90.4,0.79,210,1,TRUE,2025-02-13
+SYN-0243,Mohale's Hoek,Mpharane,Battery,8-12 years,0,1,5,unavailable,81.1,0.88,813,0,TRUE,2026-01-07
+SYN-0244,Leribe,Hlotse,Tyre,8-12 years,1,0,8,available,9.5,0.67,473,1,TRUE,2025-06-24
+SYN-0245,Leribe,Maputsoe,Battery,4-7 years,1,1,5,available,73.2,0.71,413,1,TRUE,2025-05-03
+SYN-0246,Thaba-Tseka,Thaba-Tseka,Engine,8-12 years,1,1,16,available,107.9,0.87,1533,1,TRUE,2026-05-04
+SYN-0247,Qacha's Nek,Sehlabathebe,Brakes,8-12 years,0,1,12,available,66.6,0.88,840,1,TRUE,2025-01-28
+SYN-0248,Butha-Buthe,Oxbow,Other,0-3 years,1,0,9,unavailable,92.7,0.83,717,0,TRUE,2025-07-24
+SYN-0249,Thaba-Tseka,Katse,Engine,13+ years,1,0,12,available,31,0.81,1359,1,TRUE,2026-07-24
+SYN-0250,Leribe,Maputsoe,Brakes,4-7 years,0,1,8,available,49.4,0.89,1266,1,TRUE,2025-12-08
+SYN-0251,Qacha's Nek,Qacha's Nek,Tyre,8-12 years,0,0,11,available,61.1,0.82,396,0,TRUE,2025-02-27
+SYN-0252,Mafeteng,Mafeteng,Other,0-3 years,1,1,6,unavailable,85.9,0.81,1149,0,TRUE,2026-02-16
+SYN-0253,Leribe,Peka,Battery,8-12 years,1,0,10,available,71,0.75,257,0,TRUE,2026-08-04
+SYN-0254,Mafeteng,Mafeteng,Other,0-3 years,0,1,5,available,99.5,0.84,1157,0,TRUE,2025-12-02
+SYN-0255,Maseru,Roma,Engine,4-7 years,0,1,13,available,2.5,0.84,1870,1,TRUE,2026-04-24
+SYN-0256,Mohale's Hoek,Mpharane,Other,8-12 years,1,0,5,available,102.1,0.79,470,1,TRUE,2025-03-28
+SYN-0257,Quthing,Quthing,Battery,4-7 years,1,1,6,unavailable,94.2,0.82,396,0,TRUE,2025-12-22
+SYN-0258,Maseru,Mazenod,Other,4-7 years,1,0,10,unavailable,23.6,0.82,995,1,TRUE,2026-06-03
+SYN-0259,Thaba-Tseka,Katse,Battery,0-3 years,0,1,13,available,38.7,0.87,684,1,TRUE,2026-06-15
+SYN-0260,Maseru,Maseru,Electrical,4-7 years,1,0,8,available,17.2,0.69,538,1,TRUE,2026-10-01
+SYN-0261,Maseru,Maseru,Battery,8-12 years,1,1,9,unavailable,23.7,0.89,679,1,TRUE,2025-09-28
+SYN-0262,Berea,Sefikeng,Electrical,4-7 years,1,1,7,unavailable,62.3,0.83,910,0,TRUE,2025-07-15
+SYN-0263,Maseru,Mazenod,Battery,13+ years,0,0,7,available,7.4,0.7,622,0,TRUE,2025-06-10
+SYN-0264,Mohale's Hoek,Mohale's Hoek,Tyre,8-12 years,0,0,8,available,58.1,0.67,464,0,TRUE,2025-07-21
+SYN-0265,Mafeteng,Qalabane,Battery,4-7 years,1,1,7,available,19.5,0.77,883,1,TRUE,2025-11-27
+SYN-0266,Mokhotlong,Mokhotlong,Battery,4-7 years,1,1,5,available,123.3,0.88,429,1,TRUE,2026-05-20
+SYN-0267,Maseru,Ha Thetsane,Battery,4-7 years,1,1,10,available,16.8,0.88,610,1,TRUE,2026-02-11
+SYN-0268,Mafeteng,Mafeteng,Other,4-7 years,1,1,13,available,22.5,0.83,573,1,TRUE,2026-02-10
+SYN-0269,Maseru,Khubetsoana,Battery,4-7 years,0,1,7,available,6.4,0.81,477,1,TRUE,2025-10-25
+SYN-0270,Leribe,Hlotse,Brakes,0-3 years,0,1,14,available,57.7,0.91,728,1,TRUE,2025-02-20
+SYN-0271,Maseru,Maseru,Electrical,13+ years,0,0,9,unavailable,4.4,0.72,1388,0,TRUE,2025-04-03
+SYN-0272,Leribe,Maputsoe,Engine,0-3 years,0,1,7,available,51.2,0.89,573,1,TRUE,2026-07-14
+SYN-0273,Berea,Mapoteng,Electrical,0-3 years,0,0,8,available,16.2,0.66,1301,0,TRUE,2025-01-21
+SYN-0274,Leribe,Peka,Battery,8-12 years,0,1,9,unavailable,18.5,0.79,301,0,TRUE,2026-06-08
+SYN-0275,Leribe,Maputsoe,Tyre,0-3 years,1,1,6,available,87.4,0.72,783,1,TRUE,2025-05-10
+SYN-0276,Maseru,Khubetsoana,Other,0-3 years,0,0,8,available,12.9,0.82,754,1,TRUE,2026-08-04
+SYN-0277,Qacha's Nek,Qacha's Nek,Other,13+ years,0,0,9,available,91.9,0.72,352,0,TRUE,2026-07-27
+SYN-0278,Berea,Mapoteng,Battery,4-7 years,1,1,13,available,64.1,0.88,713,1,TRUE,2026-09-27
+SYN-0279,Maseru,Ha Thetsane,Battery,8-12 years,1,0,7,available,11.9,0.8,388,1,TRUE,2026-04-02
+SYN-0280,Maseru,Mazenod,Battery,4-7 years,1,1,7,available,12.7,0.75,257,1,TRUE,2026-06-25
+SYN-0281,Maseru,Khubetsoana,Tyre,0-3 years,1,0,10,unavailable,21.6,0.75,340,1,TRUE,2026-02-07
+SYN-0282,Leribe,Hlotse,Electrical,8-12 years,1,1,5,unavailable,122.1,0.71,1456,0,TRUE,2026-01-03
+SYN-0283,Berea,Sefikeng,Engine,8-12 years,1,1,6,available,58.3,0.84,2035,1,TRUE,2026-10-22
+SYN-0284,Maseru,Ha Thetsane,Tyre,8-12 years,0,0,7,available,28,0.64,563,1,TRUE,2025-10-12
+SYN-0285,Mafeteng,Qalabane,Tyre,8-12 years,1,0,5,available,86,0.7,206,1,TRUE,2025-10-02
+SYN-0286,Maseru,Maseru,Brakes,0-3 years,1,1,15,unavailable,28.3,0.83,898,1,TRUE,2025-08-08
+SYN-0287,Maseru,Khubetsoana,Tyre,13+ years,1,0,7,available,2.3,0.73,398,1,TRUE,2025-08-20
+SYN-0288,Berea,Mapoteng,Battery,4-7 years,1,1,11,available,30.3,0.9,590,1,TRUE,2026-06-02
+SYN-0289,Mafeteng,Mafeteng,Engine,0-3 years,0,0,8,available,22.1,0.8,1436,1,TRUE,2026-04-03
+SYN-0290,Berea,Sefikeng,Brakes,13+ years,0,1,8,unavailable,80,0.88,1264,0,TRUE,2025-08-25
+SYN-0291,Butha-Buthe,Butha-Buthe,Battery,4-7 years,1,1,5,available,33,0.82,534,1,TRUE,2025-05-20
+SYN-0292,Berea,Mapoteng,Electrical,8-12 years,1,1,14,available,119.8,0.86,1340,1,TRUE,2026-08-04
+SYN-0293,Mafeteng,Qalabane,Battery,4-7 years,0,1,17,available,54.4,0.96,690,1,TRUE,2025-02-11
+SYN-0294,Maseru,Mazenod,Battery,0-3 years,0,1,5,available,31,0.73,763,0,TRUE,2025-05-11
+SYN-0295,Butha-Buthe,Oxbow,Brakes,8-12 years,1,0,7,available,13.3,0.74,1428,1,TRUE,2025-12-27
+SYN-0296,Berea,Sefikeng,Brakes,4-7 years,1,1,6,available,108.7,0.72,727,0,TRUE,2025-11-07
+SYN-0297,Leribe,Hlotse,Electrical,13+ years,1,1,4,unavailable,125.1,0.72,896,0,TRUE,2026-10-16
+SYN-0298,Qacha's Nek,Qacha's Nek,Tyre,8-12 years,1,0,11,unavailable,72.1,0.73,289,0,TRUE,2025-04-11
+SYN-0299,Mohale's Hoek,Mohale's Hoek,Electrical,8-12 years,1,0,4,unavailable,72.7,0.62,694,0,TRUE,2025-02-16
+SYN-0300,Berea,Sefikeng,Electrical,0-3 years,1,1,13,unavailable,85.1,0.9,1289,0,TRUE,2026-08-28
+SYN-0301,Quthing,Mount Moorosi,Brakes,8-12 years,0,1,10,available,29.5,0.9,572,1,TRUE,2025-01-25
+SYN-0302,Mokhotlong,Tlokoeng,Engine,8-12 years,0,1,10,unavailable,82.7,0.83,2782,0,TRUE,2026-08-15
+SYN-0303,Mafeteng,Mafeteng,Brakes,4-7 years,1,0,17,available,44.7,0.85,964,1,TRUE,2026-06-23
+SYN-0304,Maseru,Khubetsoana,Other,0-3 years,1,1,14,available,5,0.9,989,1,TRUE,2025-05-15
+SYN-0305,Maseru,Roma,Battery,8-12 years,0,1,4,available,9.8,0.8,461,1,TRUE,2026-03-16
+SYN-0306,Mafeteng,Mafeteng,Electrical,8-12 years,1,0,9,available,60.7,0.8,572,1,TRUE,2025-05-18
+SYN-0307,Thaba-Tseka,Thaba-Tseka,Tyre,13+ years,1,1,5,available,8.1,0.75,242,1,TRUE,2026-05-22
+SYN-0308,Leribe,Peka,Battery,8-12 years,1,0,5,available,113,0.76,684,1,TRUE,2025-02-03
+SYN-0309,Maseru,Mazenod,Electrical,0-3 years,1,0,17,available,38.6,0.79,1432,1,TRUE,2025-09-14
+SYN-0310,Qacha's Nek,Sehlabathebe,Tyre,8-12 years,1,0,6,available,52.9,0.8,665,1,TRUE,2026-02-01
+SYN-0311,Maseru,Ha Thetsane,Electrical,4-7 years,0,0,4,available,22.4,0.73,441,0,TRUE,2025-08-21
+SYN-0312,Qacha's Nek,Sehlabathebe,Tyre,4-7 years,1,0,6,available,28.9,0.71,630,1,TRUE,2025-11-15
+SYN-0313,Leribe,Maputsoe,Electrical,0-3 years,1,1,4,available,95.2,0.74,924,1,TRUE,2025-02-26
+SYN-0314,Leribe,Maputsoe,Brakes,0-3 years,1,1,5,available,50.5,0.77,304,1,TRUE,2025-03-18
+SYN-0315,Thaba-Tseka,Katse,Battery,0-3 years,0,0,6,available,29.8,0.73,359,0,TRUE,2025-11-24
+SYN-0316,Berea,Mapoteng,Brakes,4-7 years,1,0,5,available,32.3,0.72,1061,1,TRUE,2025-02-21
+SYN-0317,Butha-Buthe,Oxbow,Battery,8-12 years,1,1,5,available,117,0.81,258,1,TRUE,2025-12-09
+SYN-0318,Mafeteng,Mafeteng,Other,4-7 years,0,0,6,available,13,0.77,1090,0,TRUE,2025-03-15
+SYN-0319,Thaba-Tseka,Katse,Tyre,0-3 years,0,0,8,unavailable,46.7,0.73,242,0,TRUE,2025-06-11
+SYN-0320,Mafeteng,Qalabane,Battery,8-12 years,1,0,10,available,107.7,0.78,496,0,TRUE,2026-01-01
+SYN-0321,Butha-Buthe,Butha-Buthe,Other,4-7 years,0,1,14,available,42.7,0.92,610,0,TRUE,2025-05-11
+SYN-0322,Leribe,Hlotse,Electrical,4-7 years,0,1,6,unavailable,72.1,0.71,1087,0,TRUE,2025-04-14
+SYN-0323,Quthing,Quthing,Tyre,13+ years,1,0,16,unavailable,81.9,0.87,614,0,TRUE,2025-09-22
+SYN-0324,Qacha's Nek,Qacha's Nek,Tyre,0-3 years,1,1,15,unavailable,109.5,0.91,569,0,TRUE,2025-10-10
+SYN-0325,Maseru,Ha Thetsane,Tyre,8-12 years,1,1,5,available,39.6,0.75,204,1,TRUE,2025-04-17
+SYN-0326,Mafeteng,Mafeteng,Engine,13+ years,1,0,7,available,60.3,0.76,2488,0,TRUE,2026-03-07
+SYN-0327,Mokhotlong,Mokhotlong,Battery,8-12 years,0,1,5,available,74.2,0.72,801,0,TRUE,2025-01-15
+SYN-0328,Leribe,Peka,Brakes,4-7 years,1,1,17,unavailable,85.6,0.96,395,0,TRUE,2026-01-07
+SYN-0329,Thaba-Tseka,Katse,Engine,0-3 years,1,0,4,unavailable,81.6,0.72,1144,0,TRUE,2026-01-22
+SYN-0330,Mafeteng,Qalabane,Battery,13+ years,1,0,5,unavailable,57.9,0.76,846,0,TRUE,2026-02-10
+SYN-0331,Maseru,Mazenod,Battery,4-7 years,1,0,10,available,33.2,0.78,707,1,TRUE,2026-03-07
+SYN-0332,Leribe,Hlotse,Brakes,8-12 years,1,1,10,unavailable,14.2,0.79,338,1,TRUE,2025-11-01
+SYN-0333,Leribe,Maputsoe,Electrical,0-3 years,0,1,8,available,39.9,0.75,433,1,TRUE,2025-03-18
+SYN-0334,Maseru,Mazenod,Electrical,4-7 years,0,1,9,unavailable,18.1,0.87,1299,0,TRUE,2025-09-18
+SYN-0335,Maseru,Mazenod,Brakes,4-7 years,1,0,10,available,31,0.67,1031,1,TRUE,2025-01-07
+SYN-0336,Mohale's Hoek,Mpharane,Electrical,4-7 years,0,0,6,available,45.9,0.73,470,0,TRUE,2025-08-07
+SYN-0337,Maseru,Khubetsoana,Tyre,4-7 years,1,1,6,available,37.3,0.8,239,1,TRUE,2026-09-28
+SYN-0338,Quthing,Quthing,Other,0-3 years,1,0,13,available,109.3,0.76,832,0,TRUE,2026-04-27
+SYN-0339,Maseru,Khubetsoana,Brakes,8-12 years,0,0,7,unavailable,3.5,0.66,587,0,TRUE,2026-01-09
+SYN-0340,Maseru,Khubetsoana,Tyre,4-7 years,1,0,5,unavailable,18.4,0.66,254,0,TRUE,2026-06-07
+SYN-0341,Mafeteng,Mafeteng,Tyre,8-12 years,0,0,8,available,123.8,0.77,755,0,TRUE,2025-04-16
+SYN-0342,Mokhotlong,Mokhotlong,Brakes,13+ years,1,0,11,available,33.4,0.83,1073,1,TRUE,2025-02-25
+SYN-0343,Mohale's Hoek,Mpharane,Electrical,4-7 years,0,1,6,available,118.8,0.76,1191,0,TRUE,2025-10-11
+SYN-0344,Mokhotlong,Mokhotlong,Electrical,13+ years,1,1,6,available,12,0.75,361,1,TRUE,2025-09-10
+SYN-0345,Maseru,Khubetsoana,Tyre,4-7 years,0,1,5,available,23.3,0.75,613,0,TRUE,2026-10-16
+SYN-0346,Maseru,Ha Thetsane,Electrical,0-3 years,1,0,6,available,39.3,0.66,1266,1,TRUE,2025-07-26
+SYN-0347,Maseru,Mazenod,Other,8-12 years,1,1,9,available,4.9,0.76,894,1,TRUE,2025-04-06
+SYN-0348,Maseru,Ha Thetsane,Electrical,8-12 years,0,1,13,available,38.4,0.86,1444,1,TRUE,2025-02-24
+SYN-0349,Quthing,Quthing,Battery,8-12 years,0,1,8,available,21.9,0.74,473,1,TRUE,2026-05-12
+SYN-0350,Maseru,Mazenod,Tyre,4-7 years,0,1,8,available,4.7,0.74,620,1,TRUE,2025-03-11
+SYN-0351,Berea,Sefikeng,Other,4-7 years,0,1,8,unavailable,70.4,0.83,364,0,TRUE,2025-10-13
+SYN-0352,Maseru,Roma,Tyre,8-12 years,1,1,12,available,38.1,0.77,480,1,TRUE,2025-09-11
+SYN-0353,Thaba-Tseka,Katse,Engine,13+ years,1,0,6,available,107.6,0.69,1905,1,TRUE,2026-06-11
+SYN-0354,Mafeteng,Mafeteng,Tyre,8-12 years,1,0,14,available,72.4,0.84,204,1,TRUE,2025-02-25
+SYN-0355,Maseru,Khubetsoana,Electrical,4-7 years,0,1,7,unavailable,30.6,0.78,951,0,TRUE,2025-02-15
+SYN-0356,Maseru,Roma,Electrical,8-12 years,0,1,8,unavailable,11.7,0.75,504,0,TRUE,2025-03-20
+SYN-0357,Maseru,Ha Thetsane,Tyre,4-7 years,0,0,9,available,28.4,0.78,287,1,TRUE,2026-03-13
+SYN-0358,Maseru,Khubetsoana,Brakes,8-12 years,0,0,5,available,2.4,0.79,313,0,TRUE,2025-06-11
+SYN-0359,Leribe,Hlotse,Battery,0-3 years,1,1,5,available,98.2,0.72,616,1,TRUE,2025-01-26
+SYN-0360,Maseru,Mazenod,Other,8-12 years,1,0,8,available,5.2,0.75,201,1,TRUE,2026-03-28
+SYN-0361,Mohale's Hoek,Mpharane,Electrical,8-12 years,1,0,13,available,86.7,0.71,1094,0,TRUE,2025-04-27
+SYN-0362,Maseru,Roma,Battery,4-7 years,1,0,5,unavailable,15.3,0.74,545,0,TRUE,2025-11-28
+SYN-0363,Maseru,Maseru,Engine,4-7 years,0,1,10,available,10.4,0.92,1961,1,TRUE,2025-06-01
+SYN-0364,Leribe,Maputsoe,Engine,8-12 years,1,1,14,available,17.7,0.94,1086,1,TRUE,2026-10-13
+SYN-0365,Thaba-Tseka,Thaba-Tseka,Tyre,13+ years,1,1,6,available,46.1,0.87,487,1,TRUE,2026-03-06
+SYN-0366,Leribe,Hlotse,Engine,4-7 years,1,1,8,available,72.4,0.79,2457,0,TRUE,2025-03-25
+SYN-0367,Maseru,Maseru,Brakes,4-7 years,0,1,5,unavailable,33.8,0.78,1486,0,TRUE,2025-09-14
+SYN-0368,Qacha's Nek,Qacha's Nek,Tyre,8-12 years,0,1,14,unavailable,42.9,0.83,654,0,TRUE,2026-02-02
+SYN-0369,Maseru,Mazenod,Other,8-12 years,1,1,7,available,35.2,0.72,299,1,TRUE,2025-12-26
+SYN-0370,Leribe,Maputsoe,Electrical,8-12 years,1,1,9,unavailable,50.8,0.8,1202,1,TRUE,2025-02-17
+SYN-0371,Mafeteng,Qalabane,Electrical,0-3 years,0,1,6,unavailable,47.5,0.79,931,0,TRUE,2026-10-15
+SYN-0372,Berea,Teyateyaneng,Brakes,13+ years,0,0,10,available,89.3,0.75,1416,0,TRUE,2025-03-21
+SYN-0373,Thaba-Tseka,Katse,Brakes,4-7 years,1,1,7,unavailable,14.9,0.79,1123,1,TRUE,2025-11-12
+SYN-0374,Maseru,Ha Thetsane,Tyre,4-7 years,1,0,9,available,28.4,0.7,261,1,TRUE,2026-04-07
+SYN-0375,Maseru,Khubetsoana,Engine,4-7 years,1,0,4,unavailable,12.1,0.77,1946,0,TRUE,2026-02-12
+SYN-0376,Maseru,Ha Thetsane,Other,8-12 years,1,1,8,unavailable,3.6,0.81,722,1,TRUE,2025-10-07
+SYN-0377,Butha-Buthe,Oxbow,Brakes,0-3 years,0,1,18,unavailable,126.5,0.96,1116,0,TRUE,2026-01-16
+SYN-0378,Maseru,Mazenod,Battery,0-3 years,1,0,8,unavailable,34.4,0.82,814,0,TRUE,2026-04-17
+SYN-0379,Maseru,Mazenod,Tyre,8-12 years,0,0,5,available,30.9,0.8,664,0,TRUE,2025-06-06
+SYN-0380,Butha-Buthe,Butha-Buthe,Engine,4-7 years,1,0,8,available,73.3,0.73,2162,0,TRUE,2025-12-24
+SYN-0381,Maseru,Khubetsoana,Other,4-7 years,1,1,13,available,7.1,0.88,428,1,TRUE,2026-06-03
+SYN-0382,Mafeteng,Mafeteng,Tyre,4-7 years,0,1,5,available,89,0.83,743,1,TRUE,2025-10-24
+SYN-0383,Maseru,Roma,Engine,13+ years,1,1,7,available,3.4,0.72,1764,1,TRUE,2026-01-03
+SYN-0384,Mohale's Hoek,Mpharane,Battery,4-7 years,1,1,11,available,53.5,0.78,573,1,TRUE,2026-03-05
+SYN-0385,Maseru,Ha Thetsane,Battery,0-3 years,0,1,10,unavailable,31.2,0.83,665,0,TRUE,2026-07-15
+SYN-0386,Mohale's Hoek,Mohale's Hoek,Brakes,8-12 years,0,0,8,available,9.5,0.73,421,0,TRUE,2026-03-20
+SYN-0387,Maseru,Ha Thetsane,Battery,13+ years,1,1,8,unavailable,19.3,0.77,388,0,TRUE,2025-08-05
+SYN-0388,Berea,Sefikeng,Brakes,4-7 years,0,1,9,available,117.8,0.81,826,0,TRUE,2026-01-14
+SYN-0389,Leribe,Maputsoe,Battery,8-12 years,1,0,12,unavailable,69.1,0.81,515,0,TRUE,2025-02-28
+SYN-0390,Leribe,Peka,Brakes,8-12 years,1,0,11,available,37.6,0.71,529,1,TRUE,2025-05-03
+SYN-0391,Leribe,Hlotse,Other,0-3 years,0,1,8,available,28.6,0.79,347,0,TRUE,2025-04-21
+SYN-0392,Butha-Buthe,Butha-Buthe,Engine,4-7 years,0,0,5,unavailable,39.9,0.64,1456,0,TRUE,2026-02-01
+SYN-0393,Leribe,Maputsoe,Tyre,13+ years,1,1,12,available,81.2,0.93,673,1,TRUE,2026-03-19
+SYN-0394,Maseru,Maseru,Tyre,0-3 years,0,1,16,available,33,0.93,441,0,TRUE,2025-10-22
+SYN-0395,Maseru,Roma,Engine,4-7 years,1,1,8,available,19.6,0.83,2252,1,TRUE,2026-02-27
+SYN-0396,Mokhotlong,Tlokoeng,Electrical,8-12 years,0,0,4,unavailable,68.2,0.75,1477,0,TRUE,2026-09-14
+SYN-0397,Leribe,Peka,Other,8-12 years,0,1,6,available,13.8,0.78,997,1,TRUE,2025-05-04
+SYN-0398,Mohale's Hoek,Mohale's Hoek,Electrical,4-7 years,0,1,7,unavailable,62.7,0.79,1316,0,TRUE,2025-08-27
+SYN-0399,Maseru,Khubetsoana,Tyre,8-12 years,1,0,12,available,15.7,0.71,425,1,TRUE,2026-07-05
+SYN-0400,Leribe,Maputsoe,Other,4-7 years,0,0,11,unavailable,94.5,0.78,907,0,TRUE,2025-12-05
+SYN-0401,Maseru,Mazenod,Other,4-7 years,1,1,9,available,7.3,0.74,329,1,TRUE,2025-07-25
+SYN-0402,Maseru,Roma,Tyre,13+ years,1,1,13,available,25.6,0.93,767,1,TRUE,2025-07-05
+SYN-0403,Maseru,Mazenod,Engine,4-7 years,1,1,4,available,8,0.76,2173,1,TRUE,2026-01-10
+SYN-0404,Berea,Teyateyaneng,Other,13+ years,0,0,10,available,44.7,0.72,1135,0,TRUE,2026-06-17
+SYN-0405,Mafeteng,Qalabane,Other,8-12 years,1,0,4,unavailable,94.5,0.68,591,0,TRUE,2025-07-07
+SYN-0406,Butha-Buthe,Oxbow,Brakes,4-7 years,0,1,11,available,36.8,0.8,1436,0,TRUE,2025-10-22
+SYN-0407,Berea,Sefikeng,Battery,4-7 years,0,1,9,available,23.1,0.89,753,0,TRUE,2025-09-16
+SYN-0408,Mokhotlong,Mokhotlong,Tyre,8-12 years,1,1,8,unavailable,24.2,0.74,695,1,TRUE,2025-06-03
+SYN-0409,Berea,Sefikeng,Battery,4-7 years,1,0,12,available,37.9,0.85,539,1,TRUE,2026-02-03
+SYN-0410,Maseru,Maseru,Other,8-12 years,1,1,5,available,11,0.76,292,1,TRUE,2025-06-09
+SYN-0411,Maseru,Maseru,Brakes,0-3 years,0,1,13,available,35.9,0.93,1240,0,TRUE,2025-01-03
+SYN-0412,Mafeteng,Qalabane,Brakes,0-3 years,0,1,8,available,72.2,0.89,468,1,TRUE,2026-04-17
+SYN-0413,Maseru,Mazenod,Engine,8-12 years,1,0,7,unavailable,12.7,0.72,2798,0,TRUE,2025-11-27
+SYN-0414,Quthing,Mount Moorosi,Electrical,0-3 years,0,1,8,available,92.1,0.82,1113,0,TRUE,2025-11-13
+SYN-0415,Maseru,Maseru,Brakes,8-12 years,1,0,10,unavailable,4.2,0.78,1329,0,TRUE,2025-03-02
+SYN-0416,Mafeteng,Mafeteng,Battery,8-12 years,1,1,4,available,114.1,0.75,413,1,TRUE,2025-11-12
+SYN-0417,Maseru,Ha Thetsane,Tyre,4-7 years,0,1,5,available,11.8,0.72,220,1,TRUE,2026-10-07
+SYN-0418,Berea,Sefikeng,Brakes,4-7 years,1,1,4,available,101.3,0.71,445,1,TRUE,2025-01-11
+SYN-0419,Leribe,Maputsoe,Engine,4-7 years,1,1,9,available,90.4,0.79,2630,1,TRUE,2025-12-11
+SYN-0420,Maseru,Roma,Engine,0-3 years,1,0,9,unavailable,12.2,0.79,1961,0,TRUE,2026-10-20
+SYN-0421,Maseru,Ha Thetsane,Electrical,8-12 years,1,1,4,available,4.6,0.75,830,1,TRUE,2026-02-27
+SYN-0422,Maseru,Roma,Other,0-3 years,0,1,8,unavailable,11.2,0.87,248,0,TRUE,2026-03-27
+SYN-0423,Mafeteng,Qalabane,Battery,4-7 years,1,1,22,available,19.3,0.85,400,1,TRUE,2026-03-24
+SYN-0424,Mohale's Hoek,Mohale's Hoek,Tyre,13+ years,0,1,15,available,72.6,0.96,366,0,TRUE,2026-05-03
+SYN-0425,Berea,Mapoteng,Tyre,4-7 years,1,0,9,available,54.8,0.78,367,1,TRUE,2026-08-18
+SYN-0426,Berea,Sefikeng,Engine,8-12 years,0,0,7,available,41.7,0.64,1410,0,TRUE,2025-04-13
+SYN-0427,Quthing,Mount Moorosi,Engine,8-12 years,1,0,9,available,63.1,0.79,1714,1,TRUE,2026-03-24
+SYN-0428,Thaba-Tseka,Katse,Tyre,8-12 years,1,1,10,available,28,0.75,577,1,TRUE,2025-03-21
+SYN-0429,Berea,Sefikeng,Brakes,0-3 years,0,1,7,available,8.9,0.75,399,1,TRUE,2025-12-09
+SYN-0430,Leribe,Hlotse,Electrical,4-7 years,1,1,14,available,47.8,0.86,743,1,TRUE,2026-09-12
+SYN-0431,Leribe,Hlotse,Brakes,8-12 years,0,1,4,available,117.5,0.71,893,0,TRUE,2026-10-09
+SYN-0432,Maseru,Ha Thetsane,Battery,4-7 years,1,1,5,unavailable,24.2,0.86,682,0,TRUE,2025-08-17
+SYN-0433,Butha-Buthe,Oxbow,Other,4-7 years,1,1,8,available,69.9,0.77,483,1,TRUE,2026-08-10
+SYN-0434,Quthing,Mount Moorosi,Engine,8-12 years,1,0,6,available,32.3,0.67,752,1,TRUE,2026-02-10
+SYN-0435,Butha-Buthe,Butha-Buthe,Brakes,4-7 years,1,1,13,available,86.8,0.89,949,1,TRUE,2026-04-07
+SYN-0436,Maseru,Khubetsoana,Engine,8-12 years,0,0,8,available,2.5,0.66,1725,0,TRUE,2026-07-02
+SYN-0437,Maseru,Khubetsoana,Tyre,0-3 years,1,0,11,available,3.4,0.69,371,1,TRUE,2025-03-03
+SYN-0438,Leribe,Hlotse,Battery,4-7 years,0,0,7,available,82.3,0.73,816,0,TRUE,2026-05-13
+SYN-0439,Maseru,Roma,Battery,4-7 years,0,0,7,unavailable,38.5,0.77,776,0,TRUE,2026-04-26
+SYN-0440,Berea,Sefikeng,Tyre,13+ years,0,1,4,available,123.1,0.76,466,0,TRUE,2025-02-22
+SYN-0441,Leribe,Hlotse,Brakes,0-3 years,1,1,7,available,80.9,0.82,502,1,TRUE,2025-04-18
+SYN-0442,Maseru,Mazenod,Battery,8-12 years,1,0,4,available,24,0.77,409,1,TRUE,2026-03-17
+SYN-0443,Mohale's Hoek,Mohale's Hoek,Tyre,8-12 years,0,0,7,available,11,0.73,611,0,TRUE,2026-03-11
+SYN-0444,Quthing,Mount Moorosi,Tyre,4-7 years,0,0,8,available,114.1,0.67,712,0,TRUE,2025-05-09
+SYN-0445,Maseru,Mazenod,Battery,0-3 years,1,0,17,unavailable,21.9,0.82,363,0,TRUE,2025-08-10
+SYN-0446,Leribe,Maputsoe,Tyre,0-3 years,1,1,6,unavailable,21.8,0.81,568,1,TRUE,2025-09-18
+SYN-0447,Maseru,Khubetsoana,Brakes,13+ years,1,1,5,unavailable,27.5,0.85,1114,0,TRUE,2026-08-15
+SYN-0448,Quthing,Quthing,Battery,8-12 years,0,1,14,available,19,0.93,264,1,TRUE,2026-02-23
+SYN-0449,Berea,Sefikeng,Battery,13+ years,0,0,11,available,44.3,0.84,470,0,TRUE,2026-09-08
+SYN-0450,Maseru,Maseru,Battery,8-12 years,0,1,7,available,23.4,0.78,885,1,TRUE,2025-06-14
+SYN-0451,Quthing,Mount Moorosi,Engine,8-12 years,0,1,5,available,79.5,0.81,714,1,TRUE,2026-09-26
+SYN-0452,Quthing,Quthing,Other,0-3 years,0,0,9,unavailable,74.1,0.74,684,0,TRUE,2025-02-19
+SYN-0453,Mokhotlong,Mokhotlong,Battery,13+ years,0,1,11,unavailable,13.9,0.82,616,0,TRUE,2025-05-25
+SYN-0454,Maseru,Maseru,Engine,8-12 years,1,1,5,unavailable,20.8,0.8,995,1,TRUE,2026-08-01
+SYN-0455,Maseru,Ha Thetsane,Other,0-3 years,1,0,8,available,36.1,0.8,579,1,TRUE,2025-11-28
+SYN-0456,Maseru,Roma,Battery,4-7 years,0,0,10,unavailable,36.8,0.84,779,0,TRUE,2025-05-19
+SYN-0457,Butha-Buthe,Butha-Buthe,Brakes,8-12 years,1,1,9,available,28.3,0.9,749,1,TRUE,2025-01-17
+SYN-0458,Mohale's Hoek,Mohale's Hoek,Brakes,4-7 years,0,0,10,available,19.4,0.74,358,1,TRUE,2026-02-11
+SYN-0459,Mohale's Hoek,Mohale's Hoek,Battery,8-12 years,1,0,4,available,94.2,0.69,294,0,TRUE,2025-12-20
+SYN-0460,Maseru,Mazenod,Other,13+ years,1,1,12,unavailable,16.2,0.93,1024,0,TRUE,2026-09-22
+SYN-0461,Berea,Teyateyaneng,Engine,13+ years,1,1,6,available,35.3,0.81,1643,1,TRUE,2026-01-02
+SYN-0462,Quthing,Quthing,Engine,0-3 years,1,0,21,available,11.3,0.82,1263,1,TRUE,2025-12-22
+SYN-0463,Mohale's Hoek,Mohale's Hoek,Brakes,8-12 years,1,1,7,available,81.8,0.83,529,1,TRUE,2025-12-02
+SYN-0464,Maseru,Ha Thetsane,Other,0-3 years,1,0,6,available,36.5,0.81,316,1,TRUE,2025-04-07
+SYN-0465,Butha-Buthe,Oxbow,Tyre,8-12 years,1,0,6,available,120.6,0.79,487,0,TRUE,2025-10-01
+SYN-0466,Mafeteng,Qalabane,Electrical,0-3 years,0,1,4,unavailable,58.9,0.82,978,0,TRUE,2025-01-08
+SYN-0467,Berea,Sefikeng,Brakes,0-3 years,1,1,7,available,9.2,0.73,624,1,TRUE,2025-07-15
+SYN-0468,Quthing,Mount Moorosi,Battery,8-12 years,0,0,5,available,117.7,0.7,856,0,TRUE,2026-04-08
+SYN-0469,Quthing,Mount Moorosi,Other,8-12 years,0,1,13,unavailable,18.6,0.85,542,0,TRUE,2026-08-22
+SYN-0470,Maseru,Khubetsoana,Tyre,13+ years,1,1,11,unavailable,17.7,0.87,234,0,TRUE,2026-01-17
+SYN-0471,Leribe,Maputsoe,Engine,8-12 years,0,0,13,available,62.8,0.77,1155,0,TRUE,2026-02-16
+SYN-0472,Maseru,Roma,Battery,8-12 years,0,1,10,available,5.6,0.77,374,1,TRUE,2026-03-15
+SYN-0473,Mohale's Hoek,Mpharane,Battery,4-7 years,1,1,14,available,102.8,0.8,868,1,TRUE,2025-10-16
+SYN-0474,Mafeteng,Mafeteng,Battery,0-3 years,1,1,8,available,127,0.76,751,0,TRUE,2025-04-10
+SYN-0475,Maseru,Ha Thetsane,Brakes,8-12 years,1,1,8,available,39,0.74,1253,1,TRUE,2025-03-15
+SYN-0476,Mokhotlong,Mokhotlong,Battery,0-3 years,0,0,8,available,56.5,0.8,390,0,TRUE,2026-06-01
+SYN-0477,Maseru,Mazenod,Brakes,13+ years,0,1,10,available,28.9,0.76,1404,1,TRUE,2026-09-06
+SYN-0478,Leribe,Maputsoe,Electrical,0-3 years,1,1,6,available,54.4,0.79,1524,1,TRUE,2026-04-27
+SYN-0479,Maseru,Mazenod,Electrical,4-7 years,1,1,11,available,30.6,0.84,862,1,TRUE,2026-06-26
+SYN-0480,Maseru,Mazenod,Battery,4-7 years,1,0,11,available,39,0.83,701,1,TRUE,2026-08-05
+SYN-0481,Mohale's Hoek,Mohale's Hoek,Engine,0-3 years,0,1,16,available,87.8,0.92,1761,1,TRUE,2026-06-24
+SYN-0482,Maseru,Khubetsoana,Brakes,8-12 years,1,1,7,available,20.9,0.78,1390,1,TRUE,2025-02-19
+SYN-0483,Mafeteng,Mafeteng,Battery,8-12 years,1,0,18,unavailable,88.8,0.78,596,0,TRUE,2026-04-18
+SYN-0484,Qacha's Nek,Qacha's Nek,Brakes,0-3 years,1,0,12,available,117.3,0.83,1255,1,TRUE,2025-03-17
+SYN-0485,Mafeteng,Mafeteng,Tyre,8-12 years,1,1,14,available,44.8,0.82,469,1,TRUE,2026-07-21
+SYN-0486,Maseru,Khubetsoana,Battery,13+ years,1,1,7,available,19,0.81,553,1,TRUE,2025-01-03
+SYN-0487,Maseru,Maseru,Brakes,4-7 years,1,1,12,available,5.3,0.83,1028,1,TRUE,2025-11-21
+SYN-0488,Leribe,Hlotse,Tyre,4-7 years,1,0,5,available,15.4,0.78,760,1,TRUE,2026-05-26
+SYN-0489,Berea,Teyateyaneng,Tyre,0-3 years,1,1,9,unavailable,56.1,0.88,520,1,TRUE,2026-10-21
+SYN-0490,Maseru,Roma,Battery,8-12 years,1,1,11,available,21.7,0.83,338,1,TRUE,2025-09-01
+SYN-0491,Thaba-Tseka,Katse,Other,8-12 years,1,1,5,available,116.9,0.8,903,0,TRUE,2025-01-07
+SYN-0492,Maseru,Khubetsoana,Engine,4-7 years,0,1,8,unavailable,25.1,0.89,1908,0,TRUE,2026-02-03
+SYN-0493,Maseru,Ha Thetsane,Tyre,13+ years,0,1,8,available,35.7,0.85,459,0,TRUE,2025-06-12
+SYN-0494,Leribe,Maputsoe,Tyre,13+ years,0,1,10,unavailable,65,0.77,270,0,TRUE,2026-05-06
+SYN-0495,Maseru,Mazenod,Electrical,0-3 years,0,1,9,available,38.4,0.82,1331,0,TRUE,2025-07-12
+SYN-0496,Maseru,Maseru,Electrical,8-12 years,1,1,9,unavailable,8.6,0.91,392,1,TRUE,2026-03-21
+SYN-0497,Quthing,Quthing,Battery,13+ years,1,0,14,available,38,0.73,575,1,TRUE,2026-04-07
+SYN-0498,Mokhotlong,Tlokoeng,Battery,13+ years,0,0,6,available,95.2,0.66,318,0,TRUE,2025-08-28
+SYN-0499,Maseru,Roma,Tyre,8-12 years,1,0,5,available,25.7,0.8,258,1,TRUE,2026-07-17
+SYN-0500,Mafeteng,Qalabane,Engine,8-12 years,0,1,6,available,25.7,0.83,1223,1,TRUE,2025-06-21
+SYN-0501,Maseru,Mazenod,Other,4-7 years,0,0,7,available,36.3,0.8,740,0,TRUE,2025-09-08
+SYN-0502,Quthing,Mount Moorosi,Other,13+ years,1,1,6,available,99.4,0.72,657,1,TRUE,2026-10-25
+SYN-0503,Qacha's Nek,Qacha's Nek,Other,8-12 years,1,1,7,unavailable,122,0.8,208,0,TRUE,2026-02-27
+SYN-0504,Maseru,Roma,Brakes,4-7 years,1,0,6,available,23,0.66,817,1,TRUE,2026-06-13
+SYN-0505,Leribe,Peka,Engine,8-12 years,1,1,4,unavailable,118,0.77,2546,0,TRUE,2025-04-24
+SYN-0506,Mafeteng,Qalabane,Tyre,8-12 years,1,1,12,available,97.6,0.79,486,0,TRUE,2026-08-24
+SYN-0507,Maseru,Mazenod,Engine,4-7 years,1,1,16,available,11.6,0.87,1935,1,TRUE,2026-06-09
+SYN-0508,Mafeteng,Mafeteng,Engine,4-7 years,1,1,16,available,76.2,0.83,576,1,TRUE,2025-12-05
+SYN-0509,Leribe,Peka,Engine,8-12 years,1,1,12,unavailable,27.4,0.83,2664,0,TRUE,2025-04-09
+SYN-0510,Maseru,Maseru,Electrical,0-3 years,1,1,10,available,32.9,0.81,756,1,TRUE,2025-07-12
+SYN-0511,Maseru,Ha Thetsane,Tyre,4-7 years,1,1,7,available,34.5,0.75,623,1,TRUE,2025-12-13
+SYN-0512,Qacha's Nek,Sehlabathebe,Tyre,4-7 years,1,1,6,unavailable,115.5,0.78,299,0,TRUE,2026-01-05
+SYN-0513,Mohale's Hoek,Mohale's Hoek,Brakes,0-3 years,1,1,8,available,94.7,0.74,388,0,TRUE,2026-10-18
+SYN-0514,Berea,Sefikeng,Other,4-7 years,0,1,5,available,39,0.84,502,1,TRUE,2026-08-09
+SYN-0515,Qacha's Nek,Sehlabathebe,Tyre,8-12 years,1,1,6,available,123.8,0.72,683,1,TRUE,2026-09-09
+SYN-0516,Leribe,Maputsoe,Brakes,8-12 years,1,0,4,available,17.7,0.68,1468,1,TRUE,2026-06-14
+SYN-0517,Butha-Buthe,Oxbow,Other,0-3 years,1,0,7,unavailable,41.7,0.72,1041,0,TRUE,2026-10-04
+SYN-0518,Butha-Buthe,Oxbow,Other,13+ years,0,0,14,available,71.9,0.79,1002,0,TRUE,2025-03-09
+SYN-0519,Thaba-Tseka,Katse,Engine,13+ years,0,1,9,available,10.6,0.85,1849,1,TRUE,2025-09-13
+SYN-0520,Maseru,Maseru,Brakes,13+ years,1,0,6,available,34.9,0.69,627,1,TRUE,2025-08-24
+SYN-0521,Mohale's Hoek,Mohale's Hoek,Tyre,4-7 years,1,1,8,available,27.3,0.87,270,1,TRUE,2025-07-18
+SYN-0522,Butha-Buthe,Butha-Buthe,Engine,8-12 years,1,0,10,available,32,0.83,1916,1,TRUE,2025-09-19
+SYN-0523,Mafeteng,Mafeteng,Electrical,4-7 years,0,0,4,unavailable,63.6,0.68,402,0,TRUE,2025-11-22
+SYN-0524,Maseru,Khubetsoana,Tyre,13+ years,0,0,8,available,15.2,0.74,460,0,TRUE,2025-05-03
+SYN-0525,Maseru,Ha Thetsane,Brakes,0-3 years,1,1,10,available,19.5,0.86,365,1,TRUE,2025-03-02
+SYN-0526,Quthing,Quthing,Tyre,13+ years,1,1,15,available,49.8,0.85,329,1,TRUE,2026-05-14
+SYN-0527,Mafeteng,Mafeteng,Other,0-3 years,0,1,8,unavailable,30.9,0.77,471,0,TRUE,2025-11-28
+SYN-0528,Maseru,Maseru,Battery,4-7 years,1,1,8,available,4.1,0.78,341,1,TRUE,2025-03-08
+SYN-0529,Mohale's Hoek,Mpharane,Other,4-7 years,1,1,6,available,100.5,0.86,290,0,TRUE,2025-12-26
+SYN-0530,Maseru,Ha Thetsane,Tyre,4-7 years,0,0,5,available,4.1,0.63,665,0,TRUE,2025-07-04
+SYN-0531,Mafeteng,Qalabane,Tyre,4-7 years,1,1,10,available,43.5,0.9,495,1,TRUE,2026-08-02
+SYN-0532,Leribe,Peka,Other,8-12 years,1,1,9,available,127.8,0.89,642,1,TRUE,2026-10-08
+SYN-0533,Maseru,Ha Thetsane,Other,8-12 years,0,1,16,available,34.6,0.87,1000,1,TRUE,2025-04-26
+SYN-0534,Mokhotlong,Tlokoeng,Battery,4-7 years,1,0,5,available,116.7,0.77,470,1,TRUE,2026-10-17
+SYN-0535,Butha-Buthe,Butha-Buthe,Engine,13+ years,1,1,9,available,94.1,0.75,868,1,TRUE,2025-11-17
+SYN-0536,Butha-Buthe,Butha-Buthe,Tyre,4-7 years,1,1,6,available,15.8,0.74,471,1,TRUE,2026-06-01
+SYN-0537,Butha-Buthe,Oxbow,Battery,0-3 years,0,1,8,unavailable,112.1,0.83,660,0,TRUE,2026-06-25
+SYN-0538,Leribe,Maputsoe,Brakes,4-7 years,1,1,11,unavailable,54,0.82,1245,0,TRUE,2026-05-16
+SYN-0539,Maseru,Khubetsoana,Tyre,4-7 years,0,1,7,available,11.3,0.88,577,1,TRUE,2025-08-25
+SYN-0540,Quthing,Mount Moorosi,Battery,0-3 years,1,1,13,available,50,0.79,782,1,TRUE,2026-09-28
+SYN-0541,Butha-Buthe,Butha-Buthe,Battery,4-7 years,0,1,5,available,103.2,0.86,370,0,TRUE,2025-11-06
+SYN-0542,Berea,Teyateyaneng,Brakes,8-12 years,1,1,6,unavailable,118.3,0.77,1051,0,TRUE,2025-11-07
+SYN-0543,Leribe,Hlotse,Tyre,8-12 years,1,1,13,unavailable,88,0.86,328,0,TRUE,2025-11-03
+SYN-0544,Leribe,Peka,Electrical,4-7 years,0,1,4,unavailable,32.6,0.78,689,0,TRUE,2025-12-10
+SYN-0545,Maseru,Roma,Other,8-12 years,1,1,5,available,4.6,0.87,1152,1,TRUE,2026-01-16
+SYN-0546,Maseru,Mazenod,Engine,8-12 years,1,1,13,available,31.3,0.87,1098,1,TRUE,2025-09-28
+SYN-0547,Mafeteng,Mafeteng,Other,8-12 years,1,1,6,available,116.1,0.88,1035,1,TRUE,2026-07-10
+SYN-0548,Berea,Mapoteng,Engine,4-7 years,0,0,7,available,108.5,0.78,1240,0,TRUE,2025-11-19
+SYN-0549,Maseru,Khubetsoana,Brakes,4-7 years,0,1,16,available,11.5,0.95,1221,1,TRUE,2026-08-11
+SYN-0550,Maseru,Maseru,Electrical,8-12 years,1,1,12,available,5.2,0.91,1587,1,TRUE,2025-05-02
+SYN-0551,Mokhotlong,Mokhotlong,Brakes,4-7 years,1,1,10,unavailable,103.9,0.89,304,0,TRUE,2025-12-03
+SYN-0552,Mafeteng,Mafeteng,Tyre,8-12 years,1,1,5,available,52.5,0.77,778,1,TRUE,2025-08-16
+SYN-0553,Maseru,Khubetsoana,Engine,13+ years,0,0,6,unavailable,31.2,0.64,2722,0,TRUE,2025-11-16
+SYN-0554,Quthing,Mount Moorosi,Electrical,0-3 years,0,0,7,available,34.6,0.76,545,0,TRUE,2025-03-18
+SYN-0555,Maseru,Maseru,Tyre,4-7 years,0,1,8,unavailable,20.2,0.77,576,0,TRUE,2026-07-17
+SYN-0556,Mokhotlong,Tlokoeng,Brakes,0-3 years,1,1,13,unavailable,97,0.79,873,0,TRUE,2025-12-23
+SYN-0557,Mohale's Hoek,Mohale's Hoek,Battery,4-7 years,1,0,9,unavailable,10.7,0.76,578,0,TRUE,2025-07-06
+SYN-0558,Maseru,Khubetsoana,Engine,13+ years,1,0,8,unavailable,6.2,0.79,590,1,TRUE,2026-09-03
+SYN-0559,Mafeteng,Qalabane,Electrical,8-12 years,1,1,10,available,15.1,0.79,1148,1,TRUE,2026-03-26
+SYN-0560,Leribe,Peka,Battery,8-12 years,1,0,16,available,40.1,0.86,742,1,TRUE,2025-09-09
+SYN-0561,Maseru,Mazenod,Electrical,13+ years,1,0,12,available,28.9,0.82,1117,0,TRUE,2025-12-28
+SYN-0562,Mafeteng,Mafeteng,Other,13+ years,0,1,6,available,14.7,0.8,1189,0,TRUE,2026-05-21
+SYN-0563,Maseru,Mazenod,Engine,4-7 years,1,1,9,unavailable,23.6,0.74,1154,1,TRUE,2026-07-27
+SYN-0564,Maseru,Khubetsoana,Battery,8-12 years,1,0,13,available,22.2,0.8,712,1,TRUE,2026-07-28
+SYN-0565,Maseru,Maseru,Battery,8-12 years,1,0,6,unavailable,24.8,0.76,519,0,TRUE,2025-04-16
+SYN-0566,Maseru,Mazenod,Brakes,8-12 years,1,1,18,available,16.1,0.97,1178,1,TRUE,2025-12-14
+SYN-0567,Maseru,Ha Thetsane,Battery,8-12 years,0,1,20,available,3.7,0.96,627,1,TRUE,2025-08-15
+SYN-0568,Berea,Sefikeng,Engine,4-7 years,0,0,7,available,88.4,0.69,1986,0,TRUE,2026-06-28
+SYN-0569,Thaba-Tseka,Thaba-Tseka,Electrical,8-12 years,0,1,5,unavailable,79.6,0.76,433,0,TRUE,2025-08-12
+SYN-0570,Leribe,Peka,Brakes,8-12 years,1,0,6,unavailable,37.5,0.78,613,0,TRUE,2026-08-26
+SYN-0571,Berea,Mapoteng,Battery,8-12 years,1,1,11,available,68.7,0.85,669,1,TRUE,2025-03-12
+SYN-0572,Mafeteng,Mafeteng,Brakes,8-12 years,0,0,9,available,47.1,0.76,983,0,TRUE,2025-11-13
+SYN-0573,Mokhotlong,Mokhotlong,Tyre,13+ years,0,1,4,unavailable,47.6,0.78,745,0,TRUE,2026-04-07
+SYN-0574,Mohale's Hoek,Mpharane,Battery,8-12 years,1,1,11,available,95,0.89,496,1,TRUE,2026-08-26
+SYN-0575,Maseru,Mazenod,Electrical,8-12 years,1,1,4,unavailable,6.3,0.86,1591,1,TRUE,2026-02-18
+SYN-0576,Berea,Mapoteng,Other,13+ years,0,1,7,unavailable,106.2,0.72,792,0,TRUE,2026-08-19
+SYN-0577,Mafeteng,Mafeteng,Tyre,0-3 years,0,1,12,available,44.2,0.86,672,0,TRUE,2025-11-02
+SYN-0578,Berea,Mapoteng,Other,4-7 years,1,1,7,available,116.8,0.73,504,1,TRUE,2026-09-11
+SYN-0579,Maseru,Khubetsoana,Brakes,4-7 years,0,0,9,available,10.3,0.71,1356,0,TRUE,2025-09-02
+SYN-0580,Leribe,Maputsoe,Battery,8-12 years,1,1,10,available,74.7,0.77,509,1,TRUE,2025-07-04
+SYN-0581,Butha-Buthe,Butha-Buthe,Tyre,8-12 years,1,0,5,unavailable,19.6,0.68,599,0,TRUE,2026-04-22
+SYN-0582,Berea,Sefikeng,Electrical,13+ years,1,1,8,unavailable,21.8,0.76,375,0,TRUE,2025-06-26
+SYN-0583,Thaba-Tseka,Thaba-Tseka,Brakes,4-7 years,1,0,6,unavailable,79.3,0.8,1449,0,TRUE,2026-03-17
+SYN-0584,Mohale's Hoek,Mohale's Hoek,Tyre,4-7 years,0,1,4,unavailable,66.6,0.84,393,0,TRUE,2025-07-14
+SYN-0585,Leribe,Peka,Engine,8-12 years,0,0,11,available,122.2,0.73,848,0,TRUE,2026-05-13
+SYN-0586,Maseru,Maseru,Battery,13+ years,1,1,10,available,15.3,0.91,874,1,TRUE,2025-03-27
+SYN-0587,Butha-Buthe,Butha-Buthe,Engine,8-12 years,1,1,9,available,87.1,0.78,1633,1,TRUE,2026-08-10
+SYN-0588,Maseru,Roma,Battery,4-7 years,1,1,11,available,7.1,0.77,655,1,TRUE,2026-10-01
+SYN-0589,Mohale's Hoek,Mohale's Hoek,Tyre,8-12 years,0,0,9,available,96.2,0.71,387,0,TRUE,2026-01-22
+SYN-0590,Quthing,Mount Moorosi,Tyre,13+ years,1,1,8,unavailable,72.5,0.75,741,0,TRUE,2025-12-06
+SYN-0591,Quthing,Quthing,Engine,4-7 years,0,1,16,available,107.1,0.81,1761,0,TRUE,2025-12-05
+SYN-0592,Mafeteng,Qalabane,Tyre,4-7 years,1,0,8,unavailable,98.1,0.68,709,0,TRUE,2025-06-11
+SYN-0593,Maseru,Maseru,Battery,8-12 years,1,1,16,available,13.3,0.87,616,1,TRUE,2026-07-21
+SYN-0594,Leribe,Peka,Battery,13+ years,0,1,7,unavailable,104.9,0.84,701,0,TRUE,2026-07-03
+SYN-0595,Maseru,Maseru,Tyre,8-12 years,1,0,7,available,12,0.71,367,1,TRUE,2025-04-08
+SYN-0596,Leribe,Peka,Battery,0-3 years,1,1,13,unavailable,105.1,0.86,722,0,TRUE,2025-04-22
+SYN-0597,Butha-Buthe,Butha-Buthe,Battery,8-12 years,1,1,4,unavailable,30.1,0.79,429,1,TRUE,2025-02-21
+SYN-0598,Berea,Sefikeng,Battery,0-3 years,1,0,8,available,57.4,0.81,774,1,TRUE,2025-12-23
+SYN-0599,Mohale's Hoek,Mpharane,Tyre,0-3 years,1,1,10,available,126.4,0.81,570,1,TRUE,2025-05-26
+SYN-0600,Thaba-Tseka,Katse,Brakes,0-3 years,1,1,9,available,60.1,0.87,865,1,TRUE,2026-02-19
+SYN-0601,Thaba-Tseka,Thaba-Tseka,Battery,4-7 years,0,0,4,available,37.4,0.74,799,1,TRUE,2026-01-02
+SYN-0602,Maseru,Maseru,Electrical,8-12 years,0,1,6,unavailable,6.2,0.83,856,0,TRUE,2026-03-16
+SYN-0603,Mokhotlong,Mokhotlong,Battery,4-7 years,0,1,16,available,114.6,0.87,609,0,TRUE,2025-08-06
+SYN-0604,Qacha's Nek,Sehlabathebe,Engine,4-7 years,1,0,15,available,50.2,0.76,1938,1,TRUE,2026-06-27
+SYN-0605,Berea,Sefikeng,Tyre,13+ years,0,0,15,unavailable,13.7,0.81,682,0,TRUE,2025-04-09
+SYN-0606,Mohale's Hoek,Mohale's Hoek,Tyre,0-3 years,0,1,5,available,91.1,0.82,277,0,TRUE,2026-05-08
+SYN-0607,Maseru,Maseru,Electrical,4-7 years,0,1,11,available,20.7,0.78,972,1,TRUE,2026-02-25
+SYN-0608,Berea,Teyateyaneng,Battery,0-3 years,0,1,10,unavailable,55.9,0.83,402,0,TRUE,2025-11-15
+SYN-0609,Thaba-Tseka,Thaba-Tseka,Battery,8-12 years,1,1,9,available,81.7,0.76,318,1,TRUE,2026-04-16
+SYN-0610,Maseru,Ha Thetsane,Electrical,4-7 years,1,0,5,available,27.4,0.62,1098,1,TRUE,2025-03-16
+SYN-0611,Mafeteng,Mafeteng,Tyre,8-12 years,1,1,4,available,127.1,0.84,608,1,TRUE,2025-03-14
+SYN-0612,Mafeteng,Mafeteng,Other,8-12 years,0,0,6,available,93.5,0.78,1069,0,TRUE,2025-09-20
+SYN-0613,Berea,Teyateyaneng,Engine,4-7 years,0,0,11,available,125.7,0.76,2540,0,TRUE,2026-05-15
+SYN-0614,Mohale's Hoek,Mpharane,Engine,8-12 years,0,1,7,available,42.2,0.82,928,0,TRUE,2025-02-02
+SYN-0615,Thaba-Tseka,Thaba-Tseka,Electrical,13+ years,1,1,15,available,59.8,0.91,1127,1,TRUE,2025-12-23
+SYN-0616,Maseru,Roma,Battery,4-7 years,1,1,11,available,2.2,0.76,877,1,TRUE,2026-06-11
+SYN-0617,Leribe,Peka,Tyre,4-7 years,1,1,6,available,98.1,0.82,219,0,TRUE,2026-09-06
+SYN-0618,Qacha's Nek,Qacha's Nek,Engine,8-12 years,1,1,12,available,71.8,0.79,1865,1,TRUE,2026-09-14
+SYN-0619,Maseru,Maseru,Electrical,8-12 years,0,1,10,available,36.5,0.82,799,1,TRUE,2026-06-13
+SYN-0620,Butha-Buthe,Oxbow,Electrical,0-3 years,1,1,10,available,14.2,0.85,1467,1,TRUE,2025-02-02
+SYN-0621,Mohale's Hoek,Mohale's Hoek,Other,13+ years,1,0,14,available,49.2,0.85,1200,1,TRUE,2026-02-10
+SYN-0622,Quthing,Mount Moorosi,Other,4-7 years,0,1,6,available,67.9,0.84,788,0,TRUE,2026-06-21
+SYN-0623,Leribe,Maputsoe,Other,4-7 years,1,1,17,unavailable,97.2,0.97,1183,0,TRUE,2026-05-14
+SYN-0624,Maseru,Ha Thetsane,Engine,8-12 years,1,0,15,available,32.5,0.72,612,1,TRUE,2025-05-21
+SYN-0625,Mafeteng,Mafeteng,Battery,8-12 years,0,1,14,available,59.3,0.85,672,0,TRUE,2025-08-04
+SYN-0626,Maseru,Ha Thetsane,Other,0-3 years,1,1,8,unavailable,34.1,0.75,1198,0,TRUE,2025-09-02
+SYN-0627,Leribe,Peka,Engine,0-3 years,1,1,9,unavailable,69.2,0.77,2362,1,TRUE,2026-10-16
+SYN-0628,Berea,Teyateyaneng,Tyre,8-12 years,0,0,8,unavailable,117.3,0.81,663,0,TRUE,2026-08-17
+SYN-0629,Maseru,Khubetsoana,Tyre,4-7 years,0,0,10,available,32,0.81,396,0,TRUE,2025-04-20
+SYN-0630,Mokhotlong,Tlokoeng,Brakes,13+ years,0,1,11,unavailable,62.1,0.76,1479,0,TRUE,2026-02-11
+SYN-0631,Leribe,Maputsoe,Electrical,4-7 years,0,0,11,available,107.4,0.68,1219,0,TRUE,2025-12-15
+SYN-0632,Berea,Teyateyaneng,Electrical,13+ years,0,1,6,available,8.7,0.74,1373,1,TRUE,2025-07-22
+SYN-0633,Mokhotlong,Tlokoeng,Battery,4-7 years,0,0,14,available,123.8,0.79,631,0,TRUE,2026-06-05
+SYN-0634,Berea,Mapoteng,Brakes,8-12 years,1,1,10,available,20,0.9,1339,1,TRUE,2025-05-14
+SYN-0635,Mafeteng,Qalabane,Tyre,0-3 years,1,1,7,available,23.8,0.83,411,1,TRUE,2026-07-04
+SYN-0636,Maseru,Khubetsoana,Tyre,13+ years,0,0,10,available,2.2,0.81,253,0,TRUE,2025-09-02
+SYN-0637,Leribe,Hlotse,Battery,4-7 years,0,1,12,unavailable,24,0.82,295,0,TRUE,2026-07-11
+SYN-0638,Mohale's Hoek,Mpharane,Other,8-12 years,1,0,10,unavailable,57.2,0.83,220,0,TRUE,2025-09-08
+SYN-0639,Maseru,Roma,Brakes,4-7 years,1,1,11,available,23.5,0.92,339,1,TRUE,2025-10-23
+SYN-0640,Mafeteng,Mafeteng,Engine,8-12 years,1,0,10,available,46.9,0.83,1033,1,TRUE,2025-03-12
+SYN-0641,Mafeteng,Mafeteng,Engine,0-3 years,1,0,6,available,113.5,0.68,1992,0,TRUE,2026-10-04
+SYN-0642,Mafeteng,Qalabane,Battery,8-12 years,0,1,9,available,123.4,0.79,387,0,TRUE,2025-06-21
+SYN-0643,Butha-Buthe,Oxbow,Battery,4-7 years,0,0,6,available,62.1,0.76,352,0,TRUE,2025-12-19
+SYN-0644,Maseru,Khubetsoana,Brakes,8-12 years,0,1,6,unavailable,16.5,0.77,1316,0,TRUE,2025-07-10
+SYN-0645,Butha-Buthe,Oxbow,Brakes,4-7 years,1,0,13,unavailable,40.2,0.76,550,0,TRUE,2025-12-10
+SYN-0646,Maseru,Roma,Tyre,13+ years,1,1,13,available,25,0.89,480,1,TRUE,2025-08-14
+SYN-0647,Mokhotlong,Mokhotlong,Engine,0-3 years,1,0,6,available,113.2,0.74,2416,1,TRUE,2026-03-09
+SYN-0648,Quthing,Mount Moorosi,Engine,13+ years,1,0,7,available,28,0.8,2574,1,TRUE,2026-01-20
+SYN-0649,Thaba-Tseka,Katse,Tyre,8-12 years,0,0,7,available,9.9,0.7,532,0,TRUE,2026-07-01
+SYN-0650,Maseru,Mazenod,Other,8-12 years,1,1,9,available,34.8,0.85,898,1,TRUE,2025-11-01
+SYN-0651,Mohale's Hoek,Mpharane,Electrical,0-3 years,1,1,16,available,102.1,0.9,1459,1,TRUE,2025-08-09
+SYN-0652,Leribe,Hlotse,Engine,4-7 years,1,0,15,available,91.2,0.87,2551,1,TRUE,2025-07-24
+SYN-0653,Maseru,Maseru,Engine,8-12 years,0,1,17,available,39.9,0.81,971,0,TRUE,2025-02-15
+SYN-0654,Maseru,Khubetsoana,Tyre,0-3 years,0,0,6,available,27,0.64,505,0,TRUE,2026-06-03
+SYN-0655,Leribe,Hlotse,Engine,13+ years,1,1,8,available,95,0.84,2422,0,TRUE,2026-01-12
+SYN-0656,Maseru,Ha Thetsane,Electrical,4-7 years,0,0,11,available,8,0.81,482,1,TRUE,2026-04-21
+SYN-0657,Leribe,Maputsoe,Electrical,13+ years,1,0,4,available,92.2,0.69,968,0,TRUE,2025-04-13
+SYN-0658,Leribe,Peka,Brakes,0-3 years,0,0,6,available,86.9,0.78,770,0,TRUE,2026-02-04
+SYN-0659,Maseru,Roma,Other,4-7 years,0,0,5,available,14.2,0.77,333,0,TRUE,2026-02-14
+SYN-0660,Leribe,Maputsoe,Brakes,13+ years,1,1,14,unavailable,63.7,0.86,479,0,TRUE,2026-01-27
+SYN-0661,Maseru,Khubetsoana,Engine,8-12 years,1,0,6,available,8.5,0.71,1975,1,TRUE,2025-05-03
+SYN-0662,Leribe,Peka,Brakes,4-7 years,1,1,4,available,12.2,0.74,1480,1,TRUE,2026-08-19
+SYN-0663,Leribe,Peka,Tyre,4-7 years,1,1,18,available,23.3,0.85,430,1,TRUE,2025-06-07
+SYN-0664,Berea,Teyateyaneng,Other,8-12 years,1,0,17,unavailable,26.1,0.85,823,0,TRUE,2025-06-09
+SYN-0665,Maseru,Ha Thetsane,Electrical,13+ years,1,1,4,available,27.3,0.78,1476,1,TRUE,2025-08-09
+SYN-0666,Maseru,Khubetsoana,Brakes,4-7 years,1,0,18,available,10.6,0.77,1096,1,TRUE,2025-04-28
+SYN-0667,Maseru,Ha Thetsane,Tyre,13+ years,0,1,5,unavailable,19.3,0.75,469,0,TRUE,2026-03-22
+SYN-0668,Berea,Mapoteng,Engine,13+ years,0,0,13,unavailable,128,0.87,1692,0,TRUE,2026-10-24
+SYN-0669,Maseru,Mazenod,Battery,0-3 years,1,0,6,unavailable,32.2,0.75,538,0,TRUE,2026-10-18
+SYN-0670,Maseru,Maseru,Brakes,13+ years,0,0,14,available,28,0.76,1485,0,TRUE,2026-08-06
+SYN-0671,Maseru,Mazenod,Battery,13+ years,0,1,16,unavailable,11.6,0.81,552,0,TRUE,2025-06-04
+SYN-0672,Qacha's Nek,Qacha's Nek,Tyre,13+ years,1,1,14,available,43.4,0.81,716,1,TRUE,2025-10-19
+SYN-0673,Mafeteng,Qalabane,Tyre,13+ years,1,1,11,unavailable,71.8,0.84,637,0,TRUE,2026-01-09
+SYN-0674,Butha-Buthe,Oxbow,Battery,8-12 years,1,0,9,unavailable,20.3,0.73,744,0,TRUE,2026-09-09
+SYN-0675,Berea,Sefikeng,Electrical,4-7 years,1,1,6,available,85.4,0.74,489,1,TRUE,2025-05-06
+SYN-0676,Butha-Buthe,Butha-Buthe,Brakes,8-12 years,0,0,4,available,72.7,0.64,944,0,TRUE,2026-01-02
+SYN-0677,Maseru,Khubetsoana,Electrical,8-12 years,1,1,7,unavailable,17.1,0.89,782,1,TRUE,2025-02-01
+SYN-0678,Qacha's Nek,Qacha's Nek,Tyre,8-12 years,0,1,11,unavailable,100.6,0.89,420,0,TRUE,2026-05-06
+SYN-0679,Maseru,Mazenod,Brakes,13+ years,0,1,8,unavailable,9.6,0.76,829,0,TRUE,2025-07-16
+SYN-0680,Mafeteng,Mafeteng,Tyre,8-12 years,1,1,8,available,101.7,0.83,593,0,TRUE,2025-11-06
+SYN-0681,Mafeteng,Qalabane,Electrical,8-12 years,0,1,10,unavailable,118.2,0.84,1103,0,TRUE,2026-03-05
+SYN-0682,Mohale's Hoek,Mpharane,Engine,8-12 years,0,1,10,available,8.2,0.8,1419,1,TRUE,2026-10-19
+SYN-0683,Maseru,Ha Thetsane,Other,0-3 years,0,0,8,available,20.5,0.72,678,0,TRUE,2025-06-02
+SYN-0684,Maseru,Khubetsoana,Tyre,13+ years,0,1,12,unavailable,5.8,0.82,741,0,TRUE,2025-08-07
+SYN-0685,Quthing,Mount Moorosi,Other,8-12 years,1,1,4,available,70.8,0.79,1171,1,TRUE,2026-02-19
+SYN-0686,Leribe,Peka,Other,4-7 years,1,0,12,available,45.2,0.86,308,1,TRUE,2026-07-10
+SYN-0687,Quthing,Quthing,Engine,4-7 years,1,1,7,unavailable,25.6,0.72,1604,0,TRUE,2026-06-21
+SYN-0688,Mohale's Hoek,Mohale's Hoek,Engine,13+ years,0,1,10,available,70.1,0.91,2568,0,TRUE,2025-02-21
+SYN-0689,Mafeteng,Qalabane,Battery,4-7 years,0,0,11,available,55,0.77,715,0,TRUE,2026-07-10
+SYN-0690,Leribe,Hlotse,Battery,13+ years,0,0,5,available,109.8,0.67,601,0,TRUE,2025-07-13
+SYN-0691,Maseru,Mazenod,Other,8-12 years,0,1,8,unavailable,11.4,0.84,668,0,TRUE,2025-04-06
+SYN-0692,Qacha's Nek,Sehlabathebe,Battery,4-7 years,0,0,11,available,115.7,0.72,882,0,TRUE,2025-12-23
+SYN-0693,Berea,Teyateyaneng,Tyre,0-3 years,1,1,5,unavailable,78.7,0.87,581,0,TRUE,2025-04-25
+SYN-0694,Berea,Mapoteng,Tyre,0-3 years,1,1,13,available,103.4,0.8,455,1,TRUE,2026-10-03
+SYN-0695,Mafeteng,Mafeteng,Tyre,4-7 years,1,1,10,available,39.2,0.8,504,1,TRUE,2025-01-05
+SYN-0696,Berea,Teyateyaneng,Tyre,13+ years,1,0,17,unavailable,45.8,0.85,691,0,TRUE,2025-10-06
+SYN-0697,Berea,Teyateyaneng,Battery,4-7 years,0,1,5,available,86.2,0.86,832,0,TRUE,2026-10-21
+SYN-0698,Berea,Sefikeng,Electrical,0-3 years,1,1,6,available,22.1,0.71,1348,1,TRUE,2025-01-23
+SYN-0699,Berea,Mapoteng,Tyre,4-7 years,0,0,13,available,103.9,0.84,620,0,TRUE,2025-07-03
+SYN-0700,Mafeteng,Qalabane,Engine,4-7 years,1,0,9,available,82.6,0.76,1381,0,TRUE,2026-04-04
+SYN-0701,Mohale's Hoek,Mpharane,Engine,4-7 years,0,0,8,available,51.9,0.75,2412,0,TRUE,2025-01-03
+SYN-0702,Mohale's Hoek,Mohale's Hoek,Battery,13+ years,1,1,5,available,100.6,0.71,266,0,TRUE,2026-05-17
+SYN-0703,Maseru,Mazenod,Battery,0-3 years,1,1,10,available,13.4,0.83,293,1,TRUE,2025-04-01
+SYN-0704,Maseru,Khubetsoana,Other,4-7 years,1,0,10,unavailable,6.1,0.81,330,0,TRUE,2025-09-16
+SYN-0705,Mokhotlong,Tlokoeng,Other,4-7 years,0,0,6,unavailable,50.2,0.72,624,0,TRUE,2025-02-12
+SYN-0706,Leribe,Hlotse,Tyre,4-7 years,1,1,14,unavailable,88.6,0.9,718,0,TRUE,2025-02-26
+SYN-0707,Quthing,Quthing,Battery,8-12 years,1,1,9,available,43.8,0.91,546,1,TRUE,2025-09-03
+SYN-0708,Mohale's Hoek,Mpharane,Brakes,8-12 years,0,1,4,available,98.5,0.77,1179,0,TRUE,2025-10-24
+SYN-0709,Qacha's Nek,Qacha's Nek,Electrical,8-12 years,0,0,5,available,121.8,0.78,859,0,TRUE,2026-03-02
+SYN-0710,Berea,Sefikeng,Other,0-3 years,1,1,5,available,70.5,0.84,532,1,TRUE,2026-06-25
+SYN-0711,Mafeteng,Mafeteng,Electrical,13+ years,0,0,8,available,87,0.8,519,0,TRUE,2026-10-19
+SYN-0712,Berea,Mapoteng,Other,8-12 years,1,0,9,available,71.8,0.78,1106,0,TRUE,2025-04-13
+SYN-0713,Maseru,Khubetsoana,Battery,8-12 years,1,1,4,unavailable,34,0.85,673,0,TRUE,2025-04-14
+SYN-0714,Maseru,Ha Thetsane,Battery,13+ years,1,0,4,unavailable,19.5,0.67,280,0,TRUE,2026-06-19
+SYN-0715,Mohale's Hoek,Mpharane,Other,8-12 years,1,1,8,available,126.6,0.87,1197,1,TRUE,2026-09-01
+SYN-0716,Mafeteng,Mafeteng,Engine,0-3 years,0,0,7,available,19.4,0.64,925,0,TRUE,2025-05-03
+SYN-0717,Maseru,Khubetsoana,Electrical,0-3 years,0,1,12,unavailable,27.3,0.83,701,0,TRUE,2025-05-06
+SYN-0718,Maseru,Khubetsoana,Brakes,0-3 years,0,1,7,unavailable,6.7,0.79,332,0,TRUE,2025-11-28
+SYN-0719,Qacha's Nek,Sehlabathebe,Engine,0-3 years,1,1,8,unavailable,104,0.81,525,0,TRUE,2026-03-16
+SYN-0720,Mafeteng,Qalabane,Battery,8-12 years,0,1,7,available,67.6,0.78,878,0,TRUE,2025-08-25
+SYN-0721,Leribe,Hlotse,Other,13+ years,1,1,9,available,53,0.9,669,1,TRUE,2026-10-25
+SYN-0722,Leribe,Hlotse,Battery,4-7 years,1,1,7,unavailable,31,0.84,878,0,TRUE,2026-09-23
+SYN-0723,Qacha's Nek,Sehlabathebe,Battery,4-7 years,1,0,7,available,79.4,0.73,688,1,TRUE,2026-10-06
+SYN-0724,Mafeteng,Mafeteng,Other,4-7 years,0,0,5,available,104.2,0.64,342,0,TRUE,2026-06-15
+SYN-0725,Maseru,Khubetsoana,Other,0-3 years,1,1,8,available,29.9,0.82,242,1,TRUE,2026-01-15
+SYN-0726,Qacha's Nek,Sehlabathebe,Electrical,4-7 years,1,1,6,available,86.3,0.82,543,1,TRUE,2026-06-10
+SYN-0727,Butha-Buthe,Butha-Buthe,Electrical,8-12 years,0,0,11,available,79.9,0.76,1569,0,TRUE,2026-09-24
+SYN-0728,Maseru,Maseru,Brakes,4-7 years,0,0,13,available,25.7,0.74,354,0,TRUE,2025-10-02
+SYN-0729,Leribe,Hlotse,Battery,8-12 years,0,1,6,available,127.5,0.8,612,0,TRUE,2025-07-06
+SYN-0730,Qacha's Nek,Sehlabathebe,Engine,8-12 years,1,1,8,unavailable,110.6,0.8,2435,0,TRUE,2026-09-26
+SYN-0731,Quthing,Mount Moorosi,Tyre,4-7 years,1,1,8,unavailable,21.2,0.8,608,1,TRUE,2025-02-22
+SYN-0732,Mafeteng,Mafeteng,Engine,8-12 years,1,0,13,unavailable,107.2,0.76,1790,0,TRUE,2025-04-27
+SYN-0733,Mokhotlong,Tlokoeng,Engine,0-3 years,1,1,8,available,29.8,0.73,2730,1,TRUE,2026-03-05
+SYN-0734,Quthing,Quthing,Engine,4-7 years,1,1,15,available,84,0.89,1760,1,TRUE,2025-11-04
+SYN-0735,Leribe,Hlotse,Brakes,4-7 years,1,1,19,available,62,0.86,614,1,TRUE,2025-02-04
+SYN-0736,Mohale's Hoek,Mpharane,Other,0-3 years,1,0,11,available,124.1,0.76,1070,0,TRUE,2026-01-09
+SYN-0737,Maseru,Maseru,Battery,4-7 years,0,0,9,available,33.7,0.73,641,0,TRUE,2025-06-20
+SYN-0738,Quthing,Mount Moorosi,Engine,4-7 years,1,0,4,unavailable,66.5,0.68,624,0,TRUE,2025-08-05
+SYN-0739,Quthing,Quthing,Battery,8-12 years,1,0,18,available,28.3,0.75,753,1,TRUE,2026-02-20
+SYN-0740,Berea,Sefikeng,Tyre,0-3 years,0,0,11,available,101.8,0.74,656,0,TRUE,2025-02-12
+SYN-0741,Maseru,Khubetsoana,Battery,8-12 years,0,1,7,unavailable,37.1,0.83,805,0,TRUE,2025-01-09
+SYN-0742,Mafeteng,Mafeteng,Tyre,4-7 years,1,1,8,available,99.4,0.73,306,0,TRUE,2026-03-05
+SYN-0743,Mohale's Hoek,Mohale's Hoek,Engine,4-7 years,1,0,8,available,110.9,0.81,2619,0,TRUE,2025-10-20
+SYN-0744,Thaba-Tseka,Thaba-Tseka,Engine,4-7 years,1,0,5,unavailable,12.5,0.79,1842,0,TRUE,2025-05-18
+SYN-0745,Thaba-Tseka,Katse,Electrical,8-12 years,0,1,11,available,70.6,0.89,383,0,TRUE,2026-09-24
+SYN-0746,Maseru,Roma,Brakes,4-7 years,1,0,11,available,4.1,0.75,404,1,TRUE,2025-07-07
+SYN-0747,Quthing,Quthing,Engine,4-7 years,0,0,7,available,69.2,0.8,1464,0,TRUE,2025-12-27
+SYN-0748,Leribe,Hlotse,Battery,0-3 years,1,1,12,unavailable,50.7,0.77,784,0,TRUE,2025-04-13
+SYN-0749,Mokhotlong,Mokhotlong,Battery,4-7 years,0,1,5,available,113.4,0.77,376,0,TRUE,2025-05-25
+SYN-0750,Mafeteng,Mafeteng,Other,8-12 years,0,1,8,unavailable,39.9,0.73,848,0,TRUE,2025-04-16
+SYN-0751,Qacha's Nek,Sehlabathebe,Brakes,8-12 years,1,0,7,unavailable,66.6,0.72,346,0,TRUE,2025-03-27
+SYN-0752,Berea,Teyateyaneng,Tyre,4-7 years,0,1,12,available,100.5,0.78,447,0,TRUE,2026-01-21
+SYN-0753,Leribe,Peka,Battery,13+ years,0,1,9,available,30.9,0.79,837,0,TRUE,2026-07-02
+SYN-0754,Mohale's Hoek,Mohale's Hoek,Brakes,4-7 years,0,0,10,available,13.8,0.81,865,0,TRUE,2026-06-25
+SYN-0755,Thaba-Tseka,Thaba-Tseka,Battery,13+ years,1,1,9,available,88.5,0.91,449,1,TRUE,2025-08-25
+SYN-0756,Leribe,Peka,Brakes,0-3 years,0,1,10,available,85.3,0.84,637,1,TRUE,2025-08-06
+SYN-0757,Berea,Mapoteng,Tyre,13+ years,1,1,9,available,25.4,0.89,305,1,TRUE,2025-05-03
+SYN-0758,Berea,Mapoteng,Battery,4-7 years,0,1,10,unavailable,11.3,0.85,796,0,TRUE,2026-01-23
+SYN-0759,Maseru,Maseru,Engine,13+ years,1,1,5,unavailable,27.3,0.77,1979,0,TRUE,2026-03-21
+SYN-0760,Quthing,Mount Moorosi,Tyre,13+ years,1,1,7,available,79.9,0.72,679,1,TRUE,2025-04-22
+SYN-0761,Mohale's Hoek,Mohale's Hoek,Battery,4-7 years,0,0,7,available,85.1,0.79,527,0,TRUE,2026-03-07
+SYN-0762,Mohale's Hoek,Mpharane,Other,8-12 years,1,1,4,available,127.2,0.83,356,0,TRUE,2026-05-20
+SYN-0763,Mokhotlong,Mokhotlong,Tyre,8-12 years,1,1,9,available,119.2,0.86,765,0,TRUE,2026-03-12
+SYN-0764,Mafeteng,Mafeteng,Brakes,8-12 years,1,1,4,available,70.6,0.72,870,1,TRUE,2025-11-18
+SYN-0765,Mokhotlong,Tlokoeng,Brakes,8-12 years,0,0,6,available,44.2,0.69,1481,0,TRUE,2025-08-05
+SYN-0766,Quthing,Quthing,Electrical,4-7 years,0,1,7,available,51.5,0.85,1451,0,TRUE,2026-03-24
+SYN-0767,Mafeteng,Mafeteng,Engine,4-7 years,1,1,11,available,40.6,0.9,1176,1,TRUE,2026-03-06
+SYN-0768,Maseru,Khubetsoana,Electrical,8-12 years,1,1,10,unavailable,2.6,0.87,1330,1,TRUE,2025-02-27
+SYN-0769,Maseru,Roma,Brakes,8-12 years,1,1,4,unavailable,19,0.82,542,1,TRUE,2025-12-24
+SYN-0770,Maseru,Roma,Tyre,0-3 years,1,0,4,available,27.2,0.67,219,1,TRUE,2026-07-24
+SYN-0771,Maseru,Roma,Other,13+ years,1,1,14,available,24.7,0.86,440,1,TRUE,2025-04-23
+SYN-0772,Mohale's Hoek,Mpharane,Other,8-12 years,1,1,5,available,82.6,0.73,607,1,TRUE,2026-09-06
+SYN-0773,Maseru,Ha Thetsane,Engine,4-7 years,0,0,11,available,17.9,0.84,1442,0,TRUE,2025-03-22
+SYN-0774,Berea,Teyateyaneng,Tyre,0-3 years,1,1,7,available,110.6,0.86,322,1,TRUE,2025-02-04
+SYN-0775,Maseru,Mazenod,Engine,8-12 years,1,1,8,available,14.8,0.86,1253,1,TRUE,2025-12-10
+SYN-0776,Butha-Buthe,Butha-Buthe,Electrical,0-3 years,1,1,13,available,44.2,0.79,600,1,TRUE,2026-07-24
+SYN-0777,Leribe,Maputsoe,Other,0-3 years,1,0,5,unavailable,47.8,0.69,642,0,TRUE,2026-09-13
+SYN-0778,Quthing,Quthing,Battery,13+ years,1,0,13,available,97.2,0.69,491,1,TRUE,2025-06-08
+SYN-0779,Maseru,Maseru,Battery,0-3 years,1,0,5,available,2.8,0.69,545,1,TRUE,2025-09-04
+SYN-0780,Leribe,Peka,Engine,4-7 years,1,0,7,available,45.3,0.81,2031,1,TRUE,2025-02-18
+SYN-0781,Leribe,Hlotse,Electrical,0-3 years,1,0,11,unavailable,32.5,0.78,1389,0,TRUE,2026-02-16
+SYN-0782,Leribe,Peka,Electrical,4-7 years,1,1,9,available,105,0.84,1531,0,TRUE,2025-01-15
+SYN-0783,Mafeteng,Mafeteng,Electrical,8-12 years,1,0,5,unavailable,21.4,0.74,1420,0,TRUE,2026-04-10
+SYN-0784,Berea,Mapoteng,Battery,8-12 years,1,0,9,available,11.6,0.68,575,1,TRUE,2026-05-25
+SYN-0785,Berea,Mapoteng,Tyre,13+ years,0,0,5,available,65.7,0.77,473,0,TRUE,2025-10-19
+SYN-0786,Mafeteng,Mafeteng,Battery,8-12 years,0,1,8,available,35.9,0.77,519,1,TRUE,2026-02-04
+SYN-0787,Quthing,Mount Moorosi,Electrical,13+ years,1,1,6,unavailable,9.5,0.72,1290,0,TRUE,2025-04-11
+SYN-0788,Maseru,Khubetsoana,Other,4-7 years,1,0,9,available,37,0.78,465,1,TRUE,2026-02-07
+SYN-0789,Maseru,Maseru,Tyre,4-7 years,1,0,11,unavailable,33.6,0.84,609,0,TRUE,2026-06-07
+SYN-0790,Quthing,Mount Moorosi,Brakes,13+ years,0,1,5,available,93.1,0.76,1006,0,TRUE,2026-08-10
+SYN-0791,Mohale's Hoek,Mohale's Hoek,Electrical,8-12 years,0,1,4,unavailable,50.3,0.72,1589,0,TRUE,2026-02-10
+SYN-0792,Leribe,Hlotse,Tyre,4-7 years,1,0,9,available,49.8,0.75,211,1,TRUE,2025-12-10
+SYN-0793,Maseru,Maseru,Tyre,13+ years,0,0,6,available,22.9,0.7,384,0,TRUE,2025-02-19
+SYN-0794,Mafeteng,Qalabane,Other,4-7 years,1,1,5,unavailable,24.4,0.82,1127,1,TRUE,2026-10-23
+SYN-0795,Maseru,Ha Thetsane,Other,4-7 years,1,1,13,available,19.4,0.82,824,1,TRUE,2026-06-28
+SYN-0796,Mokhotlong,Mokhotlong,Tyre,4-7 years,0,1,7,available,119.3,0.82,673,0,TRUE,2025-09-27
+SYN-0797,Mafeteng,Mafeteng,Brakes,8-12 years,0,0,5,available,112.2,0.69,548,0,TRUE,2026-04-12
+SYN-0798,Leribe,Hlotse,Battery,8-12 years,1,1,8,available,120.5,0.87,847,1,TRUE,2026-06-25
+SYN-0799,Mafeteng,Mafeteng,Engine,8-12 years,1,1,10,unavailable,68,0.9,1232,1,TRUE,2025-08-02
+SYN-0800,Maseru,Roma,Other,13+ years,1,1,11,available,24.6,0.78,295,1,TRUE,2025-11-13
+SYN-0801,Mafeteng,Qalabane,Tyre,4-7 years,1,1,8,unavailable,125.3,0.73,586,0,TRUE,2025-01-22
+SYN-0802,Mohale's Hoek,Mohale's Hoek,Battery,8-12 years,0,1,13,available,122.7,0.9,522,0,TRUE,2026-09-25
+SYN-0803,Berea,Sefikeng,Tyre,8-12 years,1,1,9,available,57.8,0.85,748,1,TRUE,2026-06-17
+SYN-0804,Maseru,Roma,Electrical,13+ years,0,0,5,available,30.4,0.78,1586,0,TRUE,2026-09-15
+SYN-0805,Butha-Buthe,Oxbow,Brakes,0-3 years,1,1,12,available,47.5,0.81,576,1,TRUE,2026-03-17
+SYN-0806,Mohale's Hoek,Mpharane,Brakes,4-7 years,0,1,6,unavailable,109.9,0.87,1395,0,TRUE,2026-07-22
+SYN-0807,Leribe,Maputsoe,Electrical,4-7 years,1,1,11,unavailable,77.2,0.81,768,0,TRUE,2025-08-10
+SYN-0808,Maseru,Khubetsoana,Battery,8-12 years,1,1,5,available,14.2,0.79,766,1,TRUE,2025-05-06
+SYN-0809,Quthing,Quthing,Brakes,8-12 years,0,1,22,unavailable,113.8,0.97,1178,0,TRUE,2025-01-10
+SYN-0810,Butha-Buthe,Oxbow,Tyre,4-7 years,0,1,14,available,19.4,0.82,367,1,TRUE,2026-01-19
+SYN-0811,Qacha's Nek,Qacha's Nek,Brakes,8-12 years,0,0,10,available,93,0.77,1347,0,TRUE,2026-02-16
+SYN-0812,Leribe,Hlotse,Engine,0-3 years,1,1,8,unavailable,64.5,0.9,700,0,TRUE,2026-10-05
+SYN-0813,Maseru,Roma,Brakes,4-7 years,1,1,5,available,27.5,0.87,627,1,TRUE,2026-08-22
+SYN-0814,Mohale's Hoek,Mohale's Hoek,Electrical,8-12 years,0,1,15,unavailable,118.7,0.87,621,0,TRUE,2026-08-06
+SYN-0815,Maseru,Maseru,Electrical,4-7 years,0,1,11,available,2.9,0.81,1146,1,TRUE,2025-12-20
+SYN-0816,Mohale's Hoek,Mohale's Hoek,Electrical,8-12 years,0,1,11,unavailable,114.2,0.8,514,0,TRUE,2025-11-27
+SYN-0817,Mohale's Hoek,Mohale's Hoek,Battery,4-7 years,1,1,8,available,80.3,0.91,399,1,TRUE,2026-07-07
+SYN-0818,Butha-Buthe,Oxbow,Engine,4-7 years,0,1,12,available,48.1,0.8,2380,1,TRUE,2026-08-25
+SYN-0819,Berea,Mapoteng,Battery,8-12 years,1,1,5,unavailable,39.2,0.82,370,0,TRUE,2025-10-10
+SYN-0820,Butha-Buthe,Butha-Buthe,Engine,0-3 years,1,0,6,available,70.1,0.76,2262,1,TRUE,2025-12-18
+SYN-0821,Maseru,Khubetsoana,Battery,8-12 years,0,1,13,available,10.7,0.79,552,1,TRUE,2026-10-16
+SYN-0822,Mohale's Hoek,Mpharane,Brakes,8-12 years,0,1,9,available,61,0.85,446,1,TRUE,2025-10-22
+SYN-0823,Maseru,Maseru,Engine,4-7 years,1,0,10,available,25.8,0.75,529,1,TRUE,2026-05-12
+SYN-0824,Mohale's Hoek,Mpharane,Tyre,0-3 years,1,1,18,available,37.4,0.82,355,1,TRUE,2025-11-16
+SYN-0825,Maseru,Maseru,Brakes,8-12 years,1,1,12,unavailable,21.8,0.78,1216,1,TRUE,2025-07-07
+SYN-0826,Qacha's Nek,Sehlabathebe,Other,8-12 years,0,1,7,available,23.8,0.76,893,0,TRUE,2025-04-12
+SYN-0827,Quthing,Quthing,Brakes,13+ years,0,1,8,available,44.7,0.81,406,0,TRUE,2025-05-01
+SYN-0828,Berea,Mapoteng,Brakes,0-3 years,1,1,9,unavailable,71.2,0.88,395,0,TRUE,2026-08-14
+SYN-0829,Maseru,Roma,Battery,8-12 years,1,1,12,available,19.8,0.81,744,1,TRUE,2025-01-05
+SYN-0830,Maseru,Roma,Battery,4-7 years,1,1,11,available,33.1,0.88,299,1,TRUE,2025-10-17
+SYN-0831,Maseru,Roma,Battery,13+ years,0,1,7,available,3.3,0.87,852,0,TRUE,2025-02-14
+SYN-0832,Butha-Buthe,Oxbow,Other,8-12 years,1,0,5,available,39.7,0.77,979,1,TRUE,2026-10-02
+SYN-0833,Mohale's Hoek,Mpharane,Other,4-7 years,1,0,5,unavailable,111.5,0.63,1013,0,TRUE,2026-02-03
+SYN-0834,Mafeteng,Mafeteng,Tyre,13+ years,1,0,9,unavailable,72.6,0.69,577,0,TRUE,2026-06-20
+SYN-0835,Maseru,Maseru,Battery,8-12 years,1,0,11,available,5.7,0.75,785,1,TRUE,2026-07-07
+SYN-0836,Butha-Buthe,Butha-Buthe,Battery,13+ years,1,0,5,unavailable,67.7,0.65,254,0,TRUE,2026-03-28
+SYN-0837,Leribe,Hlotse,Other,8-12 years,0,0,9,available,14.6,0.75,1147,0,TRUE,2026-03-15
+SYN-0838,Maseru,Roma,Engine,13+ years,1,0,5,available,38.1,0.79,624,0,TRUE,2026-04-20
+SYN-0839,Mohale's Hoek,Mohale's Hoek,Brakes,4-7 years,1,0,12,available,77,0.81,1218,0,TRUE,2026-04-20
+SYN-0840,Maseru,Maseru,Brakes,4-7 years,1,1,24,available,21,0.9,611,1,TRUE,2026-08-21
+SYN-0841,Berea,Teyateyaneng,Battery,4-7 years,1,0,11,available,106.3,0.77,363,0,TRUE,2025-11-02
+SYN-0842,Quthing,Mount Moorosi,Engine,4-7 years,1,1,4,available,32.8,0.8,2624,1,TRUE,2026-04-11
+SYN-0843,Berea,Sefikeng,Battery,8-12 years,0,0,10,available,31.6,0.76,752,0,TRUE,2025-04-06
+SYN-0844,Qacha's Nek,Qacha's Nek,Brakes,4-7 years,1,1,4,available,124,0.83,1143,0,TRUE,2025-09-05
+SYN-0845,Leribe,Hlotse,Electrical,4-7 years,1,0,6,available,91.1,0.66,1040,1,TRUE,2026-07-05
+SYN-0846,Leribe,Maputsoe,Brakes,8-12 years,0,0,5,available,80.2,0.71,340,0,TRUE,2025-06-13
+SYN-0847,Maseru,Khubetsoana,Engine,8-12 years,1,1,18,unavailable,5,0.85,1179,1,TRUE,2026-08-11
+SYN-0848,Maseru,Khubetsoana,Tyre,8-12 years,1,1,6,available,28.6,0.78,318,1,TRUE,2026-10-11
+SYN-0849,Maseru,Khubetsoana,Electrical,4-7 years,0,0,7,available,24.6,0.67,1184,0,TRUE,2026-10-27
+SYN-0850,Mafeteng,Qalabane,Electrical,4-7 years,0,0,5,available,90.7,0.75,1356,0,TRUE,2025-07-03
+SYN-0851,Berea,Sefikeng,Engine,0-3 years,0,1,6,available,101.4,0.81,1740,0,TRUE,2026-02-10
+SYN-0852,Quthing,Mount Moorosi,Brakes,8-12 years,1,1,7,available,74.3,0.75,824,1,TRUE,2026-02-06
+SYN-0853,Mafeteng,Mafeteng,Engine,8-12 years,0,1,7,available,29.3,0.77,1387,0,TRUE,2025-02-28
+SYN-0854,Leribe,Hlotse,Battery,8-12 years,1,0,5,available,13,0.7,834,1,TRUE,2026-05-20
+SYN-0855,Berea,Sefikeng,Battery,13+ years,1,1,5,unavailable,73.3,0.78,690,0,TRUE,2025-06-23
+SYN-0856,Mafeteng,Mafeteng,Brakes,8-12 years,1,1,6,available,84.1,0.82,871,0,TRUE,2025-10-12
+SYN-0857,Berea,Mapoteng,Battery,8-12 years,0,1,5,available,35.9,0.8,447,1,TRUE,2025-12-02
+SYN-0858,Berea,Sefikeng,Electrical,8-12 years,1,0,13,available,43.6,0.7,1170,1,TRUE,2025-05-24
+SYN-0859,Leribe,Hlotse,Battery,4-7 years,1,1,7,available,8.7,0.89,403,1,TRUE,2026-02-19
+SYN-0860,Mohale's Hoek,Mpharane,Engine,8-12 years,1,1,7,unavailable,22.1,0.76,2275,0,TRUE,2026-08-10
+SYN-0861,Maseru,Khubetsoana,Brakes,4-7 years,0,1,8,available,38.9,0.89,1277,1,TRUE,2025-05-17
+SYN-0862,Maseru,Khubetsoana,Tyre,4-7 years,1,1,10,available,29.7,0.87,312,1,TRUE,2026-08-27
+SYN-0863,Leribe,Maputsoe,Brakes,8-12 years,0,1,13,available,66.3,0.9,757,0,TRUE,2026-09-17
+SYN-0864,Maseru,Roma,Battery,4-7 years,0,1,10,unavailable,28.8,0.75,475,0,TRUE,2025-09-25
+SYN-0865,Mokhotlong,Tlokoeng,Brakes,13+ years,1,0,5,unavailable,69.9,0.68,809,0,TRUE,2025-05-12
+SYN-0866,Maseru,Khubetsoana,Battery,8-12 years,0,1,5,available,31.1,0.73,839,1,TRUE,2025-07-18
+SYN-0867,Leribe,Maputsoe,Electrical,0-3 years,1,1,20,unavailable,110.4,0.96,980,0,TRUE,2026-01-04
+SYN-0868,Quthing,Mount Moorosi,Battery,4-7 years,0,1,9,unavailable,54.8,0.87,593,0,TRUE,2025-07-24
+SYN-0869,Maseru,Khubetsoana,Electrical,8-12 years,1,1,18,available,32.9,0.9,1183,1,TRUE,2025-04-27
+SYN-0870,Mohale's Hoek,Mohale's Hoek,Engine,0-3 years,0,0,11,available,127.5,0.83,967,0,TRUE,2025-09-23
+SYN-0871,Mafeteng,Mafeteng,Electrical,0-3 years,1,0,24,available,47.6,0.79,1204,1,TRUE,2026-08-27
+SYN-0872,Maseru,Khubetsoana,Battery,4-7 years,1,0,13,available,10.4,0.85,282,1,TRUE,2026-03-14
+SYN-0873,Berea,Teyateyaneng,Battery,4-7 years,0,1,7,unavailable,100.6,0.89,807,0,TRUE,2026-04-04
+SYN-0874,Maseru,Maseru,Brakes,4-7 years,0,0,6,available,30,0.71,808,0,TRUE,2026-10-18
+SYN-0875,Berea,Mapoteng,Electrical,13+ years,0,1,4,available,99.1,0.74,657,0,TRUE,2026-09-08
+SYN-0876,Mafeteng,Mafeteng,Engine,8-12 years,1,1,8,unavailable,88.6,0.73,1993,0,TRUE,2026-06-14
+SYN-0877,Thaba-Tseka,Katse,Engine,8-12 years,1,0,6,available,84.1,0.69,1899,0,TRUE,2026-10-07
+SYN-0878,Berea,Sefikeng,Battery,0-3 years,1,1,6,unavailable,11.9,0.87,694,1,TRUE,2025-09-08
+SYN-0879,Maseru,Maseru,Brakes,4-7 years,1,1,15,available,35.3,0.83,403,1,TRUE,2026-03-09
+SYN-0880,Thaba-Tseka,Katse,Electrical,4-7 years,1,1,8,available,103.1,0.76,734,0,TRUE,2026-01-07
+SYN-0881,Mafeteng,Qalabane,Tyre,8-12 years,0,0,12,available,58,0.69,442,0,TRUE,2025-08-02
+SYN-0882,Leribe,Peka,Brakes,8-12 years,1,0,5,available,24.7,0.7,784,1,TRUE,2026-05-28
+SYN-0883,Mafeteng,Qalabane,Tyre,4-7 years,1,0,9,available,12.7,0.75,725,1,TRUE,2026-02-14
+SYN-0884,Maseru,Khubetsoana,Other,13+ years,1,0,11,available,6.7,0.68,802,1,TRUE,2026-05-09
+SYN-0885,Berea,Sefikeng,Engine,4-7 years,1,0,10,available,35.4,0.76,1708,1,TRUE,2026-02-24
+SYN-0886,Maseru,Maseru,Electrical,0-3 years,0,1,7,available,33.8,0.84,1285,1,TRUE,2025-12-21
+SYN-0887,Leribe,Hlotse,Brakes,0-3 years,0,0,7,available,84.4,0.74,1289,0,TRUE,2025-09-01
+SYN-0888,Qacha's Nek,Sehlabathebe,Engine,4-7 years,1,0,17,unavailable,113.6,0.82,2492,0,TRUE,2026-05-02
+SYN-0889,Maseru,Mazenod,Other,4-7 years,0,1,8,available,3.3,0.88,995,1,TRUE,2026-08-24
+SYN-0890,Quthing,Mount Moorosi,Electrical,8-12 years,1,1,9,unavailable,49.9,0.87,1037,0,TRUE,2025-09-27
+SYN-0891,Mokhotlong,Mokhotlong,Tyre,4-7 years,1,0,14,available,97.3,0.8,579,0,TRUE,2026-04-20
+SYN-0892,Maseru,Ha Thetsane,Other,13+ years,1,1,11,available,25.6,0.93,576,1,TRUE,2025-10-19
+SYN-0893,Leribe,Hlotse,Tyre,4-7 years,0,1,12,available,89.9,0.76,289,0,TRUE,2026-03-13
+SYN-0894,Quthing,Quthing,Tyre,4-7 years,0,1,12,available,99.3,0.88,645,0,TRUE,2026-05-21
+SYN-0895,Maseru,Ha Thetsane,Electrical,13+ years,1,1,9,available,33.8,0.79,1490,1,TRUE,2025-03-05
+SYN-0896,Berea,Teyateyaneng,Electrical,13+ years,0,1,13,available,124,0.81,820,0,TRUE,2026-05-03
+SYN-0897,Butha-Buthe,Oxbow,Battery,8-12 years,1,1,7,unavailable,113.1,0.84,334,0,TRUE,2025-10-16
+SYN-0898,Leribe,Hlotse,Engine,4-7 years,1,1,12,available,28.8,0.86,1771,1,TRUE,2026-01-08
+SYN-0899,Mafeteng,Mafeteng,Engine,13+ years,0,1,10,available,80.7,0.89,1374,0,TRUE,2026-10-25
+SYN-0900,Mafeteng,Mafeteng,Battery,4-7 years,1,0,7,unavailable,95.2,0.69,420,0,TRUE,2025-11-21
+SYN-0901,Mokhotlong,Mokhotlong,Brakes,8-12 years,1,0,8,available,57.4,0.82,1450,1,TRUE,2025-09-28
+SYN-0902,Maseru,Mazenod,Tyre,13+ years,0,0,10,available,27.3,0.74,638,0,TRUE,2026-04-16
+SYN-0903,Maseru,Khubetsoana,Brakes,13+ years,1,0,5,available,13.1,0.77,311,1,TRUE,2026-08-13
+SYN-0904,Quthing,Mount Moorosi,Battery,8-12 years,1,1,12,available,78,0.87,623,0,TRUE,2025-11-26
+SYN-0905,Mohale's Hoek,Mohale's Hoek,Battery,13+ years,0,1,8,available,94.1,0.89,573,0,TRUE,2026-05-10
+SYN-0906,Mafeteng,Mafeteng,Battery,0-3 years,1,1,9,available,69.8,0.88,704,1,TRUE,2025-07-22
+SYN-0907,Maseru,Ha Thetsane,Engine,4-7 years,0,0,12,available,17.3,0.8,1384,0,TRUE,2026-08-24
+SYN-0908,Leribe,Hlotse,Engine,4-7 years,1,1,9,available,79.5,0.81,655,1,TRUE,2025-11-07
+SYN-0909,Mafeteng,Mafeteng,Engine,0-3 years,1,1,4,available,18.2,0.81,2366,1,TRUE,2026-06-23
+SYN-0910,Mohale's Hoek,Mpharane,Tyre,0-3 years,0,0,22,available,89.2,0.78,699,0,TRUE,2025-10-07
+SYN-0911,Berea,Mapoteng,Brakes,0-3 years,1,1,6,unavailable,55.5,0.77,1366,0,TRUE,2026-04-24
+SYN-0912,Quthing,Quthing,Other,0-3 years,0,0,5,unavailable,115.6,0.78,383,0,TRUE,2025-12-02
+SYN-0913,Maseru,Ha Thetsane,Other,13+ years,1,0,5,unavailable,16.4,0.7,1186,0,TRUE,2025-09-20
+SYN-0914,Maseru,Roma,Brakes,0-3 years,1,1,6,unavailable,2.7,0.74,1076,1,TRUE,2026-07-01
+SYN-0915,Leribe,Hlotse,Battery,13+ years,1,0,5,available,98.1,0.72,734,0,TRUE,2026-07-08
+SYN-0916,Berea,Sefikeng,Brakes,13+ years,0,0,9,available,123,0.71,423,0,TRUE,2025-10-22
+SYN-0917,Quthing,Quthing,Brakes,4-7 years,1,0,14,available,27.8,0.77,937,1,TRUE,2026-10-24
+SYN-0918,Berea,Mapoteng,Electrical,8-12 years,0,0,12,available,88.8,0.72,658,0,TRUE,2026-04-04
+SYN-0919,Quthing,Mount Moorosi,Brakes,4-7 years,0,0,8,available,110.2,0.78,706,0,TRUE,2025-09-17
+SYN-0920,Maseru,Khubetsoana,Brakes,4-7 years,0,1,14,unavailable,36.7,0.79,1121,0,TRUE,2026-05-01
+SYN-0921,Mohale's Hoek,Mpharane,Brakes,4-7 years,1,1,8,available,89.6,0.74,373,0,TRUE,2025-01-15
+SYN-0922,Maseru,Roma,Battery,8-12 years,0,1,15,unavailable,24.2,0.79,631,0,TRUE,2025-12-19
+SYN-0923,Qacha's Nek,Qacha's Nek,Engine,8-12 years,1,1,6,available,54.4,0.74,2099,1,TRUE,2025-03-10
+SYN-0924,Maseru,Maseru,Electrical,8-12 years,1,0,4,available,29.9,0.77,1479,1,TRUE,2026-04-15
+SYN-0925,Leribe,Maputsoe,Electrical,8-12 years,1,0,4,available,23.6,0.69,1106,1,TRUE,2025-02-08
+SYN-0926,Leribe,Maputsoe,Electrical,0-3 years,0,0,8,available,34.7,0.67,1559,0,TRUE,2026-05-20
+SYN-0927,Maseru,Mazenod,Battery,13+ years,0,1,18,unavailable,19.1,0.97,663,0,TRUE,2026-05-27
+SYN-0928,Mokhotlong,Tlokoeng,Brakes,13+ years,1,1,5,available,29.4,0.82,746,1,TRUE,2026-03-11
+SYN-0929,Berea,Teyateyaneng,Other,0-3 years,1,1,12,available,33.6,0.84,1161,1,TRUE,2025-10-03
+SYN-0930,Butha-Buthe,Oxbow,Battery,8-12 years,1,1,13,available,39.9,0.92,871,1,TRUE,2025-07-12
+SYN-0931,Mafeteng,Mafeteng,Brakes,13+ years,1,1,5,unavailable,39.8,0.85,1391,0,TRUE,2025-01-15
+SYN-0932,Thaba-Tseka,Thaba-Tseka,Other,8-12 years,1,1,6,available,92.6,0.77,838,0,TRUE,2025-08-01
+SYN-0933,Berea,Mapoteng,Electrical,8-12 years,1,1,17,available,80.4,0.92,541,1,TRUE,2025-03-09
+SYN-0934,Thaba-Tseka,Katse,Brakes,0-3 years,1,1,10,available,14,0.82,1070,1,TRUE,2025-11-06
+SYN-0935,Qacha's Nek,Sehlabathebe,Battery,8-12 years,0,1,5,unavailable,20.9,0.83,796,0,TRUE,2026-01-09
+SYN-0936,Maseru,Ha Thetsane,Other,0-3 years,0,1,10,available,27.1,0.88,779,1,TRUE,2025-11-07
+SYN-0937,Mohale's Hoek,Mpharane,Battery,4-7 years,1,1,9,available,103.7,0.89,275,1,TRUE,2026-03-21
+SYN-0938,Mohale's Hoek,Mohale's Hoek,Brakes,8-12 years,1,1,6,unavailable,94.2,0.74,490,0,TRUE,2026-06-27
+SYN-0939,Maseru,Khubetsoana,Other,0-3 years,1,1,7,unavailable,17.9,0.76,1106,0,TRUE,2025-05-09
+SYN-0940,Maseru,Mazenod,Engine,0-3 years,1,0,7,unavailable,18,0.7,1859,0,TRUE,2026-09-28
+SYN-0941,Berea,Sefikeng,Tyre,0-3 years,0,1,5,available,71.3,0.87,278,1,TRUE,2025-08-06
+SYN-0942,Butha-Buthe,Butha-Buthe,Electrical,4-7 years,1,1,8,available,36.2,0.77,458,1,TRUE,2025-12-08
+SYN-0943,Maseru,Khubetsoana,Other,13+ years,1,1,10,available,21.4,0.83,283,1,TRUE,2025-12-03
+SYN-0944,Leribe,Maputsoe,Electrical,4-7 years,1,1,5,unavailable,113.9,0.71,556,0,TRUE,2026-03-17
+SYN-0945,Maseru,Maseru,Electrical,4-7 years,1,1,5,available,2.9,0.7,467,1,TRUE,2025-01-05
+SYN-0946,Leribe,Peka,Brakes,4-7 years,0,1,10,available,60.2,0.83,517,0,TRUE,2026-07-11
+SYN-0947,Leribe,Peka,Engine,13+ years,0,1,10,available,8.3,0.87,2066,0,TRUE,2025-09-13
+SYN-0948,Mafeteng,Qalabane,Tyre,4-7 years,1,0,21,available,94.9,0.93,661,1,TRUE,2026-04-23
+SYN-0949,Thaba-Tseka,Thaba-Tseka,Engine,4-7 years,1,1,6,available,94.3,0.85,1716,1,TRUE,2026-04-04
+SYN-0950,Thaba-Tseka,Thaba-Tseka,Engine,4-7 years,0,1,5,available,107.8,0.74,2663,0,TRUE,2026-06-13
+SYN-0951,Maseru,Ha Thetsane,Tyre,8-12 years,0,0,14,available,33.5,0.77,479,0,TRUE,2025-10-14
+SYN-0952,Maseru,Khubetsoana,Battery,4-7 years,0,1,9,available,7.4,0.88,828,1,TRUE,2025-06-24
+SYN-0953,Maseru,Khubetsoana,Engine,4-7 years,0,1,6,available,17.4,0.82,2261,1,TRUE,2026-04-10
+SYN-0954,Maseru,Roma,Electrical,8-12 years,1,1,12,available,15.1,0.81,1522,1,TRUE,2026-05-19
+SYN-0955,Berea,Teyateyaneng,Battery,13+ years,1,0,10,available,97.9,0.68,787,0,TRUE,2025-11-24
+SYN-0956,Mohale's Hoek,Mohale's Hoek,Electrical,8-12 years,0,1,7,available,55.6,0.87,730,0,TRUE,2025-08-09
+SYN-0957,Maseru,Ha Thetsane,Brakes,4-7 years,1,0,8,available,22.4,0.72,496,1,TRUE,2025-03-09
+SYN-0958,Quthing,Mount Moorosi,Electrical,0-3 years,1,0,5,available,50.1,0.73,1320,1,TRUE,2026-03-01
+SYN-0959,Thaba-Tseka,Thaba-Tseka,Electrical,8-12 years,0,0,4,available,49.8,0.75,1044,0,TRUE,2026-02-25
+SYN-0960,Maseru,Roma,Battery,4-7 years,1,1,11,available,30.4,0.76,799,1,TRUE,2025-09-15
+SYN-0961,Leribe,Peka,Other,8-12 years,1,1,9,available,23.4,0.78,1121,1,TRUE,2026-09-19
+SYN-0962,Mohale's Hoek,Mohale's Hoek,Brakes,0-3 years,1,0,8,available,19.2,0.75,1454,1,TRUE,2025-05-06
+SYN-0963,Maseru,Khubetsoana,Engine,0-3 years,0,0,9,unavailable,27.4,0.78,754,0,TRUE,2026-05-15
+SYN-0964,Maseru,Mazenod,Battery,4-7 years,0,1,4,available,26.1,0.79,502,1,TRUE,2026-02-01
+SYN-0965,Maseru,Mazenod,Other,13+ years,1,1,7,unavailable,31.3,0.77,576,0,TRUE,2025-05-25
+SYN-0966,Mokhotlong,Mokhotlong,Electrical,4-7 years,1,1,11,available,12.2,0.89,737,1,TRUE,2026-08-05
+SYN-0967,Mafeteng,Qalabane,Battery,4-7 years,1,1,7,available,108.3,0.83,655,1,TRUE,2025-10-22
+SYN-0968,Leribe,Maputsoe,Other,4-7 years,0,1,9,unavailable,80.7,0.85,464,0,TRUE,2025-05-09
+SYN-0969,Maseru,Ha Thetsane,Engine,8-12 years,0,0,7,available,39,0.72,2647,0,TRUE,2026-06-10
+SYN-0970,Leribe,Peka,Electrical,8-12 years,0,1,5,available,45.7,0.78,858,0,TRUE,2025-08-10
+SYN-0971,Quthing,Mount Moorosi,Brakes,4-7 years,0,0,9,unavailable,86.1,0.75,1140,0,TRUE,2025-07-25
+SYN-0972,Mohale's Hoek,Mpharane,Engine,4-7 years,1,0,11,available,113.3,0.82,1624,0,TRUE,2026-04-21
+SYN-0973,Maseru,Roma,Brakes,13+ years,1,1,9,unavailable,2,0.84,601,1,TRUE,2025-06-11
+SYN-0974,Mohale's Hoek,Mohale's Hoek,Battery,8-12 years,1,1,8,available,95.5,0.8,519,1,TRUE,2026-01-13
+SYN-0975,Leribe,Hlotse,Battery,8-12 years,0,1,6,available,84.8,0.8,510,0,TRUE,2026-07-19
+SYN-0976,Butha-Buthe,Butha-Buthe,Tyre,4-7 years,0,1,7,available,78.7,0.76,291,0,TRUE,2026-09-14
+SYN-0977,Butha-Buthe,Butha-Buthe,Engine,4-7 years,1,1,18,unavailable,53.9,0.84,625,0,TRUE,2026-10-27
+SYN-0978,Quthing,Mount Moorosi,Electrical,0-3 years,1,1,15,available,66.8,0.86,1501,1,TRUE,2025-03-08
+SYN-0979,Butha-Buthe,Oxbow,Brakes,8-12 years,0,0,18,available,72.7,0.87,754,0,TRUE,2025-07-10
+SYN-0980,Berea,Sefikeng,Electrical,0-3 years,1,0,7,unavailable,38,0.72,741,0,TRUE,2025-12-25
+SYN-0981,Thaba-Tseka,Katse,Electrical,4-7 years,1,0,9,available,66.8,0.67,974,0,TRUE,2025-10-04
+SYN-0982,Maseru,Ha Thetsane,Brakes,13+ years,0,0,11,available,34.3,0.77,369,0,TRUE,2025-11-18
+SYN-0983,Butha-Buthe,Butha-Buthe,Tyre,8-12 years,0,0,8,available,87.6,0.74,575,0,TRUE,2026-04-20
+SYN-0984,Maseru,Ha Thetsane,Brakes,8-12 years,0,1,15,available,10,0.94,357,1,TRUE,2026-10-04
+SYN-0985,Maseru,Mazenod,Other,4-7 years,1,1,13,unavailable,38.6,0.81,385,1,TRUE,2025-11-28
+SYN-0986,Quthing,Mount Moorosi,Battery,13+ years,0,1,7,available,39.6,0.72,628,0,TRUE,2025-08-20
+SYN-0987,Maseru,Maseru,Battery,4-7 years,1,1,8,available,10.6,0.77,833,1,TRUE,2026-10-22
+SYN-0988,Berea,Teyateyaneng,Engine,4-7 years,0,1,6,available,88.8,0.82,1974,0,TRUE,2025-09-09
+SYN-0989,Quthing,Mount Moorosi,Engine,8-12 years,1,0,5,available,89,0.69,1443,0,TRUE,2025-06-25
+SYN-0990,Maseru,Roma,Brakes,4-7 years,1,1,9,available,13.3,0.81,938,1,TRUE,2025-04-12
+SYN-0991,Mokhotlong,Tlokoeng,Battery,4-7 years,0,1,9,available,57.4,0.77,263,1,TRUE,2025-09-24
+SYN-0992,Maseru,Mazenod,Brakes,0-3 years,0,1,7,unavailable,8.4,0.86,532,0,TRUE,2025-01-27
+SYN-0993,Maseru,Mazenod,Tyre,0-3 years,1,1,8,unavailable,16.3,0.82,731,1,TRUE,2025-12-18
+SYN-0994,Leribe,Hlotse,Tyre,8-12 years,0,1,7,available,43.4,0.75,673,1,TRUE,2025-06-12
+SYN-0995,Butha-Buthe,Butha-Buthe,Battery,8-12 years,1,0,6,available,80.5,0.63,431,1,TRUE,2025-11-26
+SYN-0996,Maseru,Maseru,Tyre,8-12 years,1,0,17,available,38.1,0.76,495,1,TRUE,2026-07-01
+SYN-0997,Maseru,Maseru,Battery,8-12 years,0,1,5,unavailable,21.5,0.7,813,0,TRUE,2025-03-25
+SYN-0998,Maseru,Roma,Brakes,8-12 years,1,1,11,unavailable,19.8,0.9,486,0,TRUE,2026-01-18
+SYN-0999,Quthing,Mount Moorosi,Electrical,8-12 years,1,1,6,unavailable,28.7,0.8,1474,1,TRUE,2025-11-28
+SYN-1000,Mafeteng,Qalabane,Engine,8-12 years,0,0,6,available,96.6,0.75,1812,0,TRUE,2026-10-14

@@ -22,7 +22,15 @@ export function DemoTag() {
   );
 }
 
-export function MechanicCard({ m }: { m: Mechanic }) {
+export function MechanicCard({
+  m,
+  specialtyMayNotMatch = false,
+  aiScore,
+}: {
+  m: Mechanic;
+  specialtyMayNotMatch?: boolean;
+  aiScore?: number;
+}) {
   return (
     <Link
       to="/mechanics/$id"
@@ -35,6 +43,11 @@ export function MechanicCard({ m }: { m: Mechanic }) {
           <h3 className="truncate font-semibold">{m.name}</h3>
           {m.verified && <BadgeCheck className="size-4 shrink-0 text-primary" />}
           {m.is_demo && <DemoTag />}
+          {aiScore !== undefined && (
+            <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+              {aiScore.toFixed(0)}% Match
+            </span>
+          )}
         </div>
         <p className="truncate text-sm text-muted-foreground">{m.workshop}</p>
         <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
@@ -52,6 +65,9 @@ export function MechanicCard({ m }: { m: Mechanic }) {
             <span key={s} className="rounded-md bg-accent px-2 py-0.5 text-[11px]">{s}</span>
           ))}
         </div>
+        {specialtyMayNotMatch && (
+          <p className="mt-2 text-xs text-warning">Specialty may not match your selected problem.</p>
+        )}
       </div>
     </Link>
   );

@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import type { DocumentSnapshot, Transaction } from "firebase-admin/firestore";
+import type { DocumentReference, DocumentSnapshot, Transaction } from "firebase-admin/firestore";
 import { getFirestore } from "firebase-admin/firestore";
 
 export type MechanicRecord = {
@@ -25,6 +25,25 @@ export type RequestRecord = {
 };
 
 const GENESIS_PREV = "0".repeat(64);
+
+/**
+ * GDPR Art. 17 for the ledger: block hashes cannot be erased, but each fingerprint is
+ * SHA-256(salt | record). Deleting the private salt makes the on-chain/ledger hash impossible
+ * to re-link to the person. Returns the ledger_secrets documents to delete for these record refs.
+ */
+export async function ledgerSaltRefs(recordRefs: string[]): Promise<DocumentReference[]> {
+  const db = getFirestore();
+  const unique = [...new Set(recordRefs.filter((ref) => typeof ref === "string" && ref.length > 0))];
+  const refs: DocumentReference[] = [];
+  for (let i = 0; i < unique.length; i += 30) {
+    const blocks = await db
+      .collection("ledger_blocks")
+      .where("record_ref", "in", unique.slice(i, i + 30))
+      .get();
+    for (const block of blocks.docs) refs.push(db.doc(`ledger_secrets/${block.id}`));
+  }
+  return refs;
+}
 
 export function ledgerHeadRef() {
   return getFirestore().doc("ledger_state/head");

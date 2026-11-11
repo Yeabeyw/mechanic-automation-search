@@ -42,7 +42,7 @@ export function LedgerProof({ recordRef, snapshot }: { recordRef: string; snapsh
         message: !chainOk
           ? "Ledger chain verification failed."
           : recordOk
-            ? `Current record fingerprint matches the simulated proof ${short(latestBlock.record_hash ?? "")}.`
+            ? `Current record fingerprint matches the ledger proof ${short(latestBlock.record_hash ?? "")}.`
             : "Current record differs from its latest fingerprint, or its proof is missing.",
       });
     } catch (verificationError) {
@@ -60,7 +60,7 @@ export function LedgerProof({ recordRef, snapshot }: { recordRef: string; snapsh
       <div className="flex flex-wrap items-center gap-2">
         <Link2 className="size-4 text-primary" />
         <span className="font-semibold">
-          {snapshot.type === "mechanic" ? "Mechanic verification" : "Request history"} proof · Hash-chain
+          {snapshot.type === "mechanic" ? "Mechanic verification" : "Request history"} proof · Blockchain ledger
           {" · "}{availableBlocks.length} event{availableBlocks.length > 1 ? "s" : ""}
         </span>
         <span className="rounded-full bg-warning/15 px-2 py-0.5 font-medium text-warning">

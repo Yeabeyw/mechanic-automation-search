@@ -1,11 +1,18 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listAuditLog = exports.getSecurityPolicy = exports.setUserRole = exports.listUserRoles = exports.verifyLedgerRecord = exports.verifyMechanic = exports.submitReview = exports.updateServiceRequestStatus = exports.cancelServiceRequest = exports.createServiceRequest = exports.setMechanicAvailability = exports.submitMechanicApplication = exports.updateMyProfile = exports.ensureUserProfile = void 0;
+exports.listAuditLog = exports.publishAiModels = exports.publishAiDataset = exports.anonymizeOldRequests = exports.deleteUser = exports.recordDataExport = exports.recordSecurityConsoleAccess = exports.beforeSignInAudit = exports.getSecurityPolicy = exports.setUserRole = exports.listUserRoles = exports.verifyLedgerRecord = exports.reassignServiceRequest = exports.suspendMechanic = exports.verifyMechanic = exports.submitReview = exports.getMechanicInbox = exports.updateServiceRequestStatus = exports.cancelServiceRequest = exports.createServiceRequest = exports.setMechanicAvailability = exports.submitMechanicApplication = exports.updateMyVehicles = exports.updateMyProfile = exports.ensureUserProfile = void 0;
 const node_crypto_1 = require("node:crypto");
 const app_1 = require("firebase-admin/app");
+const auth_1 = require("firebase-admin/auth");
 const firestore_1 = require("firebase-admin/firestore");
 const v2_1 = require("firebase-functions/v2");
+const identity_1 = require("firebase-functions/v2/identity");
+const scheduler_1 = require("firebase-functions/v2/scheduler");
 const https_1 = require("firebase-functions/v2/https");
+const security_policy_json_1 = __importDefault(require("./security-policy.json"));
 const ledger_js_1 = require("./ledger.js");
 (0, app_1.initializeApp)();
 (0, v2_1.setGlobalOptions)({ region: "africa-south1", maxInstances: 10 });
@@ -49,7 +56,6 @@ function roleList(data) {
     if (!Array.isArray(roles))
         return [];
     return roles.filter((role) => role === "customer" ||
-        role === "mechanic" ||
         role === "admin" ||
         role === "security_admin");
 }
@@ -86,6 +92,10 @@ exports.ensureUserProfile = (0, https_1.onCall)(async (request) => {
             }
             return roleList(profile.data());
         }
+        if (data.consentAccepted !== true) {
+            throw new https_1.HttpsError("failed-precondition", "Privacy notice consent is required to create an account.");
+        }
+        const policyVersion = textField(data, "policyVersion", 40);
         const tokenName = request.auth?.token.name;
         const tokenEmail = request.auth?.token.email;
         const createdRoles = ["customer"];
@@ -94,6 +104,11 @@ exports.ensureUserProfile = (0, https_1.onCall)(async (request) => {
             email: typeof tokenEmail === "string" ? tokenEmail : "",
             roles: createdRoles,
             created_at: new Date().toISOString(),
+            consent: {
+                accepted: true,
+                accepted_at: firestore_1.FieldValue.serverTimestamp(),
+                policy_version: policyVersion,
+            },
         });
         return createdRoles;
     });
@@ -116,12 +131,41 @@ exports.updateMyProfile = (0, https_1.onCall)(async (request) => {
     });
     return { ok: true };
 });
+exports.updateMyVehicles = (0, https_1.onCall)(async (request) => {
+    const uid = requireUid(request);
+    const data = inputObject(request.data);
+    if (!Array.isArray(data.vehicles) || data.vehicles.length > 5) {
+        throw new https_1.HttpsError("invalid-argument", "Add no more than five vehicles.");
+    }
+    const vehicles = data.vehicles.map((value) => {
+        const vehicle = inputObject(value);
+        const make = textField(vehicle, "make", 40);
+        const model = textField(vehicle, "model", 40);
+        const year = vehicle.year === null || vehicle.year === undefined || vehicle.year === ""
+            ? null
+            : Number(vehicle.year);
+        if (year !== null && (!Number.isInteger(year) || year < 1970 || year > new Date().getFullYear() + 1)) {
+            throw new https_1.HttpsError("invalid-argument", "Vehicle year is outside the supported range.");
+        }
+        return { make, model, year };
+    });
+    const userRef = db.doc(`users/${uid}`);
+    await db.runTransaction(async (transaction) => {
+        const profile = await transaction.get(userRef);
+        if (!profile.exists)
+            throw new https_1.HttpsError("failed-precondition", "Your profile is not ready.");
+        transaction.update(userRef, { vehicles });
+        writeAuditLogInTransaction(transaction, uid, "updateMyVehicles", uid, null, "Allowed", "Customer updated their vehicle list");
+    });
+    return { ok: true };
+});
 exports.submitMechanicApplication = (0, https_1.onCall)(async (request) => {
     const uid = requireUid(request);
     const data = inputObject(request.data);
     const name = textField(data, "name", 80);
     const workshop = textField(data, "workshop", 80);
     const town = textField(data, "town", 80);
+    const idReference = textField(data, "id_reference", 100);
     const bio = optionalText(data.bio, 300);
     const experienceYears = Number(data.experience_years);
     const specialties = data.specialties;
@@ -138,19 +182,21 @@ exports.submitMechanicApplication = (0, https_1.onCall)(async (request) => {
     const userRef = db.doc(`users/${uid}`);
     const mechanicRef = db.doc(`mechanics/${uid}`);
     const mechanicOwnerRef = db.doc(`mechanic_owners/${uid}`);
+    const privateRef = db.doc(`mechanic_private/${uid}`);
     const result = await db.runTransaction(async (transaction) => {
-        const [profile, existingMechanic, existingOwner, head] = await Promise.all([
+        const [profile, existingMechanic, existingOwner, existingPrivate, head] = await Promise.all([
             transaction.get(userRef),
             transaction.get(mechanicRef),
             transaction.get(mechanicOwnerRef),
+            transaction.get(privateRef),
             transaction.get((0, ledger_js_1.ledgerHeadRef)()),
         ]);
-        if (!profile.exists)
-            throw new https_1.HttpsError("failed-precondition", "Your Firebase profile is not ready.");
-        if (existingMechanic.exists || existingOwner.exists) {
+        if (!profile.exists || !roleList(profile.data()).includes("customer")) {
+            throw new https_1.HttpsError("failed-precondition", "Your Firebase customer profile is not ready.");
+        }
+        if (existingMechanic.exists || existingOwner.exists || existingPrivate.exists) {
             throw new https_1.HttpsError("already-exists", "This account already has a mechanic application.");
         }
-        const roles = [...new Set([...roleList(profile.data()), "mechanic"])];
         const mechanic = {
             id: uid,
             code: mechanicCode(uid),
@@ -161,6 +207,7 @@ exports.submitMechanicApplication = (0, https_1.onCall)(async (request) => {
             specialties,
             bio,
             verified: false,
+            status: "pending",
             available: false,
             jobs_completed: 0,
             rating: 0,
@@ -174,8 +221,12 @@ exports.submitMechanicApplication = (0, https_1.onCall)(async (request) => {
             mechanic_id: uid,
             created_at: mechanic.created_at,
         });
-        transaction.update(userRef, { roles });
+        transaction.create(privateRef, {
+            id_reference: idReference,
+            submitted_at: mechanic.created_at,
+        });
         await (0, ledger_js_1.appendLedgerEvent)(transaction, head, "MECHANIC_APPLIED", "mechanic", mechanic.code, recordMetadata("MECHANIC_APPLIED", mechanic.code, { verified: false }), (0, ledger_js_1.mechanicRecord)(mechanic));
+        writeAuditLogInTransaction(transaction, uid, "submitMechanicApplication", uid, null, "Allowed", "Mechanic application submitted", { record_ref: mechanic.code, after_status: "pending" });
         return { id: uid };
     });
     return result;
@@ -196,7 +247,11 @@ exports.setMechanicAvailability = (0, https_1.onCall)(async (request) => {
         if (!mechanic.exists || !owner.exists || owner.get("user_id") !== uid) {
             throw new https_1.HttpsError("permission-denied", "Only the workshop owner can change availability.");
         }
+        if (mechanic.get("verified") !== true) {
+            throw new https_1.HttpsError("failed-precondition", "Only an admin-verified workshop can change availability.");
+        }
         transaction.update(mechanicRef, { available: data.available });
+        writeAuditLogInTransaction(transaction, uid, "setMechanicAvailability", null, null, "Allowed", "Mechanic availability changed", { record_ref: String(mechanic.get("code")), after_status: data.available ? "available" : "unavailable" });
     });
 });
 exports.createServiceRequest = (0, https_1.onCall)(async (request) => {
@@ -222,6 +277,7 @@ exports.createServiceRequest = (0, https_1.onCall)(async (request) => {
     const mechanicRef = db.doc(`mechanics/${mechanicId}`);
     const mechanicOwnerRef = db.doc(`mechanic_owners/${mechanicId}`);
     const requestRef = db.collection("service_requests").doc();
+    const privateRef = db.doc(`service_request_private/${requestRef.id}`);
     const ref = nextReference();
     const createdAt = new Date().toISOString();
     const newRequest = {
@@ -229,16 +285,20 @@ exports.createServiceRequest = (0, https_1.onCall)(async (request) => {
         ref,
         customer_id: uid,
         mechanic_id: mechanicId,
+        mechanic_code: "",
         mechanic_owner_id: "",
         category,
+        status: "sent",
+        status_history: [{ status: "sent", actor_uid: uid, changed_at: createdAt }],
+        created_at: createdAt,
+        updated_at: createdAt,
+    };
+    const privateRequest = {
+        description,
+        contact_phone: contactPhone,
         vehicle_make: vehicleMake,
         vehicle_model: vehicleModel,
         vehicle_year: vehicleYear,
-        description,
-        contact_phone: contactPhone,
-        status: "sent",
-        created_at: createdAt,
-        updated_at: createdAt,
     };
     await db.runTransaction(async (transaction) => {
         const [customer, mechanic, mechanicOwner, head] = await Promise.all([
@@ -252,17 +312,26 @@ exports.createServiceRequest = (0, https_1.onCall)(async (request) => {
         }
         if (!mechanic.exists ||
             mechanic.get("verified") !== true ||
+            mechanic.get("available") !== true ||
             !mechanicOwner.exists ||
             typeof mechanicOwner.get("user_id") !== "string") {
             throw new https_1.HttpsError("not-found", "This mechanic is not available for new requests.");
         }
         newRequest.mechanic_owner_id = String(mechanicOwner.get("user_id"));
+        newRequest.mechanic_code = String(mechanic.get("code"));
         transaction.create(requestRef, newRequest);
+        transaction.create(privateRef, {
+            ...privateRequest,
+            customer_id: uid,
+            mechanic_owner_id: newRequest.mechanic_owner_id,
+            customer_name: String(customer.get("full_name") ?? ""),
+        });
+        writeAuditLogInTransaction(transaction, uid, "createServiceRequest", null, null, "Allowed", "Customer request created", { record_ref: ref, after_status: "sent" });
         await (0, ledger_js_1.appendLedgerEvent)(transaction, head, "REQUEST_SENT", "service_request", ref, recordMetadata("REQUEST_SENT", ref, {
             category,
             mechanicCode: mechanic.get("code"),
             status: "sent",
-        }), (0, ledger_js_1.requestRecord)(newRequest, String(mechanic.get("code"))));
+        }), (0, ledger_js_1.requestRecord)({ ...newRequest, ...privateRequest }, String(mechanic.get("code"))));
     });
     return { id: requestRef.id, ref };
 });
@@ -271,25 +340,47 @@ exports.cancelServiceRequest = (0, https_1.onCall)(async (request) => {
     const data = inputObject(request.data);
     const id = textField(data, "id", 128);
     const requestRef = db.doc(`service_requests/${id}`);
+    const privateRef = db.doc(`service_request_private/${id}`);
     await db.runTransaction(async (transaction) => {
-        const [serviceRequest, head] = await Promise.all([
+        const [serviceRequest, privateRequest, head] = await Promise.all([
             transaction.get(requestRef),
+            transaction.get(privateRef),
             transaction.get((0, ledger_js_1.ledgerHeadRef)()),
         ]);
         if (!serviceRequest.exists || serviceRequest.get("customer_id") !== uid) {
             throw new https_1.HttpsError("permission-denied", "You can only cancel your own requests.");
         }
         const currentStatus = asRequestStatus(serviceRequest.get("status"));
-        if (currentStatus !== "sent" && currentStatus !== "accepted") {
+        if (currentStatus !== "sent") {
             throw new https_1.HttpsError("failed-precondition", "This request can no longer be cancelled.");
         }
-        const mechanicRef = db.doc(`mechanics/${String(serviceRequest.get("mechanic_id"))}`);
-        const mechanic = await transaction.get(mechanicRef);
-        if (!mechanic.exists)
-            throw new https_1.HttpsError("failed-precondition", "The assigned mechanic no longer exists.");
-        const updatedRequest = { ...serviceRequest.data(), status: "cancelled" };
-        transaction.update(requestRef, { status: "cancelled", updated_at: new Date().toISOString() });
-        await (0, ledger_js_1.appendLedgerEvent)(transaction, head, "REQUEST_CANCELLED", "service_request", String(serviceRequest.get("ref")), recordMetadata("REQUEST_CANCELLED", String(serviceRequest.get("ref")), { status: "cancelled" }), (0, ledger_js_1.requestRecord)(updatedRequest, String(mechanic.get("code"))));
+        const mechanicId = String(serviceRequest.get("mechanic_id") ?? "");
+        const mechanic = mechanicId
+            ? await transaction.get(db.doc(`mechanics/${mechanicId}`))
+            : null;
+        const history = Array.isArray(serviceRequest.get("status_history"))
+            ? serviceRequest.get("status_history")
+            : [];
+        const changedAt = new Date().toISOString();
+        const updatedRequest = {
+            ...serviceRequest.data(),
+            ...(privateRequest.data() ?? {}),
+            status: "cancelled",
+        };
+        transaction.update(requestRef, {
+            status: "cancelled",
+            updated_at: changedAt,
+            status_history: [
+                ...history,
+                { status: "cancelled", actor_uid: uid, changed_at: changedAt },
+            ],
+        });
+        writeAuditLogInTransaction(transaction, uid, "cancelServiceRequest", null, null, "Allowed", "Customer cancelled a request before mechanic acceptance", {
+            record_ref: String(serviceRequest.get("ref")),
+            before_status: currentStatus,
+            after_status: "cancelled",
+        });
+        await (0, ledger_js_1.appendLedgerEvent)(transaction, head, "REQUEST_CANCELLED", "service_request", String(serviceRequest.get("ref")), recordMetadata("REQUEST_CANCELLED", String(serviceRequest.get("ref")), { status: "cancelled" }), (0, ledger_js_1.requestRecord)(updatedRequest, String(serviceRequest.get("mechanic_code") ?? (mechanic?.exists ? mechanic.get("code") : ""))));
     });
 });
 exports.updateServiceRequestStatus = (0, https_1.onCall)(async (request) => {
@@ -302,21 +393,32 @@ exports.updateServiceRequestStatus = (0, https_1.onCall)(async (request) => {
         const serviceRequest = await transaction.get(requestRef);
         if (!serviceRequest.exists)
             throw new https_1.HttpsError("not-found", "Request not found.");
-        const mechanicId = String(serviceRequest.get("mechanic_id"));
+        const assignedOwnerId = String(serviceRequest.get("mechanic_owner_id") ?? "");
+        const isPoolRequest = serviceRequest.get("status") === "sent" && assignedOwnerId === "";
+        if (assignedOwnerId && assignedOwnerId !== uid) {
+            throw new https_1.HttpsError("permission-denied", "Only the assigned mechanic can update this request.");
+        }
+        if (isPoolRequest && nextStatus !== "accepted") {
+            throw new https_1.HttpsError("failed-precondition", "A pooled request must be accepted before it can change.");
+        }
+        const mechanicId = isPoolRequest ? uid : String(serviceRequest.get("mechanic_id"));
         const mechanicRef = db.doc(`mechanics/${mechanicId}`);
         const mechanicOwnerRef = db.doc(`mechanic_owners/${mechanicId}`);
-        const userRef = db.doc(`users/${uid}`);
-        const [mechanic, mechanicOwner, profile, head] = await Promise.all([
+        const privateRef = db.doc(`service_request_private/${id}`);
+        const [mechanic, mechanicOwner, privateRequest, head] = await Promise.all([
             transaction.get(mechanicRef),
             transaction.get(mechanicOwnerRef),
-            transaction.get(userRef),
+            transaction.get(privateRef),
             transaction.get((0, ledger_js_1.ledgerHeadRef)()),
         ]);
         if (!mechanic.exists ||
             !mechanicOwner.exists ||
             mechanicOwner.get("user_id") !== uid ||
-            !roleList(profile.data()).includes("mechanic")) {
+            mechanic.get("verified") !== true) {
             throw new https_1.HttpsError("permission-denied", "Only the assigned mechanic can update this request.");
+        }
+        if (isPoolRequest && mechanic.get("available") !== true) {
+            throw new https_1.HttpsError("failed-precondition", "Turn availability on before accepting a pooled request.");
         }
         const currentStatus = asRequestStatus(serviceRequest.get("status"));
         const allowed = {
@@ -327,18 +429,142 @@ exports.updateServiceRequestStatus = (0, https_1.onCall)(async (request) => {
         if (!allowed[currentStatus]?.includes(nextStatus)) {
             throw new https_1.HttpsError("failed-precondition", `Cannot move a request from ${currentStatus} to ${nextStatus}.`);
         }
-        const updatedRequest = { ...serviceRequest.data(), status: nextStatus };
+        const changedAt = new Date().toISOString();
+        const previousHistory = serviceRequest.get("status_history");
+        const history = Array.isArray(previousHistory) ? previousHistory : [];
+        const historyEntry = {
+            status: nextStatus === "declined" ? "declined" : nextStatus,
+            actor_uid: uid,
+            changed_at: changedAt,
+            ...(nextStatus === "declined"
+                ? {
+                    mechanic_id: mechanicId,
+                    note: "Returned to the available mechanic pool",
+                }
+                : {}),
+        };
+        const nextHistory = nextStatus === "declined"
+            ? [
+                ...history,
+                historyEntry,
+                { status: "sent", actor_uid: uid, changed_at: changedAt, note: "Available to other verified mechanics" },
+            ]
+            : [...history, historyEntry];
+        const returnToPool = nextStatus === "declined";
+        const effectiveStatus = returnToPool ? "sent" : nextStatus;
         const updates = {
-            status: nextStatus,
-            updated_at: new Date().toISOString(),
+            status: effectiveStatus,
+            updated_at: changedAt,
+            status_history: nextHistory,
+            ...(isPoolRequest && nextStatus === "accepted"
+                ? {
+                    mechanic_id: mechanicId,
+                    mechanic_code: String(mechanic.get("code")),
+                    mechanic_owner_id: uid,
+                }
+                : {}),
+            ...(returnToPool ? { mechanic_id: "", mechanic_owner_id: "" } : {}),
+        };
+        const updatedRequest = {
+            ...serviceRequest.data(),
+            ...(privateRequest.data() ?? {}),
+            ...updates,
+            ...(returnToPool ? { mechanic_id: "", mechanic_owner_id: "" } : {}),
         };
         transaction.update(requestRef, updates);
+        if (isPoolRequest && nextStatus === "accepted" && privateRequest.exists) {
+            transaction.update(privateRef, { mechanic_owner_id: uid });
+        }
+        if (returnToPool && privateRequest.exists) {
+            transaction.update(privateRef, { mechanic_owner_id: "" });
+        }
         if (nextStatus === "completed") {
             transaction.update(mechanicRef, { jobs_completed: firestore_1.FieldValue.increment(1) });
         }
-        const eventType = `REQUEST_${nextStatus.toUpperCase()}`;
-        await (0, ledger_js_1.appendLedgerEvent)(transaction, head, eventType, "service_request", String(serviceRequest.get("ref")), recordMetadata(eventType, String(serviceRequest.get("ref")), { status: nextStatus }), (0, ledger_js_1.requestRecord)(updatedRequest, String(mechanic.get("code"))));
+        writeAuditLogInTransaction(transaction, uid, "updateServiceRequestStatus", null, null, "Allowed", "Service request status changed", {
+            record_ref: String(serviceRequest.get("ref")),
+            before_status: currentStatus,
+            after_status: effectiveStatus,
+            ...(returnToPool ? { note: "Request returned to the pool after mechanic decline" } : {}),
+        });
+        const eventType = returnToPool
+            ? "REQUEST_DECLINED_AND_RETURNED_TO_POOL"
+            : `REQUEST_${nextStatus.toUpperCase()}`;
+        await (0, ledger_js_1.appendLedgerEvent)(transaction, head, eventType, "service_request", String(serviceRequest.get("ref")), recordMetadata(eventType, String(serviceRequest.get("ref")), { status: effectiveStatus }), (0, ledger_js_1.requestRecord)(updatedRequest, String(mechanic.get("code"))));
     });
+});
+exports.getMechanicInbox = (0, https_1.onCall)(async (request) => {
+    const uid = requireUid(request);
+    const [mechanic, owner] = await Promise.all([
+        db.doc(`mechanics/${uid}`).get(),
+        db.doc(`mechanic_owners/${uid}`).get(),
+    ]);
+    if (!mechanic.exists ||
+        !owner.exists ||
+        owner.get("user_id") !== uid ||
+        mechanic.get("verified") !== true ||
+        mechanic.get("status") === "suspended") {
+        throw new https_1.HttpsError("permission-denied", "A verified workshop account is required.");
+    }
+    const assignedQuery = db
+        .collection("service_requests")
+        .where("mechanic_owner_id", "==", uid)
+        .orderBy("created_at", "desc")
+        .limit(50);
+    const poolQuery = mechanic.get("available") === true
+        ? db
+            .collection("service_requests")
+            .where("mechanic_owner_id", "==", "")
+            .where("status", "==", "sent")
+            .orderBy("created_at", "desc")
+            .limit(50)
+            .get()
+        : Promise.resolve(null);
+    const [assigned, pool] = await Promise.all([assignedQuery.get(), poolQuery]);
+    const records = new Map([
+        ...assigned.docs.map((snapshot) => [snapshot.id, snapshot]),
+        ...(pool?.docs ?? []).map((snapshot) => [snapshot.id, snapshot]),
+    ]);
+    return {
+        requests: await Promise.all([...records.values()].map(async (snapshot) => {
+            const row = snapshot.data();
+            const history = Array.isArray(row.status_history) ? row.status_history : [];
+            const assignedToThisMechanic = row.mechanic_owner_id === uid;
+            const mayReadDetails = assignedToThisMechanic &&
+                ["accepted", "in_progress", "completed"].includes(String(row.status));
+            const response = {
+                id: snapshot.id,
+                ref: row.ref,
+                category: row.category,
+                mechanic_id: row.mechanic_id,
+                mechanic_owner_id: row.mechanic_owner_id,
+                status: row.status,
+                status_history: history.map((event) => ({
+                    status: event.status,
+                    changed_at: event.changed_at,
+                })),
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+                returned_to_pool: !row.mechanic_owner_id &&
+                    history.some((event) => event.status === "declined"),
+            };
+            if (mayReadDetails) {
+                const privateRequest = await db
+                    .doc(`service_request_private/${snapshot.id}`)
+                    .get();
+                if (privateRequest.exists) {
+                    const privateData = privateRequest.data() ?? {};
+                    response.vehicle_make = privateData.vehicle_make ?? "";
+                    response.vehicle_model = privateData.vehicle_model ?? "";
+                    response.vehicle_year = privateData.vehicle_year ?? null;
+                    response.description = privateData.description ?? "";
+                    response.contact_phone = privateData.contact_phone ?? null;
+                    response.customer_name = privateData.customer_name ?? null;
+                }
+            }
+            return response;
+        })),
+    };
 });
 exports.submitReview = (0, https_1.onCall)(async (request) => {
     const uid = requireUid(request);
@@ -382,11 +608,12 @@ exports.submitReview = (0, https_1.onCall)(async (request) => {
             comment,
             created_at: createdAt,
         };
+        const ref = String(serviceRequest.get("ref"));
         const previousRatings = existingReviews.docs.reduce((total, reviewSnapshot) => total + Number(reviewSnapshot.get("rating") || 0), 0);
         const newRating = Number(((previousRatings + rating) / (existingReviews.size + 1)).toFixed(2));
         transaction.create(reviewRef, review);
         transaction.update(mechanicRef, { rating: newRating });
-        const ref = String(serviceRequest.get("ref"));
+        writeAuditLogInTransaction(transaction, uid, "submitReview", null, null, "Allowed", "Customer reviewed a completed job", { record_ref: ref, after_status: "reviewed" });
         const eventType = "REVIEW_SUBMITTED";
         await (0, ledger_js_1.appendLedgerEvent)(transaction, head, eventType, "review", ref, recordMetadata(eventType, ref, { rating }));
     });
@@ -410,22 +637,136 @@ exports.verifyMechanic = (0, https_1.onCall)(async (request) => {
             throw new https_1.HttpsError("not-found", "Mechanic not found.");
         if (mechanic.get("verified") === true)
             return;
-        const verifiedMechanic = { ...mechanic.data(), verified: true };
-        transaction.update(mechanicRef, { verified: true });
+        const verifiedMechanic = { ...mechanic.data(), verified: true, status: "verified" };
+        transaction.update(mechanicRef, { verified: true, status: "verified" });
         await (0, ledger_js_1.appendLedgerEvent)(transaction, head, "MECHANIC_VERIFIED", "mechanic", String(mechanic.get("code")), recordMetadata("MECHANIC_VERIFIED", String(mechanic.get("code")), { verified: true }), (0, ledger_js_1.mechanicRecord)(verifiedMechanic));
-        const auditRef = db.collection("security_audit").doc();
-        transaction.create(auditRef, {
-            actor_uid: uid,
-            action: "verifyMechanic",
-            target_uid: id,
-            role_changed: null,
-            result: "Allowed",
-            reason: "Mechanic verified by admin",
-            timestamp: Math.floor(Date.now() / 1000),
+        writeAuditLogInTransaction(transaction, uid, "verifyMechanic", null, null, "Allowed", "Mechanic verified by admin", {
             record_ref: String(mechanic.get("code")),
             before_status: "unverified",
             after_status: "verified",
         });
+    });
+});
+exports.suspendMechanic = (0, https_1.onCall)(async (request) => {
+    const uid = requireUid(request);
+    const data = inputObject(request.data);
+    const id = textField(data, "id", 128);
+    const mechanicRef = db.doc(`mechanics/${id}`);
+    await db.runTransaction(async (transaction) => {
+        const [profile, mechanic, head] = await Promise.all([
+            transaction.get(db.doc(`users/${uid}`)),
+            transaction.get(mechanicRef),
+            transaction.get((0, ledger_js_1.ledgerHeadRef)()),
+        ]);
+        if (!roleList(profile.data()).includes("admin")) {
+            throw new https_1.HttpsError("permission-denied", "Administrator access is required.");
+        }
+        if (!mechanic.exists)
+            throw new https_1.HttpsError("not-found", "Mechanic not found.");
+        if (mechanic.get("verified") !== true)
+            return;
+        const suspendedMechanic = {
+            ...mechanic.data(),
+            verified: false,
+            available: false,
+            status: "suspended",
+        };
+        transaction.update(mechanicRef, { verified: false, available: false, status: "suspended" });
+        await (0, ledger_js_1.appendLedgerEvent)(transaction, head, "MECHANIC_SUSPENDED", "mechanic", String(mechanic.get("code")), recordMetadata("MECHANIC_SUSPENDED", String(mechanic.get("code")), { verified: false }), (0, ledger_js_1.mechanicRecord)(suspendedMechanic));
+        writeAuditLogInTransaction(transaction, uid, "suspendMechanic", null, null, "Allowed", "Mechanic suspended by admin", {
+            record_ref: String(mechanic.get("code")),
+            before_status: "verified",
+            after_status: "suspended",
+        });
+    });
+});
+exports.reassignServiceRequest = (0, https_1.onCall)(async (request) => {
+    const uid = requireUid(request);
+    const data = inputObject(request.data);
+    const id = textField(data, "id", 128);
+    const mechanicId = textField(data, "mechanic_id", 128);
+    const requestRef = db.doc(`service_requests/${id}`);
+    const privateRef = db.doc(`service_request_private/${id}`);
+    await db.runTransaction(async (transaction) => {
+        const [adminProfile, serviceRequest, newMechanic, newOwner, privateRequest, head] = await Promise.all([
+            transaction.get(db.doc(`users/${uid}`)),
+            transaction.get(requestRef),
+            transaction.get(db.doc(`mechanics/${mechanicId}`)),
+            transaction.get(db.doc(`mechanic_owners/${mechanicId}`)),
+            transaction.get(privateRef),
+            transaction.get((0, ledger_js_1.ledgerHeadRef)()),
+        ]);
+        if (!serviceRequest.exists)
+            throw new https_1.HttpsError("not-found", "Request not found.");
+        const isAdmin = roleList(adminProfile.data()).includes("admin");
+        const isCustomer = serviceRequest.get("customer_id") === uid;
+        if (!isAdmin && !isCustomer) {
+            throw new https_1.HttpsError("permission-denied", "Only the request owner or an administrator can reassign it.");
+        }
+        if (!newMechanic.exists || newMechanic.get("verified") !== true || newMechanic.get("available") !== true) {
+            throw new https_1.HttpsError("failed-precondition", "Choose an available, verified mechanic.");
+        }
+        if (!newOwner.exists || newOwner.get("user_id") !== mechanicId) {
+            throw new https_1.HttpsError("failed-precondition", "The selected mechanic ownership record is invalid.");
+        }
+        const currentStatus = asRequestStatus(serviceRequest.get("status"));
+        const currentHistory = serviceRequest.get("status_history");
+        const hasBeenDeclined = Array.isArray(currentHistory) &&
+            currentHistory.some((entry) => entry &&
+                typeof entry === "object" &&
+                "status" in entry &&
+                entry.status === "declined");
+        if (isCustomer && (currentStatus !== "sent" || serviceRequest.get("mechanic_owner_id") !== "" || !hasBeenDeclined)) {
+            throw new https_1.HttpsError("failed-precondition", "You can choose another mechanic only after a decline returns the request to the pool.");
+        }
+        if (isAdmin && !["sent", "accepted", "in_progress"].includes(currentStatus)) {
+            throw new https_1.HttpsError("failed-precondition", "Only open or active requests can be reassigned.");
+        }
+        if (serviceRequest.get("mechanic_owner_id") === mechanicId) {
+            throw new https_1.HttpsError("invalid-argument", "Choose a different mechanic.");
+        }
+        const changedAt = new Date().toISOString();
+        const priorHistory = serviceRequest.get("status_history");
+        const history = Array.isArray(priorHistory) ? priorHistory : [];
+        const nextHistory = [
+            ...history,
+            {
+                status: "sent",
+                actor_uid: uid,
+                changed_at: changedAt,
+                note: isAdmin
+                    ? "Admin reassigned request; new mechanic must accept"
+                    : "Customer selected another mechanic; mechanic must accept",
+            },
+        ];
+        const updatedRequest = {
+            ...serviceRequest.data(),
+            ...(privateRequest.data() ?? {}),
+            mechanic_id: mechanicId,
+            mechanic_code: String(newMechanic.get("code")),
+            mechanic_owner_id: mechanicId,
+            status: "sent",
+        };
+        transaction.update(requestRef, {
+            mechanic_id: mechanicId,
+            mechanic_code: String(newMechanic.get("code")),
+            mechanic_owner_id: mechanicId,
+            status: "sent",
+            updated_at: changedAt,
+            status_history: nextHistory,
+        });
+        if (privateRequest.exists)
+            transaction.update(privateRef, { mechanic_owner_id: mechanicId });
+        writeAuditLogInTransaction(transaction, uid, "reassignServiceRequest", null, null, "Allowed", isAdmin ? "Administrator reassigned a service request" : "Customer selected another mechanic after a decline", {
+            record_ref: String(serviceRequest.get("ref")),
+            before_status: currentStatus,
+            after_status: "sent",
+        });
+        const eventType = isAdmin ? "REQUEST_REASSIGNED" : "REQUEST_CUSTOMER_REASSIGNED";
+        await (0, ledger_js_1.appendLedgerEvent)(transaction, head, eventType, "service_request", String(serviceRequest.get("ref")), recordMetadata(eventType, String(serviceRequest.get("ref")), {
+            status: "sent",
+            mechanicCode: String(newMechanic.get("code")),
+        }), (0, ledger_js_1.requestRecord)(updatedRequest, String(newMechanic.get("code"))));
     });
 });
 exports.verifyLedgerRecord = (0, https_1.onCall)(async (request) => {
@@ -462,18 +803,19 @@ exports.verifyLedgerRecord = (0, https_1.onCall)(async (request) => {
         const serviceRequest = result.docs[0];
         if (!serviceRequest)
             throw new https_1.HttpsError("not-found", "Service request not found.");
-        const mechanicId = String(serviceRequest.get("mechanic_id"));
-        const mechanic = await db.doc(`mechanics/${mechanicId}`).get();
-        const owner = await db.doc(`mechanic_owners/${mechanicId}`).get();
+        const mechanicId = String(serviceRequest.get("mechanic_id") ?? "");
+        const mechanic = mechanicId ? await db.doc(`mechanics/${mechanicId}`).get() : null;
+        const owner = mechanicId ? await db.doc(`mechanic_owners/${mechanicId}`).get() : null;
         const isCustomer = serviceRequest.get("customer_id") === uid;
-        const isMechanic = owner.exists && owner.get("user_id") === uid;
+        const isMechanic = Boolean(owner?.exists && owner.get("user_id") === uid);
         if (!isCustomer && !isMechanic && !isAdmin) {
             throw new https_1.HttpsError("permission-denied", "You cannot verify this request.");
         }
-        if (!mechanic.exists)
-            throw new https_1.HttpsError("failed-precondition", "The assigned mechanic no longer exists.");
-        record = serviceRequest.data();
-        mechanicCode = String(mechanic.get("code"));
+        const privateRequest = await db.doc(`service_request_private/${serviceRequest.id}`).get();
+        record = { ...serviceRequest.data(), ...(privateRequest.data() ?? {}) };
+        mechanicCode = String(serviceRequest.get("mechanic_code") ?? (mechanic?.exists ? mechanic.get("code") : ""));
+        if (!mechanicCode)
+            throw new https_1.HttpsError("failed-precondition", "The request has no mechanic code to verify.");
         ledgerType = "service_request";
     }
     const latest = await db
@@ -554,10 +896,10 @@ exports.setUserRole = (0, https_1.onCall)(async (request) => {
     if (action !== "grant" && action !== "revoke") {
         return deny({ code: "invalid-argument", message: "action must be 'grant' or 'revoke'.", reason: "Invalid action" });
     }
-    if (role !== "admin" && role !== "mechanic") {
+    if (role !== "admin") {
         return deny({
             code: "invalid-argument",
-            message: "Only 'admin' and 'mechanic' roles can be managed.",
+            message: "Mechanics are verified profiles, not assignable account roles. Only the admin role can be managed here.",
             reason: "Invalid role for this function",
         });
     }
@@ -610,77 +952,154 @@ exports.setUserRole = (0, https_1.onCall)(async (request) => {
 exports.getSecurityPolicy = (0, https_1.onCall)(async (request) => {
     const uid = requireUid(request);
     await requireSecurityAdmin(uid);
-    const policy = {
-        actors: ["Visitor", "Customer", "Mechanic", "Admin", "Security Admin", "System"],
-        modules: [
-            { name: "User profiles", id: "users" },
-            { name: "Mechanic profiles", id: "mechanics" },
-            { name: "Mechanic ownership", id: "mechanic_owners" },
-            { name: "Service requests", id: "service_requests" },
-            { name: "Reviews", id: "reviews" },
-            { name: "Ledger blocks", id: "ledger_blocks" },
-            { name: "Ledger secrets", id: "ledger_secrets" },
-            { name: "Ledger state", id: "ledger_state" },
-            { name: "Security audit log", id: "security_audit" },
-        ],
-        permissions: [
-            { actor: "Visitor", module: "users", read: "None", write: "None", status: "Enforced" },
-            { actor: "Visitor", module: "mechanics", read: "Own (verified)", write: "None", status: "Enforced" },
-            { actor: "Visitor", module: "mechanic_owners", read: "None", write: "None", status: "Enforced" },
-            { actor: "Visitor", module: "service_requests", read: "None", write: "None", status: "Enforced" },
-            { actor: "Visitor", module: "reviews", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Visitor", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Visitor", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
-            { actor: "Visitor", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
-            { actor: "Visitor", module: "security_audit", read: "None", write: "None", status: "Enforced" },
-            { actor: "Customer", module: "users", read: "Own", write: "None", status: "Enforced" },
-            { actor: "Customer", module: "mechanics", read: "Own (verified)", write: "None", status: "Enforced" },
-            { actor: "Customer", module: "mechanic_owners", read: "Own", write: "None", status: "Enforced" },
-            { actor: "Customer", module: "service_requests", read: "Own", write: "Own (fn)", status: "Enforced" },
-            { actor: "Customer", module: "reviews", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Customer", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Customer", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
-            { actor: "Customer", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
-            { actor: "Customer", module: "security_audit", read: "None", write: "None", status: "Enforced" },
-            { actor: "Mechanic", module: "users", read: "Own", write: "None", status: "Enforced" },
-            { actor: "Mechanic", module: "mechanics", read: "Own", write: "None", status: "Enforced" },
-            { actor: "Mechanic", module: "mechanic_owners", read: "Own", write: "None", status: "Enforced" },
-            { actor: "Mechanic", module: "service_requests", read: "Assigned", write: "Assigned (fn)", status: "Enforced" },
-            { actor: "Mechanic", module: "reviews", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Mechanic", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Mechanic", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
-            { actor: "Mechanic", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
-            { actor: "Mechanic", module: "security_audit", read: "None", write: "None", status: "Enforced" },
-            { actor: "Admin", module: "users", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Admin", module: "mechanics", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Admin", module: "mechanic_owners", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Admin", module: "service_requests", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Admin", module: "reviews", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Admin", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Admin", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
-            { actor: "Admin", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
-            { actor: "Admin", module: "security_audit", read: "None", write: "None", status: "Enforced" },
-            { actor: "Security Admin", module: "users", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Security Admin", module: "mechanics", read: "None", write: "None", status: "Enforced" },
-            { actor: "Security Admin", module: "mechanic_owners", read: "None", write: "None", status: "Enforced" },
-            { actor: "Security Admin", module: "service_requests", read: "None", write: "None", status: "Enforced" },
-            { actor: "Security Admin", module: "reviews", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Security Admin", module: "ledger_blocks", read: "Full", write: "None", status: "Enforced" },
-            { actor: "Security Admin", module: "ledger_secrets", read: "None", write: "None", status: "Enforced" },
-            { actor: "Security Admin", module: "ledger_state", read: "None", write: "None", status: "Enforced" },
-            { actor: "Security Admin", module: "security_audit", read: "Full", write: "None", status: "Enforced" },
-            { actor: "System", module: "users", read: "Full", write: "Full", status: "Enforced" },
-            { actor: "System", module: "mechanics", read: "Full", write: "Full", status: "Enforced" },
-            { actor: "System", module: "mechanic_owners", read: "Full", write: "Full", status: "Enforced" },
-            { actor: "System", module: "service_requests", read: "Full", write: "Full", status: "Enforced" },
-            { actor: "System", module: "reviews", read: "Full", write: "Full", status: "Enforced" },
-            { actor: "System", module: "ledger_blocks", read: "Full", write: "Full", status: "Enforced" },
-            { actor: "System", module: "ledger_secrets", read: "Full", write: "Full", status: "Enforced" },
-            { actor: "System", module: "ledger_state", read: "Full", write: "Full", status: "Enforced" },
-            { actor: "System", module: "security_audit", read: "Full", write: "Full", status: "Enforced" },
-        ],
-    };
-    return policy;
+    return security_policy_json_1.default;
+});
+exports.beforeSignInAudit = (0, identity_1.beforeUserSignedIn)(async (event) => {
+    const uid = event.data?.uid;
+    if (!uid)
+        throw new Error("Identity Platform sign-in event is missing its user ID.");
+    await writeAuditLog(uid, "signIn", null, null, "Allowed", "Identity Platform sign-in event");
+});
+exports.recordSecurityConsoleAccess = (0, https_1.onCall)(async (request) => {
+    const uid = requireUid(request);
+    const profile = await db.doc(`users/${uid}`).get();
+    const allowed = Boolean(profile.exists && roleList(profile.data()).includes("security_admin"));
+    await writeAuditLog(uid, "securityConsoleAccess", null, null, allowed ? "Allowed" : "Denied", allowed ? "Security console opened" : "Unauthorised security console access");
+    if (!allowed) {
+        throw new https_1.HttpsError("permission-denied", "Security administrator access is required.");
+    }
+    return { ok: true };
+});
+exports.recordDataExport = (0, https_1.onCall)(async (request) => {
+    const uid = requireUid(request);
+    await writeAuditLog(uid, "dataExport", null, null, "Allowed", "User requested personal data export");
+    return { ok: true };
+});
+exports.deleteUser = (0, https_1.onCall)(async (request) => {
+    const uid = requireUid(request);
+    const userRef = db.doc(`users/${uid}`);
+    const profile = await userRef.get();
+    if (!profile.exists)
+        throw new https_1.HttpsError("not-found", "Account profile not found.");
+    const roles = roleList(profile.data());
+    if (roles.includes("admin")) {
+        const admins = await db.collection("users").where("roles", "array-contains", "admin").get();
+        if (admins.size <= 1) {
+            throw new https_1.HttpsError("failed-precondition", "The last administrator account cannot be deleted.");
+        }
+    }
+    const customerRequests = await db.collection("service_requests").where("customer_id", "==", uid).get();
+    const assignedRequests = await db.collection("service_requests").where("mechanic_owner_id", "==", uid).get();
+    const reviews = await db.collection("reviews").where("mechanic_id", "==", uid).get();
+    const requestUpdates = new Map();
+    const reviewIds = new Set();
+    const customerRequestIds = new Set(customerRequests.docs.map((snapshot) => snapshot.id));
+    for (const snapshot of customerRequests.docs) {
+        requestUpdates.set(snapshot.ref.path, {
+            ref: snapshot.ref,
+            data: {
+                customer_id: "deleted",
+                contact_phone: firestore_1.FieldValue.delete(),
+                description: firestore_1.FieldValue.delete(),
+                vehicle_make: firestore_1.FieldValue.delete(),
+                vehicle_model: firestore_1.FieldValue.delete(),
+                vehicle_year: firestore_1.FieldValue.delete(),
+                status_history: Array.isArray(snapshot.get("status_history"))
+                    ? snapshot.get("status_history").map((event) => ({
+                        ...event,
+                        ...(event.actor_uid === uid ? { actor_uid: "deleted" } : {}),
+                        ...(event.mechanic_id === uid ? { mechanic_id: "deleted" } : {}),
+                    }))
+                    : [],
+            },
+        });
+        reviewIds.add(snapshot.id);
+    }
+    for (const snapshot of assignedRequests.docs) {
+        const update = requestUpdates.get(snapshot.ref.path) ?? { ref: snapshot.ref, data: {} };
+        update.data.mechanic_id = "deleted";
+        update.data.mechanic_code = firestore_1.FieldValue.delete();
+        update.data.mechanic_owner_id = "deleted";
+        requestUpdates.set(snapshot.ref.path, update);
+    }
+    for (const snapshot of reviews.docs)
+        reviewIds.add(snapshot.id);
+    const mechanicPrivateRecords = await Promise.all(assignedRequests.docs
+        .filter((snapshot) => !customerRequestIds.has(snapshot.id))
+        .map((snapshot) => db.doc(`service_request_private/${snapshot.id}`).get()));
+    const writer = db.bulkWriter();
+    for (const update of requestUpdates.values())
+        writer.update(update.ref, update.data);
+    for (const requestId of customerRequestIds) {
+        writer.delete(db.doc(`service_request_private/${requestId}`));
+    }
+    for (const privateRecord of mechanicPrivateRecords) {
+        if (privateRecord.exists) {
+            writer.update(privateRecord.ref, { mechanic_owner_id: "deleted" });
+        }
+    }
+    for (const reviewId of reviewIds)
+        writer.delete(db.doc(`reviews/${reviewId}`));
+    writer.delete(db.doc(`mechanic_owners/${uid}`));
+    writer.delete(db.doc(`mechanics/${uid}`));
+    writer.delete(db.doc(`mechanic_private/${uid}`));
+    writer.delete(userRef);
+    await writer.close();
+    await (0, auth_1.getAuth)().deleteUser(uid);
+    await writeAuditLog("account-erasure", "deleteUser", null, null, "Allowed", "Account erasure completed");
+    return { ok: true };
+});
+exports.anonymizeOldRequests = (0, scheduler_1.onSchedule)("every 24 hours", async () => {
+    const cutoff = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+    const cursorRef = db.doc("ledger_state/request_retention_cursor");
+    const cursor = await cursorRef.get();
+    let query = db.collection("service_requests")
+        .where("created_at", "<=", cutoff)
+        .orderBy("created_at")
+        .orderBy(firestore_1.FieldPath.documentId())
+        .limit(400);
+    if (cursor.exists && typeof cursor.get("created_at") === "string" && typeof cursor.get("document_id") === "string") {
+        query = query.startAfter(cursor.get("created_at"), cursor.get("document_id"));
+    }
+    const oldRequests = await query.get();
+    if (oldRequests.empty) {
+        if (cursor.exists)
+            await cursorRef.delete();
+        return;
+    }
+    const writer = db.bulkWriter();
+    for (const snapshot of oldRequests.docs) {
+        if (snapshot.get("retention_anonymized") !== true) {
+            const history = snapshot.get("status_history");
+            writer.update(snapshot.ref, {
+                customer_id: "anonymized",
+                mechanic_id: firestore_1.FieldValue.delete(),
+                mechanic_code: firestore_1.FieldValue.delete(),
+                mechanic_owner_id: firestore_1.FieldValue.delete(),
+                contact_phone: firestore_1.FieldValue.delete(),
+                description: firestore_1.FieldValue.delete(),
+                vehicle_make: firestore_1.FieldValue.delete(),
+                vehicle_model: firestore_1.FieldValue.delete(),
+                vehicle_year: firestore_1.FieldValue.delete(),
+                status_history: Array.isArray(history)
+                    ? history.map((event) => ({
+                        status: event.status,
+                        changed_at: event.changed_at,
+                    }))
+                    : [],
+                retention_anonymized: true,
+            });
+        }
+        writer.delete(db.doc(`service_request_private/${snapshot.id}`));
+    }
+    await writer.close();
+    const last = oldRequests.docs.at(-1);
+    if (last) {
+        await cursorRef.set({
+            created_at: last.get("created_at"),
+            document_id: last.id,
+        });
+    }
 });
 // audit-fix:v1 - filters are validated, pagination uses a document cursor (no skipped rows on equal
 // timestamps), and the composite indexes it needs are in firestore.indexes.json.
@@ -692,6 +1111,59 @@ function optionalFilter(value, name, maxLength) {
     }
     return value;
 }
+exports.publishAiDataset = (0, https_1.onCall)({ memory: "512MiB" }, async (request) => {
+    const uid = requireUid(request);
+    const profile = await db.doc(`users/${uid}`).get();
+    if (!roleList(profile.data()).includes("admin")) {
+        throw new https_1.HttpsError("permission-denied", "Administrator access is required.");
+    }
+    const data = inputObject(request.data);
+    const records = data.records;
+    if (!Array.isArray(records) || records.length === 0 || records.length > 2000) {
+        throw new https_1.HttpsError("invalid-argument", "records must be a non-empty array of at most 2000 rows.");
+    }
+    const sample = records[0];
+    if (!sample || typeof sample !== "object" || Array.isArray(sample)) {
+        throw new https_1.HttpsError("invalid-argument", "Each record must be an object.");
+    }
+    const banned = ["name", "phone", "email", "contact_phone", "full_name"];
+    for (const key of Object.keys(sample)) {
+        if (banned.includes(key.toLowerCase())) {
+            throw new https_1.HttpsError("invalid-argument", "AI dataset must not include names, phones or emails.");
+        }
+    }
+    const nSynthetic = Number(data.n_synthetic) || 0;
+    const nReal = Number(data.n_real) || 0;
+    await db.doc("ai_dataset/current").set({
+        records,
+        n_synthetic: nSynthetic,
+        n_real: nReal,
+        size: records.length,
+        updated_at: new Date().toISOString(),
+        updated_by: uid,
+    });
+    return { ok: true, size: records.length };
+});
+exports.publishAiModels = (0, https_1.onCall)({ memory: "512MiB" }, async (request) => {
+    const uid = requireUid(request);
+    const profile = await db.doc(`users/${uid}`).get();
+    if (!roleList(profile.data()).includes("admin")) {
+        throw new https_1.HttpsError("permission-denied", "Administrator access is required.");
+    }
+    const data = inputObject(request.data);
+    const bundle = data.bundle;
+    if (!bundle || typeof bundle !== "object") {
+        throw new https_1.HttpsError("invalid-argument", "bundle is required.");
+    }
+    await db.doc("ai_models/latest").set({
+        bundle,
+        dataset_size: Number(data.dataset_size) || 0,
+        trained_at: typeof data.trained_at === "string" ? data.trained_at : new Date().toISOString(),
+        best_model: typeof data.best_model === "string" ? data.best_model : "forest",
+        updated_by: uid,
+    });
+    return { ok: true };
+});
 exports.listAuditLog = (0, https_1.onCall)(async (request) => {
     const uid = requireUid(request);
     await requireSecurityAdmin(uid);
@@ -740,6 +1212,9 @@ exports.listAuditLog = (0, https_1.onCall)(async (request) => {
         result: doc.get("result"),
         reason: doc.get("reason"),
         timestamp: doc.get("timestamp"),
+        record_ref: doc.get("record_ref"),
+        before_status: doc.get("before_status"),
+        after_status: doc.get("after_status"),
     }));
     const nextCursor = entries.length === limit ? (entries.at(-1)?.id ?? null) : null;
     return { entries, nextCursor };

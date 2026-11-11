@@ -61,6 +61,11 @@ export async function getSecurityPolicy() {
   return fn({});
 }
 
+export async function recordSecurityConsoleAccess() {
+  const fn = httpsCallable<Record<string, never>, { ok: true }>(functions, 'recordSecurityConsoleAccess');
+  return fn({});
+}
+
 export type AuditLogParams = {
   limit?: number;
   startAfter?: number;

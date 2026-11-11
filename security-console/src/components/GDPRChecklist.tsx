@@ -1,22 +1,17 @@
-import { useState, useEffect } from 'react';
 import gdprData from '../data/gdpr-checklist.json';
 import type { GDPRItem } from '../lib/types';
 import { CheckCircle2, AlertTriangle, XCircle, Circle } from 'lucide-react';
 
 export default function GDPRChecklist() {
-  const [items, setItems] = useState<GDPRItem[]>([]);
-
-  useEffect(() => {
-    setItems(gdprData as GDPRItem[]);
-  }, []);
+  const items = gdprData as GDPRItem[];
 
   const getLevelColor = (level: string) => {
     switch (level) {
-      case 'Compliant':
+      case 'Implemented':
         return 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300';
-      case 'Partially compliant':
+      case 'Partially':
         return 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300';
-      case 'Non-compliant':
+      case 'Planned':
         return 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300';
       default:
         return 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300';
@@ -25,11 +20,11 @@ export default function GDPRChecklist() {
 
   const getLevelIcon = (level: string) => {
     switch (level) {
-      case 'Compliant':
+      case 'Implemented':
         return <CheckCircle2 size={14} />;
-      case 'Partially compliant':
+      case 'Partially':
         return <AlertTriangle size={14} />;
-      case 'Non-compliant':
+      case 'Planned':
         return <XCircle size={14} />;
       default:
         return <Circle size={14} />;
@@ -49,9 +44,9 @@ export default function GDPRChecklist() {
     }
   };
 
-  const compliantCount = items.filter((i) => i.level_today === 'Compliant').length;
-  const partiallyCompliantCount = items.filter((i) => i.level_today === 'Partially compliant').length;
-  const nonCompliantCount = items.filter((i) => i.level_today === 'Non-compliant').length;
+  const compliantCount = items.filter((i) => i.level_today === 'Implemented').length;
+  const partiallyCompliantCount = items.filter((i) => i.level_today === 'Partially').length;
+  const plannedCount = items.filter((i) => i.level_today === 'Planned').length;
   const total = items.length;
   const score = total === 0 ? 0 : Math.round((compliantCount / total) * 100);
 
@@ -95,7 +90,7 @@ export default function GDPRChecklist() {
           />
         </div>
         <div className="flex justify-between mt-2 text-sm text-slate-600 dark:text-slate-400">
-          <span>{score}% Compliant</span>
+          <span>{score}% Implemented</span>
           <span>{compliantCount}/{total} requirements met</span>
         </div>
       </div>
@@ -106,7 +101,7 @@ export default function GDPRChecklist() {
           <div className="flex items-center gap-3">
             <CheckCircle2 className="text-green-600 dark:text-green-400" size={24} />
             <div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Compliant</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Implemented</p>
               <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{compliantCount}</p>
             </div>
           </div>
@@ -115,7 +110,7 @@ export default function GDPRChecklist() {
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-amber-600 dark:text-amber-400" size={24} />
             <div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Partially Compliant</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Partially</p>
               <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{partiallyCompliantCount}</p>
             </div>
           </div>
@@ -124,8 +119,8 @@ export default function GDPRChecklist() {
           <div className="flex items-center gap-3">
             <XCircle className="text-red-600 dark:text-red-400" size={24} />
             <div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Non-compliant</p>
-              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{nonCompliantCount}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Planned</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{plannedCount}</p>
             </div>
           </div>
         </div>
@@ -143,6 +138,7 @@ export default function GDPRChecklist() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <p className="font-medium text-slate-900 dark:text-slate-100">{item.requirement}</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{item.articles}</p>
                     <div className="mt-2 space-y-1 text-sm">
                       <div className="flex items-center gap-2">
                         <span className="text-slate-500 dark:text-slate-400">Today:</span>

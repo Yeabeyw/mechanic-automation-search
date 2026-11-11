@@ -33,18 +33,25 @@ export interface SecurityPolicy {
 }
 
 export interface DataClassification {
-  field: string;
-  class: 'Public' | 'Private' | 'Confidential' | 'Restricted';
-  owner: string;
-  retention: string;
-  safeguard: string;
+  "Data item": string;
+  "Example field": string;
+  "Why": string;
+  "Data owner": string;
+  "Who may write": string;
+  "Storage location": string;
+  "Retention": string;
+  "Key safeguards": string;
+  "On-chain? (Y/N)": "Y" | "N";
+  "Evidence/status": string;
+  tier: 'Public' | 'Private' | 'Confidential' | 'Restricted';
 }
 
 export interface GDPRItem {
   requirement: string;
-  level_today: string;
+  level_today: 'Implemented' | 'Partially' | 'Planned' | 'N/A';
   target: string;
   gap: string;
   action: string;
   priority: 'High' | 'Medium' | 'Low';
+  articles: string;
 }
