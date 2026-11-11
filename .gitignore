@@ -43,3 +43,6 @@ dist-ssr
 firebase-install.log
 
 .firebase/
+
+.backup/
+.ui-backup-*/
